@@ -1,5 +1,7 @@
 // import processing.opengl.*;
 // import com.hamoid.*;
+import java.util.Comparator;
+import java.util.Arrays;
 
 // VideoExport _videoExport;
 // boolean _isExport = false;
@@ -9,9 +11,11 @@ SceneManager _sm;
 
 void setup()
 {
-    size(512, 512);
+    //size(1920, 1080, P2D); // full HD
+    size(800, 450, P2D); // for test
     smooth();
     frameRate(_frameRate);
+    background(#000000);
     initialize();
     // if (_isExport) { exportStart(); }
 }
@@ -19,11 +23,14 @@ void setup()
 void initialize()
 {
     _sm = new SceneManager();
+    _sm.addScene(new SceneImageConvert(10.5, 11.5));
 }
 
 void draw()
 {
-    clearScene();
+    // if (frameCount == 2) { initialize(); }
+    // if (frameCount <= 2) { return; }
+    
     _sm.advanceOneFrame();
     if (_sm.isFinish())
     {
@@ -36,7 +43,7 @@ void draw()
 void keyPressed()
 {
     if (key == 's' || key == 'S') { saveImage(); }
-    else if (key == 'r' || key == 'R') { initialize(); redraw(); }
+    else if (key == 'r' || key == 'R') { initialize(); }
 }
 
 String timestamp()
@@ -45,7 +52,5 @@ String timestamp()
         + "_"  + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
     return timestamp;
 }
-
-void clearScene() { background(#000000); }
 
 void saveImage() { saveFrame(timestamp() + "_####.png"); }
