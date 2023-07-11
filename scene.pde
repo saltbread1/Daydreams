@@ -1,23 +1,39 @@
-interface IScene
+abstract class Scene
 {
-    void nextFrame();
+    final float _totalSceneSec;
+    float _curSec;
 
-    boolean isEnd();
+    Scene(float totalSceneSec) { _totalSceneSec = totalSceneSec; }
+    
+    abstract void initialize();
+
+    abstract void update();
+
+    boolean isEnd() { return _curSec > _totalSceneSec; }
+
+    void clearScene() { background(#000000); }
 }
 
 class SceneManager
 {
-    ArrayList<IScene> _sceneList;
+    ArrayList<Scene> _sceneList;
 
-    SceneManager() { _sceneList = new ArrayList<IScene>(); }
+    SceneManager() { _sceneList = new ArrayList<Scene>(); }
 
-    void addScene(IScene scene) { _sceneList.add(scene); }
+    void addScene(Scene scene)
+    {
+        float t = millis();
+        scene.initialize();
+        println("initialize of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms");
+        _sceneList.add(scene);
+    }
 
     void advanceOneFrame()
     {
         if (isFinish()) { return; }
-        IScene scene = _sceneList.get(0);
-        scene.nextFrame();
+        Scene scene = _sceneList.get(0);
+        scene.clearScene();
+        scene.update();
         if (scene.isEnd()) { _sceneList.remove(0); }
     }
 
