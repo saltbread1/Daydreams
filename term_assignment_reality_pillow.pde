@@ -1,35 +1,35 @@
 // import processing.opengl.*;
-// import peasy.*;
 // import com.hamoid.*;
-// import gifAnimation.*;
 
-// PeasyCam _cam;
-// CameraState _camstate;
 // VideoExport _videoExport;
-// GifMaker _gifExport;
 // boolean _isExport = false;
 // int _exportingMs = 10000;
 int _frameRate = 30;
+SceneManager _sm;
 
 void setup()
 {
     size(512, 512);
     smooth();
     frameRate(_frameRate);
-    // peasySettings();
     initialize();
     // if (_isExport) { exportStart(); }
 }
 
 void initialize()
 {
-    // _cam.setState(_camstate, 1000);
+    _sm = new SceneManager();
 }
 
 void draw()
 {
     clearScene();
-    
+    _sm.advanceOneFrame();
+    if (_sm.isFinish())
+    {
+        println("The movie has just finished.");
+        noLoop();
+    }
     // if (_isExport) { exportFrame(_exportingMs); }
 }
 
@@ -37,7 +37,6 @@ void keyPressed()
 {
     if (key == 's' || key == 'S') { saveImage(); }
     else if (key == 'r' || key == 'R') { initialize(); redraw(); }
-    // else if ((key == 'e' || key == 'E') && _isExport) { exportFinish(); }
 }
 
 String timestamp()
@@ -47,6 +46,6 @@ String timestamp()
     return timestamp;
 }
 
-void clearScene() { background(#222244); }
+void clearScene() { background(#000000); }
 
 void saveImage() { saveFrame(timestamp() + "_####.png"); }
