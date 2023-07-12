@@ -21,7 +21,7 @@ class SceneLandscape extends Scene
         ambientLight(32, 32, 32);
         directionalLight(255, 255, 255, -.5, 0, -1);
         _landscape.drawMe();
-        println(_curSec);
+        //println(_curSec);
     }
 
     @Override

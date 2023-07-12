@@ -40,7 +40,7 @@ class Cone
         _res = res;
     }
 
-    void createFace()
+    void createFaces()
     {
         _faceList = new ArrayList<Triangle>();
         float dtheta = TAU/_res;
