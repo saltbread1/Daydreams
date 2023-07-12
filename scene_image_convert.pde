@@ -60,10 +60,4 @@ class SceneImageConvert extends Scene
         _ibm.updateBlocks();
         _ibm.drawBlocks();
     }
-
-    float easingOutSin(float t)
-    {
-        t = constrain(t, 0, 1);
-        return sin(HALF_PI*t);
-    }
 }
