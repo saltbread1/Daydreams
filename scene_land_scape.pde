@@ -10,9 +10,9 @@ class SceneLandscape extends Scene
     @Override
     void initialize()
     {
-        _landscape = new Landscape(width, 16, new PVector());
+        _landscape = new Landscape(width, 40, new PVector());
         _landscape.createFaces();
-        camera(0, -height, height/2, 0, 0, 0, 0, -1, -1);
+        camera(0, height, height/2, 0, 0, 0, 0, 0, -1);
     }
 
     @Override
@@ -20,6 +20,7 @@ class SceneLandscape extends Scene
     {
         ambientLight(32, 32, 32);
         directionalLight(255, 255, 255, -.5, 0, -1);
+        _landscape.updateMe();
         _landscape.drawMe();
         //println(_curSec);
     }

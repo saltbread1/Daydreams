@@ -9,6 +9,13 @@ class Triangle
         _v3 = v3;
     }
 
+    void translate(PVector dv)
+    {
+        _v1.add(dv);
+        _v2.add(dv);
+        _v3.add(dv);
+    }
+
     void drawMe()
     {
         beginShape();
@@ -60,6 +67,11 @@ class Cone
             PVector v3 = rotate3d(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
             _faceList.add(new Triangle(v1, v2, v3));
         }
+    }
+
+    void translate(PVector dv)
+    {
+        for (Triangle face : _faceList) { face.translate(dv); }
     }
 
     void drawMe()
