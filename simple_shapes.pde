@@ -17,6 +17,11 @@ class Triangle
         myVertex(_v3);
         endShape(CLOSE);
     }
+
+    PVector getCenter()
+    { // get the center of gravity
+        return PVector.add(_v1, _v2).add(_v3).div(3);
+    }
 }
 
 class Cone

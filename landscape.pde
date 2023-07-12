@@ -1,42 +1,42 @@
 class Landscape
 {
-    final float _lenX, _lenY;
-    final int _resX, _resY;
+    final float _totalSize; // edge length of this total object
+    final float _faceSize; // edge length of one face
     final PVector _center;
+    final int _res;
     ArrayList<Triangle> _faceList;
     ArrayList<Cone> _coneList;
 
-    Landscape(float lenX, float lenY, int resX, int resY, PVector center)
+    Landscape(float totalSize, float faceSize, PVector center)
     {
-        _lenX = lenX;
-        _lenY = lenY;
-        _resX = resX;
-        _resY = resY;
+        _totalSize = totalSize;
+        _faceSize = faceSize;
         _center = center;
+        _res = (int)(totalSize / faceSize);
     }
 
-    void createFace()
+    void createFaces()
     {
-        PVector[][] vertices = new PVector[_resX][_resY];
+        PVector[][] vertices = new PVector[_res][_res];
         float noiseScale = .1;
-        for (int i = 0; i < _resX; i++)
+        for (int i = 0; i < _res; i++)
         {
-            for (int j = 0; j < _resY; j++)
+            for (int j = 0; j < _res; j++)
             {
-                float x = map(i, 0, _resX, -_lenX, _lenX);
-                float y = map(j, 0, _resY, -_lenY, _lenY);
-                float z = (1 - noise(i*noiseScale, j*noiseScale)*2) * 350;
+                float x = map(i, 0, _res, -_totalSize/2, _totalSize/2);
+                float y = map(j, 0, _res, -_totalSize/2, _totalSize/2);
+                float z = 0;//(1 - noise(i*noiseScale, j*noiseScale)*2) * _totalSize * .2;
                 PVector offset = PVector.random3D();
-                offset.x *= _lenX/_resX*.5; offset.y *= _lenY/_resY*.5; offset.z = 0;
-                vertices[i][j] = new PVector(x, y, z).add(offset).add(_center);
+                offset.x *= _totalSize/_res*.5; offset.y *= _totalSize/_res*.5; offset.z = 0;
+                vertices[i][j] = new PVector(x, y, z)/*.add(offset)*/.add(_center);
             }
         }
 
         _faceList = new ArrayList<Triangle>();
         _coneList = new ArrayList<Cone>();
-        for (int i = 0; i < _resX-1; i++)
+        for (int i = 0; i < _res-1; i++)
         {
-            for (int j = 0; j < _resY-1; j++)
+            for (int j = 0; j < _res-1; j++)
             {
                 Triangle ff1 = new Triangle(vertices[i][j], vertices[i+1][j], vertices[i+1][j+1]);
                 Triangle ff2 = new Triangle(vertices[i][j], vertices[i+1][j+1], vertices[i][j+1]);
@@ -71,12 +71,22 @@ class Landscape
 
     void drawMe()
     {
-        if (_faceList == null || _coneList == null) { exit(); return; }
         pushStyle();
-        noStroke();
-        fill(#987666);
-        for (Triangle face : _faceList) { face.drawMe(); }
-        for (Cone cone : _coneList) { cone.drawMe(); }
+        //noStroke();
+        stroke(255);
+        // for (Triangle face : _faceList) { face.drawMe(); }
+        // for (Cone cone : _coneList) { cone.drawMe(); }
+        int n = _faceList.size();
+        for (int i = 0; i < n; i++)
+        {
+            Triangle face = _faceList.get(i);
+            Cone cone = _coneList.get(i);
+            int alpha = (int)(constrain(_totalSize / (1+PVector.dist(face.getCenter(), _center)) - 1.8, 0, 1)*255);
+            //if (alpha == 0) { println(alpha); }
+            fill(#987666, /*alpha*/255);
+            face.drawMe();
+            //cone.drawMe();
+        }
         popStyle();
     }
 }

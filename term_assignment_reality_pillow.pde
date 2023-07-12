@@ -25,7 +25,7 @@ void initialize()
 {
     _sm = new SceneManager();
     //_sm.addScene(new SceneImageConvert(10.5, 11.5));
-    _sm.addScene(new SceneLandscape(1));
+    _sm.addScene(new SceneLandscape(30));
     _sm.addScene(new SceneImageConvert(4, 4));
 }
 

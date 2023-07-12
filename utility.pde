@@ -42,6 +42,6 @@ float easingOutSin(float t)
 }
 
 void resetCamera()
-{
+{ // default camera
     camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
 }

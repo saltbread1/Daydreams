@@ -10,8 +10,8 @@ class SceneLandscape extends Scene
     @Override
     void initialize()
     {
-        _landscape = new Landscape(width, height, 50, 50, new PVector());
-        _landscape.createFace();
+        _landscape = new Landscape(width, 16, new PVector());
+        _landscape.createFaces();
         camera(0, -height, height/2, 0, 0, 0, 0, -1, -1);
     }
 
