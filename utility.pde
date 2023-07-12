@@ -40,3 +40,8 @@ float easingOutSin(float t)
     t = constrain(t, 0, 1);
     return sin(HALF_PI*t);
 }
+
+void resetCamera()
+{
+    camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
+}
