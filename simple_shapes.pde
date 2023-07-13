@@ -31,6 +31,29 @@ class Triangle
     }
 }
 
+class Rect
+{
+    final PVector _upperLeft, _lowerRight;
+
+    Rect(PVector upperLeft, PVector lowerRight)
+    {
+        _upperLeft = upperLeft;
+        _lowerRight = lowerRight;
+    }
+
+    void drawMe()
+    {
+        rectMode(CORNERS);
+        rect(_upperLeft.x, _upperLeft.y, _lowerRight.x, _lowerRight.y);
+    }
+
+    void translate(PVector dv)
+    {
+        _upperLeft.add(dv);
+        _lowerRight.add(dv);
+    }
+}
+
 class Cone
 {
     final PVector _bottomCenter, _centerAxis;
