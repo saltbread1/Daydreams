@@ -9,7 +9,11 @@ abstract class Scene
 
     abstract void update();
 
+    void timeCount() { _curSec += 1./_frameRate; }
+
     boolean isEnd() { return _curSec > _totalSceneSec; }
+
+    void postProcessing() { println("End \""+this.getClass().getSimpleName()+"\"."); }
 
     void clearScene() { background(#000000); }
 }
@@ -24,7 +28,7 @@ class SceneManager
     {
         float t = millis();
         scene.initialize();
-        println("initialize of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms");
+        println("Initialization of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
         _sceneList.add(scene);
     }
 
@@ -34,7 +38,12 @@ class SceneManager
         Scene scene = _sceneList.get(0);
         scene.clearScene();
         scene.update();
-        if (scene.isEnd()) { _sceneList.remove(0); }
+        scene.timeCount();
+        if (scene.isEnd())
+        {
+            scene.postProcessing();
+            _sceneList.remove(0);
+        }
     }
 
     boolean isFinish() { return _sceneList.size() == 0; }

@@ -49,37 +49,13 @@ class ImageBlock implements ImageSortable
     {
         float r = _curSec/_totalMoveSec;
         float t = easingInOutQuad(r);
-        _pos = cubicBezierPath(t);
+        _pos = cubicBezierPath(_start, _control1, _control2, _goal, t);
         _curSec += 1./_frameRate;
     }
 
     void drawMe()
     {
         image(_img, _pos.x, _pos.y);
-    }
-
-    PVector cubicBezierPath(float t)
-    {
-        t = constrain(t, 0, 1);
-        PVector v1 = PVector.mult(_start, pow(1-t,3));
-        PVector v2 = PVector.mult(_control1, t*sq(1-t)*3);
-        PVector v3 = PVector.mult(_control2, sq(t)*(1-t)*3);
-        PVector v4 = PVector.mult(_goal, pow(t,3));
-        return v1.add(v2).add(v3).add(v4);
-    }
-
-    float easingInOutQuad(float t)
-    {
-        t = constrain(t, 0, 1);
-        if (t < .5) { return 2*sq(t); }
-        return 1-2*sq(t-1);
-    }
-
-    float easingInOutCubic(float t)
-    {
-        t = constrain(t, 0, 1);
-        if (t < .5) { return 4*pow(t,3); }
-        return 1+4*pow(t-1,3);
     }
 
     PImage getImage() { return _img; }

@@ -28,6 +28,7 @@ class SceneImageConvert extends Scene
         _ibm = new ImageBlockManager(_base.get(), 20);
         _ibm.createImageBlocks(_target, _totalMovingSec);
         convertImage(); // first convert is so slow...
+        clearScene();
     }
 
     @Override
@@ -39,7 +40,6 @@ class SceneImageConvert extends Scene
             image(_base, 0, 0);
         }
         else { convertImage(); }
-        _curSec += 1./_frameRate;
     }
 
     void updateGraphics(float sec)
@@ -59,11 +59,5 @@ class SceneImageConvert extends Scene
     {
         _ibm.updateBlocks();
         _ibm.drawBlocks();
-    }
-
-    float easingOutSin(float t)
-    {
-        t = constrain(t, 0, 1);
-        return sin(HALF_PI*t);
     }
 }

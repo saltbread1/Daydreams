@@ -1,5 +1,6 @@
 // import processing.opengl.*;
 // import com.hamoid.*;
+import quaternion.*;
 import java.util.Comparator;
 import java.util.Arrays;
 
@@ -11,8 +12,8 @@ SceneManager _sm;
 
 void setup()
 {
-    //size(1920, 1080, P2D); // full HD
-    size(800, 450, P2D); // for test
+    //size(1920, 1080, P3D); // full HD
+    size(800, 450, P3D); // for test
     smooth();
     frameRate(_frameRate);
     background(#000000);
@@ -23,7 +24,9 @@ void setup()
 void initialize()
 {
     _sm = new SceneManager();
-    _sm.addScene(new SceneImageConvert(10.5, 11.5));
+    //_sm.addScene(new SceneImageConvert(10.5, 11.5));
+    _sm.addScene(new SceneLandscape(30));
+    _sm.addScene(new SceneImageConvert(4, 4));
 }
 
 void draw()
@@ -43,7 +46,7 @@ void draw()
 void keyPressed()
 {
     if (key == 's' || key == 'S') { saveImage(); }
-    else if (key == 'r' || key == 'R') { initialize(); }
+    //else if (key == 'r' || key == 'R') { initialize(); }
 }
 
 String timestamp()
