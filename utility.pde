@@ -21,26 +21,6 @@ PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVect
     return v1.add(v2).add(v3).add(v4);
 }
 
-float easingInOutQuad(float t)
-{
-    t = constrain(t, 0, 1);
-    if (t < .5) { return 2*sq(t); }
-    return 1-2*sq(t-1);
-}
-
-float easingInOutCubic(float t)
-{
-    t = constrain(t, 0, 1);
-    if (t < .5) { return 4*pow(t,3); }
-    return 1+4*pow(t-1,3);
-}
-
-float easingOutSin(float t)
-{
-    t = constrain(t, 0, 1);
-    return sin(HALF_PI*t);
-}
-
 void resetCamera()
 { // default camera
     camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
@@ -49,4 +29,52 @@ void resetCamera()
 float mod(float x, float y)
 {
     return x-y*floor(x/y);
+}
+
+/**** easing functions ****/
+float easeOutQuad(float t)
+{
+    t = constrain(t, 0, 1);
+    return 1-sq(1-t);
+}
+
+float easeInOutQuad(float t)
+{
+    t = constrain(t, 0, 1);
+    return t < .5 ? 2*sq(t) : 1-2*sq(t-1);
+}
+
+float easeOutCubic(float t)
+{
+    t = constrain(t, 0, 1);
+    return 1-pow(1-t, 3);
+}
+
+float easeInOutCubic(float t)
+{
+    t = constrain(t, 0, 1);
+    return t < .5 ? 4*pow(t,3) : 1+4*pow(t-1,3);
+}
+
+float easeOutSin(float t)
+{
+    t = constrain(t, 0, 1);
+    return sin(HALF_PI*t);
+}
+
+float easeOutElastic(float t)
+{
+    t = constrain(t, 0, 1);
+    return t == 0
+        ? 0
+        : t == 1
+        ? 1
+        //: pow(2, -10 * t) * sin((t * 10 - 0.75) * TAU/3) + 1;
+        : pow(1.6, -11.2 * t) * sin((t * 11.2 - 0.75) * TAU/3) + 1;
+}
+
+float easeReturnLiner(float t)
+{
+    t = constrain(t, 0, 1);
+    return acos(cos(TAU*t))/PI;
 }
