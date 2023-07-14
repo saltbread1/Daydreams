@@ -41,17 +41,6 @@ class Landscape
 
         Cone createCone(Triangle triangle, float height)
         {
-            // PVector v1 = triangle._v1;
-            // PVector v2 = triangle._v2;
-            // PVector v3 = triangle._v3;
-
-            // float a = PVector.dist(v2, v3);
-            // float b = PVector.dist(v3, v1);
-            // float c = PVector.dist(v1, v2);
-            // float s = (a+b+c)/2;
-            // float area = sqrt(s*(s-a)*(s-b)*(s-c));
-            // float r = area/s;
-            // PVector inn = PVector.mult(v1, a).add(PVector.mult(v2, b)).add(PVector.mult(v3, c)).div(a+b+c);
             PVector inn = triangle.getInner();
             PVector normal = PVector.sub(triangle._v1, triangle._v2)
                                     .cross(PVector.sub(triangle._v2, triangle._v3))
@@ -61,13 +50,21 @@ class Landscape
             return new Cone(inn, normal, r*.88, height, 8);
         }
 
+        void reset()
+        {
+            _cone1 = null;
+            _cone2 = null;
+            _curSec = 0;
+            _isStatic = false;
+        }
+
         void updateCones(float maxSec)
         {
             if (_isStatic) { return; }
             _curSec += 1./_frameRate;
             if (_curSec > maxSec) { _isStatic = true; }
-            float maxH1 = sqrt(_tri1.getArea()*1.28);
-            float maxH2 = sqrt(_tri2.getArea()*1.28);
+            float maxH1 = sqrt(_tri1.getArea()*1.38);
+            float maxH2 = sqrt(_tri2.getArea()*1.38);
             float r = easeOutElastic(_curSec/maxSec);
             float h1 = maxH1 * r;
             float h2 = maxH2 * r;
@@ -108,7 +105,7 @@ class Landscape
             {
                 float x = map(i, 0, _res, -_totalSize/2, _totalSize/2);
                 float y = map(j, 0, _res, -_totalSize/2, _totalSize/2);
-                float z = (1 - noise(i*noiseScale, j*noiseScale)*2) * _visibleSize * .3;
+                float z = (1 - noise(i*noiseScale, j*noiseScale)*2) * 290;
                 PVector offset = PVector.random3D().mult(_faceSize*.5);
                 offset.z = 0;
                 vertices[i][j] = new PVector(x, y, z).add(offset).add(_center);
@@ -126,7 +123,7 @@ class Landscape
         }
     }
 
-    void drawMe(PVector cameraCenter)
+    void drawMe(PVector cameraCenter, LandscapeStyle type)
     {
         pushStyle();
         noStroke();
@@ -135,11 +132,36 @@ class Landscape
         {
             int alpha = (int)(constrain(_visibleSize / (1+PVector.dist(face.getCenter(), cameraCenter)) - 1.8, 0, 1)*255);
             //int alpha = 255;
-            if (alpha == 0) { continue; }
-            if (alpha - 250 > 0) { face.updateCones(2.4); }
-            fill(#987666, alpha);
+            if (alpha == 0) { face.reset(); continue; }
+            if (alpha - 250 > 0) { face.updateCones(2); }
+            setDrawStyle(type, alpha);
             face.drawMe();
         }
         popStyle();
     }
+
+    void setDrawStyle(LandscapeStyle type, int alpha)
+    {
+        switch (type)
+        {
+            case NORMAL:
+                noStroke();
+                //fill(#987666, alpha);
+                fill(#e0e0e0, alpha);
+                //stroke(#000000, alpha);
+                break;
+            case VIRTUAL:
+                stroke(#e00000, alpha);
+                fill(#000000, alpha);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+enum LandscapeStyle
+{
+    NORMAL,
+    VIRTUAL,
 }
