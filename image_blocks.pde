@@ -48,8 +48,8 @@ class ImageBlock implements ImageSortable
     void updateMe()
     {
         float r = _curSec/_totalMoveSec;
-        float t = easeInOutQuad(r);
-        _pos = cubicBezierPath(_start, _control1, _control2, _goal, t);
+        float t = _util.easeInOutQuad(r);
+        _pos = _util.cubicBezierPath(_start, _control1, _control2, _goal, t);
         _curSec += 1./_frameRate;
     }
 

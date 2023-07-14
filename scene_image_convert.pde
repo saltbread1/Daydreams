@@ -45,7 +45,7 @@ class SceneImageConvert extends Scene
     void updateGraphics(float sec)
     {
         float t = sec/_convertStartSec;
-        float time = _convertStartSec * easeOutSin(t);
+        float time = _convertStartSec * _util.easeOutSin(t);
         _noise.set("resolution", (float)_base.width, (float)_base.height);
         _noise.set("time", time);
         _noise.set("kernel_size", 5);

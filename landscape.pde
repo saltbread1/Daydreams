@@ -33,10 +33,6 @@ class Landscape
 
             _tri1 = new Triangle(vUL.copy(), vUR.copy(), vLR.copy());
             _tri2 = new Triangle(vUL.copy(), vLR.copy(), vLL.copy());
-            // _cone1 = createCone(_tri1, 1000);
-            // _cone1.createFaces();
-            // _cone2 = createCone(_tri2, 1000);
-            // _cone2.createFaces();
         }
 
         Cone createCone(Triangle triangle, float height)
@@ -63,9 +59,10 @@ class Landscape
             if (_isStatic) { return; }
             _curSec += 1./_frameRate;
             if (_curSec > maxSec) { _isStatic = true; }
-            float maxH1 = sqrt(_tri1.getArea()*1.38);
-            float maxH2 = sqrt(_tri2.getArea()*1.38);
-            float r = easeOutElastic(_curSec/maxSec);
+            float maxH1 = sqrt(_tri1.getArea()*1.28);
+            float maxH2 = sqrt(_tri2.getArea()*1.28);
+            //float r = _util.easeOutElastic(_curSec/maxSec);
+            float r = _util.easeOutBack(_curSec/maxSec, 12);
             float h1 = maxH1 * r;
             float h2 = maxH2 * r;
             _cone1 = createCone(_tri1, h1);
@@ -133,7 +130,7 @@ class Landscape
             int alpha = (int)(constrain(_visibleSize / (1+PVector.dist(face.getCenter(), cameraCenter)) - 1.8, 0, 1)*255);
             //int alpha = 255;
             if (alpha == 0) { face.reset(); continue; }
-            if (alpha - 250 > 0) { face.updateCones(2); }
+            if (alpha - 250 > 0) { face.updateCones(.3); }
             setDrawStyle(type, alpha);
             face.drawMe();
         }
@@ -146,13 +143,15 @@ class Landscape
         {
             case NORMAL:
                 noStroke();
-                //fill(#987666, alpha);
                 fill(#e0e0e0, alpha);
                 //stroke(#000000, alpha);
+                //fill(#987666, alpha);
                 break;
             case VIRTUAL:
                 stroke(#e00000, alpha);
                 fill(#000000, alpha);
+                // noStroke();
+                // fill(#e00000);
                 break;
             default:
                 break;
