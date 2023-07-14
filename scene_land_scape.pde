@@ -29,7 +29,7 @@ class SceneLandscape extends Scene
         ambientLight(32, 32, 32);
         directionalLight(255, 255, 255, -.5, 0, -1);
         _camera.update();
-        if (_curSec > 10.5) { _camera.addVibration(.15); }
+        if (_curSec > 10.5) { _camera.addVibration(.14); }
         _camera.updateCamera();
         LandscapeStyle type = _curSec < 10.5 ? LandscapeStyle.NORMAL : LandscapeStyle.VIRTUAL;
         _landscape.drawMe(_camera.getCenter(), type);
@@ -39,7 +39,7 @@ class SceneLandscape extends Scene
     void postProcessing()
     {
         super.postProcessing();
-        resetCamera();
+        _util.resetCamera();
     }
 
     class Camera
@@ -83,10 +83,10 @@ class SceneLandscape extends Scene
                 rad = _preStepRad + random(-1,1)*PI*.8;
                 //PVector dir = PVector.random2D();
                 PVector dir = PVector.fromAngle(rad);
-                _stepTotalSec = d*.0012;
-                _stepEndSec = _stepTotalSec * sq(random(.44, .96));//random(.2,.9);
+                _stepTotalSec = d*.0018;
+                _stepEndSec = _stepTotalSec * sq(random(.44, .82));//random(.2,.9);
                 _goalPos = PVector.add(_startPos, dir.mult(d));
-                float r = easeOutQuad(_stepEndSec/_stepTotalSec);
+                float r = _util.easeOutQuad(_stepEndSec/_stepTotalSec);
                 virtualGoalPos = PVector.mult(_startPos, 1-r).add(PVector.mult(_goalPos, r));
             }
             while (!isInIimitRange(virtualGoalPos));
@@ -104,7 +104,7 @@ class SceneLandscape extends Scene
         void update()
         {
             if (_stepCurSec >= _stepEndSec) { setStepParameters(); }
-            float r = easeOutQuad(_stepCurSec/_stepTotalSec);
+            float r = _util.easeOutQuad(_stepCurSec/_stepTotalSec);
             _centerPos = PVector.mult(_startPos, 1-r).add(PVector.mult(_goalPos, r));
             _stepCurSec += 1./_frameRate;
         }
@@ -112,8 +112,8 @@ class SceneLandscape extends Scene
         void addVibration(float vibTotalSec)
         {
             if (_vibCurSec >= vibTotalSec) { setVibrationParameters(); }
-            float r = easeReturnLiner(_vibCurSec/vibTotalSec);
-            _centerPos.add(PVector.mult(_vibDir, width*.33*r));
+            float r = _util.easeReturnLiner(_vibCurSec/vibTotalSec);
+            _centerPos.add(PVector.mult(_vibDir, width*.08*r));
             _vibCurSec += 1./_frameRate;
         }
 

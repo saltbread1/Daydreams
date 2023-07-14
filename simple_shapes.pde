@@ -1,8 +1,100 @@
-class Triangle
+enum DrawStyle
 {
-    final PVector _v1, _v2, _v3;
-    final float _e12, _e23, _e31;
-    PVector _cGravity, _cInner;
+    ONLYSTROKE,
+    ONLYFILL,
+    STROKEANDFILL,
+}
+
+// interface Transformable2D extends Translatable, Rotatable
+// {
+// }
+
+// interface Transformable3D extends Translatable, Rotatable3D
+// {
+// }
+
+interface Translatable
+{
+    void translate(PVector dv);
+}
+
+interface Rotatable
+{
+    void rotate(float rad, PVector init);
+}
+
+interface Rotatable3D
+{
+    void rotate(PVector dir, float rad, PVector init);
+}
+
+abstract class SimpleShape
+{
+    color _cStroke, _cFill;
+
+    SimpleShape(color cStroke, color cFill)
+    {
+        _cStroke = cStroke;
+        _cFill = cFill;
+    }
+
+    SimpleShape(color c)
+    {
+        _cStroke = c;
+        _cFill = c;
+    }
+
+    SimpleShape()
+    {
+        _cStroke = #000000;
+        _cFill = #ffffff;
+    }
+
+    void drawMe(DrawStyle style)
+    {
+        pushStyle();
+        selectStyle(style);
+        drawMe();
+        popStyle();
+    }
+
+    abstract void drawMe();
+
+    void selectStyle(DrawStyle style)
+    {
+        switch (style)
+        {
+            case ONLYSTROKE:
+                stroke(_cStroke);
+                noFill();
+                break;
+            case ONLYFILL:
+                noStroke();
+                fill(_cFill);
+                break;
+            case STROKEANDFILL:
+                stroke(_cStroke);
+                fill(_cFill);
+                break;
+        }
+    }
+}
+
+abstract class SimpleShape3D extends SimpleShape
+{
+    SimpleShape3D(color cStroke, color cFill) { super(cStroke, cFill); }
+
+    SimpleShape3D(color c) { super(c); }
+
+    SimpleShape3D() {}
+
+    abstract void createFaces();
+}
+
+class Triangle extends SimpleShape implements Translatable, Rotatable
+{
+    PVector _v1, _v2, _v3;
+    float _e12, _e23, _e31;
     float _area, _innerRadius;
 
     Triangle(PVector v1, PVector v2, PVector v3)
@@ -16,6 +108,17 @@ class Triangle
         _e12 = PVector.dist(v1, v2);
     }
 
+    @Override
+    void drawMe()
+    {
+        beginShape();
+        _util.myVertex(_v1);
+        _util.myVertex(_v2);
+        _util.myVertex(_v3);
+        endShape(CLOSE);
+    }
+
+    @Override
     void translate(PVector dv)
     {
         _v1.add(dv);
@@ -23,31 +126,25 @@ class Triangle
         _v3.add(dv);
     }
 
-    void drawMe()
+    @Override
+    void rotate(float rad, PVector init)
     {
-        beginShape();
-        myVertex(_v1);
-        myVertex(_v2);
-        myVertex(_v3);
-        endShape(CLOSE);
+        _v1 = _util.rotate(_v1, rad, init);
+        _v2 = _util.rotate(_v2, rad, init);
+        _v3 = _util.rotate(_v3, rad, init);
     }
 
     PVector getCenter()
     {
-        if (_cGravity == null)
-        {
-            _cGravity = PVector.add(_v1, _v2).add(_v3).div(3);
-        }
-        return _cGravity;
+        return PVector.add(_v1, _v2).add(_v3).div(3);
     }
 
     PVector getInner()
     {
-        if (_cInner == null)
-        {
-            _cInner = PVector.mult(_v1, _e23).add(PVector.mult(_v2, _e31)).add(PVector.mult(_v3, _e12)).div(_e12+_e23+_e31);
-        }
-        return _cInner;
+        return PVector.mult(_v1, _e23)
+                .add(PVector.mult(_v2, _e31))
+                .add(PVector.mult(_v3, _e12))
+                .div(_e12+_e23+_e31);
     }
 
     float getArea()
@@ -70,9 +167,9 @@ class Triangle
     }
 }
 
-class Rect
+class Rect extends SimpleShape implements Translatable
 {
-    final PVector _upperLeft, _lowerRight;
+    PVector _upperLeft, _lowerRight;
 
     Rect(PVector upperLeft, PVector lowerRight)
     {
@@ -80,12 +177,14 @@ class Rect
         _lowerRight = lowerRight;
     }
 
+    @Override
     void drawMe()
     {
         rectMode(CORNERS);
         rect(_upperLeft.x, _upperLeft.y, _lowerRight.x, _lowerRight.y);
     }
 
+    @Override
     void translate(PVector dv)
     {
         _upperLeft.add(dv);
@@ -93,7 +192,7 @@ class Rect
     }
 }
 
-class Cone
+class Cone extends SimpleShape3D implements Translatable
 {
     final PVector _bottomCenter, _centerAxis;
     final float _radius, _height;
@@ -109,6 +208,7 @@ class Cone
         _res = res;
     }
 
+    @Override
     void createFaces()
     {
         _faceList = new ArrayList<Triangle>();
@@ -124,20 +224,22 @@ class Cone
             PVector ez = new PVector(0, 0, 1);
             PVector dir = ez.cross(_centerAxis);
             float phi = PVector.angleBetween(ez, _centerAxis);
-            PVector v1 = rotate3d(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
-            PVector v2 = rotate3d(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
-            PVector v3 = rotate3d(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
+            PVector v1 = _util.rotate3D(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
+            PVector v2 = _util.rotate3D(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
+            PVector v3 = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
             _faceList.add(new Triangle(v1, v2, v3));
         }
     }
 
-    void translate(PVector dv)
-    {
-        for (Triangle face : _faceList) { face.translate(dv); }
-    }
-
+    @Override
     void drawMe()
     {
         for (Triangle face : _faceList) { face.drawMe(); }
+    }
+    
+    @Override
+    void translate(PVector dv)
+    {
+        for (Triangle face : _faceList) { face.translate(dv); }
     }
 }

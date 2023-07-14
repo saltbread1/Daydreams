@@ -1,80 +1,112 @@
-void myVertex(PVector v)
+class Utility
 {
-    vertex(v.x, v.y, v.z);
-}
+    void myVertex(PVector v)
+    {
+        vertex(v.x, v.y, v.z);
+    }
 
-PVector rotate3d(PVector target, PVector dir, float theta)
-{
-    Quaternion q = new Quaternion(dir, theta);
-    Quaternion qi = q.inverse(null);
-    Quaternion qr = q.multr(target).multreq(qi);
-    return new PVector(qr.x, qr.y, qr.z);
-}
+    PVector rotate(PVector target, float rad)
+    {
+        return target.copy().rotate(rad);
+    }
 
-PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVector goal,  float t)
-{
-    t = constrain(t, 0, 1);
-    PVector v1 = PVector.mult(start, pow(1-t,3));
-    PVector v2 = PVector.mult(control1, t*sq(1-t)*3);
-    PVector v3 = PVector.mult(control2, sq(t)*(1-t)*3);
-    PVector v4 = PVector.mult(goal, pow(t,3));
-    return v1.add(v2).add(v3).add(v4);
-}
+    PVector rotate(PVector target, float rad, PVector init)
+    {
+        PVector v = target.copy();
+        v.sub(init);
+        v.rotate(rad);
+        v.add(init);
+        return v;
+    }
 
-void resetCamera()
-{ // default camera
-    camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
-}
+    PVector rotate3D(PVector target, PVector dir, float rad)
+    {
+        Quaternion q = new Quaternion(dir, rad);
+        Quaternion qi = q.inverse(null);
+        Quaternion qr = q.multr(target).multreq(qi);
+        return new PVector(qr.x, qr.y, qr.z);
+    }
 
-float mod(float x, float y)
-{
-    return x-y*floor(x/y);
-}
+    PVector rotate3D(PVector target, PVector dir, float rad, PVector init)
+    {
+        Quaternion q = new Quaternion(dir, rad);
+        Quaternion qi = q.inverse(null);
+        Quaternion qr = q.multr(PVector.sub(target, init)).multreq(qi);
+        return new PVector(qr.x, qr.y, qr.z).add(init);
+    }
 
-/**** easing functions ****/
-float easeOutQuad(float t)
-{
-    t = constrain(t, 0, 1);
-    return 1-sq(1-t);
-}
+    PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVector goal,  float t)
+    {
+        t = constrain(t, 0, 1);
+        PVector v1 = PVector.mult(start, pow(1-t,3));
+        PVector v2 = PVector.mult(control1, t*sq(1-t)*3);
+        PVector v3 = PVector.mult(control2, sq(t)*(1-t)*3);
+        PVector v4 = PVector.mult(goal, pow(t,3));
+        return v1.add(v2).add(v3).add(v4);
+    }
 
-float easeInOutQuad(float t)
-{
-    t = constrain(t, 0, 1);
-    return t < .5 ? 2*sq(t) : 1-2*sq(t-1);
-}
+    void resetCamera()
+    { // default camera
+        camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
+    }
 
-float easeOutCubic(float t)
-{
-    t = constrain(t, 0, 1);
-    return 1-pow(1-t, 3);
-}
+    float mod(float x, float y)
+    {
+        return x-y*floor(x/y);
+    }
 
-float easeInOutCubic(float t)
-{
-    t = constrain(t, 0, 1);
-    return t < .5 ? 4*pow(t,3) : 1+4*pow(t-1,3);
-}
+    /**** easing functions ****/
+    float easeOutQuad(float t)
+    {
+        t = constrain(t, 0, 1);
+        return 1-sq(1-t);
+    }
 
-float easeOutSin(float t)
-{
-    t = constrain(t, 0, 1);
-    return sin(HALF_PI*t);
-}
+    float easeInOutQuad(float t)
+    {
+        t = constrain(t, 0, 1);
+        return t < .5 ? 2*sq(t) : 1-2*sq(t-1);
+    }
 
-float easeOutElastic(float t)
-{
-    t = constrain(t, 0, 1);
-    return t == 0
-        ? 0
-        : t == 1
-        ? 1
-        //: pow(2, -10 * t) * sin((t * 10 - 0.75) * TAU/3) + 1;
-        : pow(1.6, -11.2 * t) * sin((t * 11.2 - 0.75) * TAU/3) + 1;
-}
+    float easeOutCubic(float t)
+    {
+        t = constrain(t, 0, 1);
+        return 1-pow(1-t, 3);
+    }
 
-float easeReturnLiner(float t)
-{
-    t = constrain(t, 0, 1);
-    return acos(cos(TAU*t))/PI;
+    float easeInOutCubic(float t)
+    {
+        t = constrain(t, 0, 1);
+        return t < .5 ? 4*pow(t,3) : 1+4*pow(t-1,3);
+    }
+
+    float easeOutSin(float t)
+    {
+        t = constrain(t, 0, 1);
+        return sin(HALF_PI*t);
+    }
+
+    float easeOutBack(float t, float a)
+    {
+        t = constrain(t, 0, 1);
+        float b = a+1;
+        return 1 + b*pow(t-1, 3) + a*sq(t-1);
+    }
+
+    float easeOutElastic(float t)
+    {
+        t = constrain(t, 0, 1);
+        return t == 0
+            ? 0
+            : t == 1
+            ? 1
+            //: pow(2, -10 * t) * sin((t * 10 - 0.75) * TAU/3) + 1;
+            : pow(1.6, -11.2 * t) * sin((t * 11.2 - 0.75) * TAU/3) + 1;
+    }
+
+    float easeReturnLiner(float t)
+    {
+        t = constrain(t, 0, 1);
+        return acos(cos(TAU*t))/PI;
+    }
 }

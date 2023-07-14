@@ -10,6 +10,7 @@ import java.util.HashMap;
 // int _exportingMs = 10000;
 int _frameRate = 30;
 SceneManager _sm;
+Utility _util;
 
 void setup()
 {
@@ -24,6 +25,7 @@ void setup()
 
 void initialize()
 {
+    _util = new Utility();
     _sm = new SceneManager();
     //_sm.addScene(new SceneImageConvert(10.5, 11.5));
     _sm.addScene(new SceneLandscape(300));
