@@ -3,6 +3,7 @@
 import quaternion.*;
 import java.util.Comparator;
 import java.util.Arrays;
+import java.util.HashMap;
 
 // VideoExport _videoExport;
 // boolean _isExport = false;
@@ -25,7 +26,7 @@ void initialize()
 {
     _sm = new SceneManager();
     //_sm.addScene(new SceneImageConvert(10.5, 11.5));
-    _sm.addScene(new SceneLandscape(30));
+    _sm.addScene(new SceneLandscape(300));
     _sm.addScene(new SceneImageConvert(4, 4));
 }
 

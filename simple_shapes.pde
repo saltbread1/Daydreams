@@ -1,12 +1,19 @@
 class Triangle
 {
     final PVector _v1, _v2, _v3;
+    final float _e12, _e23, _e31;
+    PVector _cGravity, _cInner;
+    float _area, _innerRadius;
 
     Triangle(PVector v1, PVector v2, PVector v3)
     {
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
+
+        _e23 = PVector.dist(v2, v3);
+        _e31 = PVector.dist(v3, v1);
+        _e12 = PVector.dist(v1, v2);
     }
 
     void translate(PVector dv)
@@ -26,8 +33,40 @@ class Triangle
     }
 
     PVector getCenter()
-    { // get the center of gravity
-        return PVector.add(_v1, _v2).add(_v3).div(3);
+    {
+        if (_cGravity == null)
+        {
+            _cGravity = PVector.add(_v1, _v2).add(_v3).div(3);
+        }
+        return _cGravity;
+    }
+
+    PVector getInner()
+    {
+        if (_cInner == null)
+        {
+            _cInner = PVector.mult(_v1, _e23).add(PVector.mult(_v2, _e31)).add(PVector.mult(_v3, _e12)).div(_e12+_e23+_e31);
+        }
+        return _cInner;
+    }
+
+    float getArea()
+    {
+        if (_area <= 0) { calcAreaAndInnerRadius(); }
+        return _area;
+    }
+
+    float getInnerRadius()
+    {
+        if (_innerRadius <= 0) { calcAreaAndInnerRadius(); }
+        return _innerRadius;
+    }
+
+    void calcAreaAndInnerRadius()
+    {
+        float s = (_e23+_e31+_e12)/2;
+        _area = sqrt(s*(s-_e23)*(s-_e31)*(s-_e12));
+        _innerRadius = _area/s;
     }
 }
 

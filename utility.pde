@@ -24,21 +24,29 @@ PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVect
 float easingInOutQuad(float t)
 {
     t = constrain(t, 0, 1);
-    if (t < .5) { return 2*sq(t); }
-    return 1-2*sq(t-1);
+    return t < .5 ? 2*sq(t) : 1-2*sq(t-1);
 }
 
 float easingInOutCubic(float t)
 {
     t = constrain(t, 0, 1);
-    if (t < .5) { return 4*pow(t,3); }
-    return 1+4*pow(t-1,3);
+    return t < .5 ? 4*pow(t,3) : 1+4*pow(t-1,3);
 }
 
 float easingOutSin(float t)
 {
     t = constrain(t, 0, 1);
     return sin(HALF_PI*t);
+}
+
+float easeOutElastic(float t)
+{
+    t = constrain(t, 0, 1);
+    return t == 0
+        ? 0
+        : t == 1
+        ? 1
+        : pow(2, -10 * t) * sin((t * 10 - 0.75) * TAU/3) + 1;
 }
 
 void resetCamera()
