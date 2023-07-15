@@ -40,13 +40,15 @@ class SceneManager
     {
         if (isFinish()) { return; }
         Scene scene = _sceneList.get(0);
+        scene.clearScene();
         if (scene.getCurrentSecond() == 0)
         {
             float t = millis();
             scene.start();
             println("Start of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
+            scene.timeCount();
+            return;
         }
-        scene.clearScene();
         scene.update();
         scene.timeCount();
         if (scene.isEnd())
