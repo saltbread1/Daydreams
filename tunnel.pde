@@ -40,11 +40,10 @@ class TunnelGate
         for (int i = 0; i < _num; i++)
         {
             PVector dir = PVector.fromAngle(rad);
-            PVector dirHeight = PVector.mult(dir, -heights[i]);
             PVector dirMaxHeight = PVector.mult(dir, maxHeight);
             PVector v1 = PVector.fromAngle(rad - PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
             PVector v2 = PVector.fromAngle(rad + PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
-            TunnelCuboid cuboid = new TunnelCuboid(v1, v2, dirHeight, time*.05, _colours[i]);
+            TunnelCuboid cuboid = new TunnelCuboid(v1, v2, dir.mult(-1), heights[i], _colours[i]);
             cuboid.createFaces();
             _cuboidList.add(cuboid);
             rad += TAU/_num;
@@ -70,52 +69,60 @@ class TunnelGate
     float getZ() { return _center.z; }
 }
 
-class TunnelCuboid extends SimpleShape3D implements Translatable
+class TunnelCuboid extends SimpleShape3D implements Translatable, Rotatable3D
 {
-    final PVector _v1, _v2, _v3, _v4;
-    final float _rotRad;
-    final color _colour;
+    final PVector _fv1, _fv2, _fv3, _fv4;
+    final float _edgeLenZ;
+    final PVector _dir, _center;
     ArrayList<Quad> _faceList;
 
-    TunnelCuboid(PVector v1, PVector v2, PVector dirHeight, float rotRad, color colour)
+    TunnelCuboid(PVector fv1, PVector fv2, PVector dir, float height, color colour)
     {
-        _v1 = v1;
-        _v2 = v2;
-        _v3 = PVector.add(_v2, dirHeight);
-        _v4 = PVector.add(_v1, dirHeight);
-        _rotRad = rotRad;
-        _colour = colour;
+        PVector xy = PVector.mult(dir, height);
+        _fv1 = fv1;
+        _fv2 = fv2;
+        _fv3 = PVector.add(fv2, xy);
+        _fv4 = PVector.add(fv1, xy);
+        _edgeLenZ = PVector.dist(fv1, fv2);
+        _dir = dir;
+        _center = PVector.add(fv1, fv2).div(2);
+        _center.z += _edgeLenZ/2;
     }
 
     @Override
     void createFaces()
     {
         _faceList = new ArrayList<Quad>();
+
+        //PVector dir = PVector.sub(_v4, _v1);
+        // PVector vc12 = PVector.add(_v1, _v2).add(hv1).add(hv2).div(4);
+        // PVector vc34 = PVector.add(_v3, _v4).add(hv3).add(hv4).div(4);
+        // PVector fv1 = _util.rotate3D(PVector.sub(_v1, vc12), dir, _rotRad).add(vc12);
+        // PVector fv2 = _util.rotate3D(PVector.sub(_v2, vc12), dir, _rotRad).add(vc12);
+        // PVector fv3 = _util.rotate3D(PVector.sub(_v3, vc34), dir, _rotRad).add(vc34);
+        // PVector fv4 = _util.rotate3D(PVector.sub(_v4, vc34), dir, _rotRad).add(vc34);
+        // hv1 = _util.rotate3D(PVector.sub(hv1, vc12), dir, _rotRad).add(vc12);
+        // hv2 = _util.rotate3D(PVector.sub(hv2, vc12), dir, _rotRad).add(vc12);
+        // hv3 = _util.rotate3D(PVector.sub(hv3, vc34), dir, _rotRad).add(vc34);
+        // hv4 = _util.rotate3D(PVector.sub(hv4, vc34), dir, _rotRad).add(vc34);
+        // _faceList.add(new Quad(fv1, fv2, fv3, fv4));
+        // _faceList.add(new Quad(hv1, hv2, hv3, hv4));
+        // _faceList.add(new Quad(fv1, hv1, hv4, fv4));
+        // _faceList.add(new Quad(fv2, hv2, hv3, fv3));
+        PVector z  = new PVector(0, 0, -_edgeLenZ);
+        PVector hv1 = PVector.add(_fv1, z);
+        PVector hv2 = PVector.add(_fv2, z);
+        PVector hv3 = PVector.add(_fv3, z);
+        PVector hv4 = PVector.add(_fv4, z);
+        _faceList.add(new Quad(_fv1, _fv2, _fv3, _fv4));
+        _faceList.add(new Quad( hv1,  hv2,  hv3,  hv4));
+        _faceList.add(new Quad(_fv1,  hv1,  hv4, _fv4));
+        _faceList.add(new Quad(_fv2,  hv2,  hv3, _fv3));
+    }
+
+    void updateMe()
+    {
         
-        PVector hide = new PVector(0, 0, PVector.dist(_v1, _v2));
-        PVector hv1 = PVector.add(_v1, hide);
-        PVector hv2 = PVector.add(_v2, hide);
-        PVector hv3 = PVector.add(_v3, hide);
-        PVector hv4 = PVector.add(_v4, hide);
-        PVector dir = PVector.sub(_v4, _v1);
-        PVector vc12 = PVector.add(_v1, _v2).add(hv1).add(hv2).div(4);
-        PVector vc34 = PVector.add(_v3, _v4).add(hv3).add(hv4).div(4);
-        PVector fv1 = _util.rotate3D(PVector.sub(_v1, vc12), dir, _rotRad).add(vc12);
-        PVector fv2 = _util.rotate3D(PVector.sub(_v2, vc12), dir, _rotRad).add(vc12);
-        PVector fv3 = _util.rotate3D(PVector.sub(_v3, vc34), dir, _rotRad).add(vc34);
-        PVector fv4 = _util.rotate3D(PVector.sub(_v4, vc34), dir, _rotRad).add(vc34);
-        hv1 = _util.rotate3D(PVector.sub(hv1, vc12), dir, _rotRad).add(vc12);
-        hv2 = _util.rotate3D(PVector.sub(hv2, vc12), dir, _rotRad).add(vc12);
-        hv3 = _util.rotate3D(PVector.sub(hv3, vc34), dir, _rotRad).add(vc34);
-        hv4 = _util.rotate3D(PVector.sub(hv4, vc34), dir, _rotRad).add(vc34);
-        _faceList.add(new Quad(fv1, fv2, fv3, fv4));
-        _faceList.add(new Quad(hv1, hv2, hv3, hv4));
-        _faceList.add(new Quad(fv1, hv1, hv4, fv4));
-        _faceList.add(new Quad(fv2, hv2, hv3, fv3));
-        // drawSurface(fv1, fv2, fv3, fv4);
-        // drawSurface(hv1, hv2, hv3, hv4);
-        // drawSurface(fv1, hv1, hv4, fv4);
-        // drawSurface(fv2, hv2, hv3, fv3);
     }
 
     @Override
@@ -147,5 +154,16 @@ class TunnelCuboid extends SimpleShape3D implements Translatable
     void translate(PVector dv)
     {
         for (Quad face : _faceList) { face.translate(dv); }
+    }
+
+    @Override
+    void rotate(PVector dir, float rad, PVector init)
+    {
+        for (Quad face : _faceList) { rotate(dir, rad, init); }
+    }
+
+    void rotate(float rad)
+    {
+        for (Quad face : _faceList) { rotate(_dir, rad, _center); }
     }
 }
