@@ -29,12 +29,13 @@ class SceneTunnel extends Scene
     void update()
     {
         ambientLight(128, 128, 128);
+        //directionalLight(255, 255, 255, 0, 0, -1);
         clearScene();
-        updateRects();
-        drawRects();
+        updateGates();
+        drawGates();
     }
 
-    void updateRects()
+    void updateGates()
     {
         if (_gateList.get(0).getZ() > _maxZ)
         {
@@ -45,7 +46,7 @@ class SceneTunnel extends Scene
         for (TunnelGate gate : _gateList) { gate.updateMe(new PVector(0, 0, 16), frameCount); }
     }
 
-    void drawRects()
+    void drawGates()
     {
         for (TunnelGate gate : _gateList) { gate.drawMe(_minZ, _maxZ); }
     }
