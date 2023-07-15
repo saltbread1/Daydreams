@@ -1,6 +1,6 @@
 class SceneTunnel extends Scene
 {
-    ArrayList<TunnelGate> _gateList;
+    ArrayDeque<TunnelGate> _gateList;
     float _radius, _spaceZ, _minZ, _maxZ;
     int _rectNum;
 
@@ -12,7 +12,7 @@ class SceneTunnel extends Scene
     @Override
     void initialize()
     {
-        _gateList = new ArrayList<TunnelGate>();
+        _gateList = new ArrayDeque<TunnelGate>();
         _radius = dist(0, 0, width/2, height/2);
         _spaceZ = 300;
         _maxZ = (height/2)/tan(PI/3)+_spaceZ;
@@ -58,9 +58,9 @@ class SceneTunnel extends Scene
 
     void updateGates()
     {
-        if (_gateList.get(0).getZ() > _maxZ)
+        if (_gateList.peek().getZ() > _maxZ)
         {
-            _gateList.remove(0);
+            _gateList.remove();
             _gateList.add(createNewGate(_minZ));
         }
 
