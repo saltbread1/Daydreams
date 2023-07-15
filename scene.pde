@@ -24,39 +24,51 @@ abstract class Scene
 
 class SceneManager
 {
-    ArrayList<Scene> _sceneList;
+    ArrayDeque<Scene> _sceneQueue;
+    Scene _curScene;
 
-    SceneManager() { _sceneList = new ArrayList<Scene>(); }
+    SceneManager() { _sceneQueue = new ArrayDeque<Scene>(); }
 
     void addScene(Scene scene)
     {
         float t = millis();
         scene.initialize();
         println("Initialization of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
-        _sceneList.add(scene);
+        _sceneQueue.add(scene);
     }
 
     void advanceOneFrame()
     {
-        if (isFinish()) { return; }
-        Scene scene = _sceneList.get(0);
-        scene.clearScene();
-        if (scene.getCurrentSecond() == 0)
+        if (_curScene == null) { _curScene = _sceneQueue.poll(); }
+
+        _curScene.clearScene();
+        if (_curScene.getCurrentSecond() == 0)
         {
             float t = millis();
-            scene.start();
-            println("Start of \""+scene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
-            scene.timeCount();
+            _curScene.start();
+            println("Start of \""+_curScene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
+            _curScene.timeCount();
             return;
         }
-        scene.update();
-        scene.timeCount();
-        if (scene.isEnd())
+        _curScene.update();
+        _curScene.timeCount();
+        if (_curScene.isEnd())
         {
-            scene.postProcessing();
-            _sceneList.remove(0);
+            _curScene.postProcessing();
+            if (isFinish())
+            {
+                postProcessing();
+                return;
+            }
+            _curScene = _sceneQueue.poll();
         }
     }
 
-    boolean isFinish() { return _sceneList.size() == 0; }
+    boolean isFinish() { return _sceneQueue.size() == 0; }
+
+    void postProcessing()
+    {
+        println("The movie has just finished.");
+        noLoop();
+    }
 }

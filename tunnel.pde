@@ -62,88 +62,88 @@ class TunnelGate
     }
 
     float getZ() { return _center.z; }
-}
 
-class TunnelCuboid extends SimpleShape3D implements Rotatable3D
-{
-    final float _minZ, _maxZ;
-    final float _initRotRad;
-    final int _rotDir;
-    PVector _fv1, _fv2, _fv3, _fv4;
-    float _edgeLenZ;
-    PVector _dir, _rotInit;
-    ArrayList<Quad> _faceList;
-
-    TunnelCuboid(float minZ, float maxZ)
+    class TunnelCuboid extends SimpleShape3D implements Rotatable3D
     {
-        _minZ = minZ;
-        _maxZ = maxZ;
-        _initRotRad = random(TAU);
-        _rotDir = 1-(int)random(2)*2; // -1 or 1
-    }
+        final float _minZ, _maxZ;
+        final float _initRotRad;
+        final int _rotDir;
+        PVector _fv1, _fv2, _fv3, _fv4;
+        float _edgeLenZ;
+        PVector _dir, _rotInit;
+        ArrayList<Quad> _faceList;
 
-    void setParameters(PVector fv1, PVector fv2, PVector dir, float height)
-    {
-        PVector xy = PVector.mult(dir, height);
-        _fv1 = fv1;
-        _fv2 = fv2;
-        _fv3 = PVector.add(fv2, xy);
-        _fv4 = PVector.add(fv1, xy);
-        _edgeLenZ = PVector.dist(fv1, fv2);
-        _dir = dir;
-        _rotInit = PVector.add(_fv3, _fv4).div(2);
-        _rotInit.z -= _edgeLenZ/2;
-    }
-
-    @Override
-    void createFaces()
-    {
-        PVector z  = new PVector(0, 0, -_edgeLenZ);
-        PVector hv1 = PVector.add(_fv1, z);
-        PVector hv2 = PVector.add(_fv2, z);
-        PVector hv3 = PVector.add(_fv3, z);
-        PVector hv4 = PVector.add(_fv4, z);
-        
-        _faceList = new ArrayList<Quad>();
-        _faceList.add(new Quad(_fv1, _fv2, _fv3, _fv4));
-        _faceList.add(new Quad( hv1,  hv2,  hv3,  hv4));
-        _faceList.add(new Quad(_fv1,  hv1,  hv4, _fv4));
-        _faceList.add(new Quad(_fv2,  hv2,  hv3, _fv3));
-    }
-
-    @Override
-    void drawMe()
-    {
-        for (Quad face : _faceList)
+        TunnelCuboid(float minZ, float maxZ)
         {
-            PVector v1 = face._v1;
-            PVector v2 = face._v2;
-            PVector v3 = face._v3;
-            PVector v4 = face._v4;
-            float val = sq(map(v1.z, _minZ, _maxZ, 0, 1));
-            beginShape();
-            noStroke();
-            stroke(#000000, val*100);
-            fill(#000000, val*100);
-            _util.myVertex(v1);
-            _util.myVertex(v2);
-            stroke(#f00000, val*180);
-            fill(#ec0000, val*180);
-            _util.myVertex(v3);
-            _util.myVertex(v4);
-            endShape();
+            _minZ = minZ;
+            _maxZ = maxZ;
+            _initRotRad = random(TAU);
+            _rotDir = 1-(int)random(2)*2; // -1 or 1
         }
-    }
 
-    @Override
-    void rotate(PVector dir, float rad, PVector init)
-    {
-        for (Quad face : _faceList) { face.rotate(dir, rad, init); }
-    }
+        void setParameters(PVector fv1, PVector fv2, PVector dir, float height)
+        {
+            PVector xy = PVector.mult(dir, height);
+            _fv1 = fv1;
+            _fv2 = fv2;
+            _fv3 = PVector.add(fv2, xy);
+            _fv4 = PVector.add(fv1, xy);
+            _edgeLenZ = PVector.dist(fv1, fv2);
+            _dir = dir;
+            _rotInit = PVector.add(_fv3, _fv4).div(2);
+            _rotInit.z -= _edgeLenZ/2;
+        }
 
-    void rotate(float rad)
-    {
-        rad = _initRotRad + rad * _rotDir;
-        for (Quad face : _faceList) { rotate(_dir, rad, _rotInit); }
+        @Override
+        void createFaces()
+        {
+            PVector z  = new PVector(0, 0, -_edgeLenZ);
+            PVector hv1 = PVector.add(_fv1, z);
+            PVector hv2 = PVector.add(_fv2, z);
+            PVector hv3 = PVector.add(_fv3, z);
+            PVector hv4 = PVector.add(_fv4, z);
+            
+            _faceList = new ArrayList<Quad>();
+            _faceList.add(new Quad(_fv1, _fv2, _fv3, _fv4));
+            _faceList.add(new Quad( hv1,  hv2,  hv3,  hv4));
+            _faceList.add(new Quad(_fv1,  hv1,  hv4, _fv4));
+            _faceList.add(new Quad(_fv2,  hv2,  hv3, _fv3));
+        }
+
+        @Override
+        void drawMe()
+        {
+            for (Quad face : _faceList)
+            {
+                PVector v1 = face._v1;
+                PVector v2 = face._v2;
+                PVector v3 = face._v3;
+                PVector v4 = face._v4;
+                float val = sq(map(v1.z, _minZ, _maxZ, 0, 1));
+                beginShape();
+                noStroke();
+                stroke(#000000, val*100);
+                fill(#000000, val*100);
+                _util.myVertex(v1);
+                _util.myVertex(v2);
+                stroke(#f00000, val*180);
+                fill(#ec0000, val*180);
+                _util.myVertex(v3);
+                _util.myVertex(v4);
+                endShape();
+            }
+        }
+
+        @Override
+        void rotate(PVector dir, float rad, PVector init)
+        {
+            for (Quad face : _faceList) { face.rotate(dir, rad, init); }
+        }
+
+        void rotate(float rad)
+        {
+            rad = _initRotRad + rad * _rotDir;
+            for (Quad face : _faceList) { rotate(_dir, rad, _rotInit); }
+        }
     }
 }
