@@ -2,10 +2,12 @@ class SceneLandscape extends Scene
 {
     Landscape _landscape;
     Camera _camera;
+    float _visualChangeSec;
 
-    SceneLandscape(float totalSceneSec)
+    SceneLandscape(float totalSceneSec, float visualChangeSec)
     {
         super(totalSceneSec);
+        _visualChangeSec = visualChangeSec;
     }
 
     @Override
@@ -20,6 +22,11 @@ class SceneLandscape extends Scene
                 PVector.add(range._upperLeft, offset),
                 PVector.sub(range._lowerRight, offset));
         _camera = new Camera(new PVector(0, height, height/2), limit);
+    }
+
+    @Override
+    void start()
+    {
         _camera.initialize();
     }
 
@@ -29,9 +36,9 @@ class SceneLandscape extends Scene
         ambientLight(32, 32, 32);
         directionalLight(255, 255, 255, -.5, 0, -1);
         _camera.update();
-        if (_curSec > 10.5) { _camera.addVibration(.14); }
+        if (_curSec > _visualChangeSec) { _camera.addVibration(.14); }
         _camera.updateCamera();
-        LandscapeStyle type = _curSec < 10.5 ? LandscapeStyle.NORMAL : LandscapeStyle.VIRTUAL;
+        LandscapeStyle type = _curSec < _visualChangeSec ? LandscapeStyle.NORMAL : LandscapeStyle.VIRTUAL;
         _landscape.drawMe(_camera.getCenter(), type);
     }
 

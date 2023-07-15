@@ -5,14 +5,6 @@ enum DrawStyle
     STROKEANDFILL,
 }
 
-// interface Transformable2D extends Translatable, Rotatable
-// {
-// }
-
-// interface Transformable3D extends Translatable, Rotatable3D
-// {
-// }
-
 interface Translatable
 {
     void translate(PVector dv);
@@ -91,7 +83,7 @@ abstract class SimpleShape3D extends SimpleShape
     abstract void createFaces();
 }
 
-class Triangle extends SimpleShape implements Translatable, Rotatable
+class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3;
     float _e12, _e23, _e31;
@@ -134,6 +126,14 @@ class Triangle extends SimpleShape implements Translatable, Rotatable
         _v3 = _util.rotate(_v3, rad, init);
     }
 
+    @Override
+    void rotate(PVector dir, float rad, PVector init)
+    {
+        _v1 = _util.rotate3D(_v1, dir, rad, init);
+        _v2 = _util.rotate3D(_v2, dir, rad, init);
+        _v3 = _util.rotate3D(_v3, dir, rad, init);
+    }
+
     PVector getCenter()
     {
         return PVector.add(_v1, _v2).add(_v3).div(3);
@@ -168,7 +168,7 @@ class Triangle extends SimpleShape implements Translatable, Rotatable
 }
 
 class Rect extends SimpleShape implements Translatable
-{
+{ // for only 2D renderer
     PVector _upperLeft, _lowerRight;
 
     Rect(PVector upperLeft, PVector lowerRight)
@@ -189,6 +189,58 @@ class Rect extends SimpleShape implements Translatable
     {
         _upperLeft.add(dv);
         _lowerRight.add(dv);
+    }
+}
+
+class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
+{
+    PVector _v1, _v2, _v3, _v4;
+
+    Quad(PVector v1, PVector v2, PVector v3, PVector v4)
+    {
+        _v1 = v1;
+        _v2 = v2;
+        _v3 = v3;
+        _v4 = v4;
+    }
+
+    @Override
+    void drawMe()
+    {
+        beginShape(QUADS);
+        _util.myVertex(_v1);
+        _util.myVertex(_v2);
+        _util.myVertex(_v3);
+        _util.myVertex(_v4);
+        endShape();
+    }
+
+    @Override
+    void translate(PVector dv)
+    {
+        _v1.add(dv);
+        _v2.add(dv);
+        _v3.add(dv);
+        _v4.add(dv);
+    }
+
+    @Override
+    void rotate(float rad, PVector init)
+    {
+        _v1 = _util.rotate(_v1, rad, init);
+        _v2 = _util.rotate(_v2, rad, init);
+        _v3 = _util.rotate(_v3, rad, init);
+        _v4 = _util.rotate(_v4, rad, init);
+        //rotate(new PVector(0, 0, 1), rad, init);
+    }
+
+    @Override
+    void rotate(PVector dir, float rad, PVector init)
+    {
+        _v1 = _util.rotate3D(_v1, dir, rad, init);
+        _v2 = _util.rotate3D(_v2, dir, rad, init);
+        _v3 = _util.rotate3D(_v3, dir, rad, init);
+        _v4 = _util.rotate3D(_v4, dir, rad, init);
     }
 }
 
