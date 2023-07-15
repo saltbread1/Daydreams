@@ -11,6 +11,7 @@ import java.util.ArrayDeque;
 int _frameRate = 30;
 SceneManager _sm;
 Utility _util;
+TestHUD _hud;
 
 void setup()
 {
@@ -26,6 +27,7 @@ void setup()
 void initialize()
 {
     _util = new Utility();
+    _hud = new TestHUD();
     _sm = new SceneManager();
     _sm.addScene(new SceneLandscape(13, 9.5));
     _sm.addScene(new SceneTunnel(11));
@@ -33,7 +35,8 @@ void initialize()
 }
 
 void draw()
-{   
+{
+    //println("FPS: "+_hud.getFPS());
     _sm.advanceOneFrame();
     // if (_isExport) { exportFrame(_exportingMs); }
 }
