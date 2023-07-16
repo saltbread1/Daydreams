@@ -57,6 +57,16 @@ class RecursiveRect extends Rect
         _lowerRight = new PVector(_width, _height).add(_upperLeft);
     }
 
+    @Override
+    void drawMe()
+    {
+        super.drawMe();
+        _util.myLine(_upperLeft, _parent._upperLeft);
+        _util.myLine(_lowerRight, _parent._lowerRight);
+        line(_upperLeft.x, _lowerRight.y, _parent._upperLeft.x, _parent._lowerRight.y);
+        line(_lowerRight.x, _upperLeft.y, _parent._lowerRight.x, _parent._upperLeft.y);
+    }
+
     PVector getStartPosition(int stepTypeIndex)
     {
         DirectionType type = DirectionType.values()[stepTypeIndex*2];

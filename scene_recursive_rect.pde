@@ -2,11 +2,12 @@ class SceneRecursiveRect extends Scene
 {
     ArrayDeque<RecursiveRect> _rectQueue;
     RecursiveRect _latest;
-    final float _scale = .5;
+    final float _scalingStartSec, _scale = .5;
 
-    SceneRecursiveRect(float totalSceneSec)
+    SceneRecursiveRect(float totalSceneSec, float scalingStartSec)
     {
         super(totalSceneSec);
+        _scalingStartSec = scalingStartSec;
     }
 
     @Override
@@ -34,21 +35,28 @@ class SceneRecursiveRect extends Scene
     }
 
     @Override
+    void start()
+    {
+        background(#000000);
+    }
+
+    @Override
     void update()
     {
-        RecursiveRect first = _rectQueue.peek();
         float dh = 8;
 
-        if (first._width > width)
+        if (_curSec > _scalingStartSec)
         {
-            _rectQueue.poll();
-            addNewRect();
-        }
-
-        for (RecursiveRect rect : _rectQueue)
-        {
-            rect.updateSize(dh);
-            dh *= _scale;
+            if (_rectQueue.peek()._width > width)
+            {
+                _rectQueue.poll();
+                addNewRect();
+            }
+            for (RecursiveRect rect : _rectQueue)
+            {
+                rect.updateSize(dh);
+                dh *= _scale;
+            }
         }
 
         for (RecursiveRect rect : _rectQueue)
@@ -57,8 +65,18 @@ class SceneRecursiveRect extends Scene
             pushStyle();
             stroke(#ffffff);
             noFill();
-            rect.drawMe();
+            if (rect._parent != null) { rect.drawMe(); }
             popStyle();
         }
+    }
+
+    @Override
+    void clearScene()
+    {
+        pushStyle();
+        noStroke();
+        fill(#000000, 111);
+        rect(0, 0, width, height);
+        popStyle();
     }
 }
