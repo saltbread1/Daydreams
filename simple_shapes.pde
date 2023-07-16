@@ -188,6 +188,11 @@ class Rect extends SimpleShape implements Translatable
         _height = height;
     }
 
+    Rect(float x, float y, float width, float height)
+    {
+        this(new PVector(x, y), width, height);
+    }
+
     @Override
     void drawMe()
     {
@@ -200,6 +205,11 @@ class Rect extends SimpleShape implements Translatable
     {
         _upperLeft.add(dv);
         _lowerRight.add(dv);
+    }
+
+    PVector getCenter()
+    {
+        return PVector.add(_upperLeft, _lowerRight).div(2);
     }
 }
 

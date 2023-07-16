@@ -51,7 +51,7 @@ class SceneRandomWalk extends Scene
 
         RandomWalkDisplayer(float x, float y, float width, float height)
         {
-            super(new PVector(x, y), width, height);
+            super(x, y, width, height);
             _pg = createGraphics((int)width, (int)height, P2D);
         }
 

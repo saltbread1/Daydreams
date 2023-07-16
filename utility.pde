@@ -45,8 +45,11 @@ class Utility
         return v1.add(v2).add(v3).add(v4);
     }
 
+    /**
+    * reset camera to default one
+    */
     void resetCamera()
-    { // default camera
+    {
         camera(width/2, height/2, (height/2)/tan(PI/6), width/2, height/2, 0, 0, 1, 0);
     }
 
@@ -55,7 +58,10 @@ class Utility
         return x-y*floor(x/y);
     }
 
-    /**** easing functions ****/
+    /************************/
+    /*    easing methods    */
+    /************************/
+
     float easeOutQuad(float t)
     {
         t = constrain(t, 0, 1);
@@ -78,6 +84,18 @@ class Utility
     {
         t = constrain(t, 0, 1);
         return t < .5 ? 4*pow(t,3) : 1+4*pow(t-1,3);
+    }
+
+    float easeInQuart(float t)
+    {
+        t = constrain(t, 0, 1);
+        return pow(t, 4);
+    }
+
+    float easeInQuint(float t)
+    {
+        t = constrain(t, 0, 1);
+        return pow(t, 5);
     }
 
     float easeOutSin(float t)
@@ -109,4 +127,22 @@ class Utility
         t = constrain(t, 0, 1);
         return acos(cos(TAU*t))/PI;
     }
+}
+
+enum DirectionType
+{
+    RIGHT(new PVector(1, 0)),
+    UPPER_RIGHT(new PVector(1, -1)),
+    UP(new PVector(0, -1)),
+    UPPER_LEFT(new PVector(-1, -1)),
+    LEFT(new PVector(-1, 0)),
+    LOWER_LEFT(new PVector(-1, 1)),
+    DOWN(new PVector(0, 1)),
+    LOWER_RIGHT(new PVector(1, 1));
+
+    final PVector _dir;
+
+    DirectionType(PVector dir) { _dir = dir; }
+
+    PVector getDirection() { return _dir; }
 }
