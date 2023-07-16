@@ -32,7 +32,8 @@ void initialize()
     // _sm.addScene(new SceneLandscape(13, 9.5));
     // _sm.addScene(new SceneTunnel(11));
     // _sm.addScene(new SceneImageConvert(10.5, 11.5));
-    _sm.addScene(new SceneRandomWalk(100));
+    //_sm.addScene(new SceneRandomWalk(5));
+    //_sm.addScene(new SceneRecursiveRect(11.5, 5.5));
 }
 
 void draw()
