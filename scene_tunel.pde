@@ -1,6 +1,6 @@
 class SceneTunnel extends Scene
 {
-    ArrayDeque<TunnelGate> _gateList;
+    ArrayDeque<TunnelGate> _gateQueue;
     float _radius, _spaceZ, _minZ, _maxZ;
     int _rectNum;
 
@@ -12,7 +12,7 @@ class SceneTunnel extends Scene
     @Override
     void initialize()
     {
-        _gateList = new ArrayDeque<TunnelGate>();
+        _gateQueue = new ArrayDeque<TunnelGate>();
         _radius = dist(0, 0, width/2, height/2);
         _spaceZ = 300;
         _maxZ = (height/2)/tan(PI/3)+_spaceZ;
@@ -20,7 +20,7 @@ class SceneTunnel extends Scene
         _rectNum = 90;
         for (float z = _maxZ-_spaceZ; z >= _minZ; z-=_spaceZ)
         {
-            _gateList.add(createNewGate(z));
+            _gateQueue.add(createNewGate(z));
         }
     }
 
@@ -58,17 +58,17 @@ class SceneTunnel extends Scene
 
     void updateGates()
     {
-        if (_gateList.peek().getZ() > _maxZ)
+        if (_gateQueue.peek().getZ() > _maxZ)
         {
-            _gateList.remove();
-            _gateList.add(createNewGate(_minZ));
+            _gateQueue.poll();
+            _gateQueue.add(createNewGate(_minZ));
         }
 
-        for (TunnelGate gate : _gateList) { gate.updateMe(32, _curSec); }
+        for (TunnelGate gate : _gateQueue) { gate.updateMe(32, _curSec); }
     }
 
     void drawGates()
     {
-        for (TunnelGate gate : _gateList) { gate.drawMe(); }
+        for (TunnelGate gate : _gateQueue) { gate.drawMe(); }
     }
 }

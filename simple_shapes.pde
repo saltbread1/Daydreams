@@ -30,10 +30,10 @@ abstract class SimpleShape
         _cFill = cFill;
     }
 
-    SimpleShape(color c)
+    SimpleShape(color colour)
     {
-        _cStroke = c;
-        _cFill = c;
+        _cStroke = colour;
+        _cFill = colour;
     }
 
     SimpleShape()
@@ -76,7 +76,7 @@ abstract class SimpleShape3D extends SimpleShape
 {
     SimpleShape3D(color cStroke, color cFill) { super(cStroke, cFill); }
 
-    SimpleShape3D(color c) { super(c); }
+    SimpleShape3D(color colour) { super(colour); }
 
     SimpleShape3D() {}
 
@@ -170,11 +170,22 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
 class Rect extends SimpleShape implements Translatable
 { // for only 2D renderer
     PVector _upperLeft, _lowerRight;
+    float _width, _height;
 
     Rect(PVector upperLeft, PVector lowerRight)
     {
         _upperLeft = upperLeft;
         _lowerRight = lowerRight;
+        _width = _lowerRight.x - _upperLeft.x;
+        _height = _lowerRight.y - _upperLeft.y;
+    }
+
+    Rect(PVector upperLeft, float width, float height)
+    {
+        _upperLeft = upperLeft;
+        _lowerRight = new PVector(width, height).add(upperLeft);
+        _width = width;
+        _height = height;
     }
 
     @Override

@@ -29,9 +29,10 @@ void initialize()
     _util = new Utility();
     _hud = new TestHUD();
     _sm = new SceneManager();
-    _sm.addScene(new SceneLandscape(13, 9.5));
-    _sm.addScene(new SceneTunnel(11));
-    _sm.addScene(new SceneImageConvert(10.5, 11.5));
+    // _sm.addScene(new SceneLandscape(13, 9.5));
+    // _sm.addScene(new SceneTunnel(11));
+    // _sm.addScene(new SceneImageConvert(10.5, 11.5));
+    _sm.addScene(new SceneRandomWalk(100));
 }
 
 void draw()
