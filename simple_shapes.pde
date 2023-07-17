@@ -75,6 +75,18 @@ class Attribution
                 break;
         }
     }
+
+    @Override
+    boolean equals(Object o)
+    {
+        if (o == null || !(o instanceof Attribution)) { return false; }
+        Attribution other = (Attribution)o;
+        if (_cStroke == other._cStroke && _cFill == other._cFill && _style == other._style)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 interface Translatable
@@ -101,6 +113,8 @@ abstract class SimpleShape
     SimpleShape() { _attr = null; }
 
     final void setAttribution(Attribution attr) { _attr = attr; }
+
+    final Attribution getAttribution() { return _attr; }
 
     final void drawMeAttr()
     {
@@ -154,7 +168,7 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         this(v1, v2, v3, null);
     }
 
-    Triangle copy() { return new Triangle(_v1.copy(), _v2.copy(), _v3.copy()); }
+    Triangle copy() { return new Triangle(_v1.copy(), _v2.copy(), _v3.copy(), _attr); }
 
     @Override
     void drawMe()
