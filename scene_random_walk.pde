@@ -12,7 +12,6 @@ class SceneRandomWalk extends Scene
     {
         _screenList = new ArrayList<RandomWalkDisplayer>();
         createScreens(0, 0, width, height, 2);
-        //createScreens(5);
         for (RandomWalkDisplayer screen : _screenList) { screen.initialize(); }
     }
 
@@ -38,47 +37,6 @@ class SceneRandomWalk extends Scene
         createScreens(x, y+h/2, w/2, h/2, n-1);
         createScreens(x+w/2, y+h/2, w/2, h/2, n-1);
     }
-    // void createScreens(int n)
-    // {
-    //     for (int i = 0; i < n; i++)
-    //     {
-    //         // for (int j = 0; j < 80; j++)
-    //         // {
-    //         //     int w = (int)random(width*.5, width*.9);
-    //         //     int h = (int)random(height*.1, height*.4);
-    //         //     int x = (int)random(width)-w/2;
-    //         //     int y = (int)random(height)-h/2;
-    //         //     RandomWalkDisplayer screen = new RandomWalkDisplayer(x, y, w, h);
-    //         //     if (!isOverlap(screen))
-    //         //     {
-    //         //         _screenList.add(screen);
-    //         //         break;
-    //         //     }
-    //         // }
-    //         int x = 0;
-    //         int y = height/n*i;
-    //         int w = width;
-    //         int h = height/n;
-    //         _screenList.add(new RandomWalkDisplayer(x, y, w, h));
-    //     }
-    // }
-
-    // boolean isOverlap(RandomWalkDisplayer screen)
-    // {
-    //     PVector c = screen.getCenter();
-    //     for (RandomWalkDisplayer other : _screenList)
-    //     {
-    //         PVector co = other.getCenter();
-    //         float distX = abs(c.x - co.x);
-    //         float distY = abs(c.y - co.y);
-    //         if (distX < (screen._width + other._width)/2
-    //             && distY < (screen._height + other._height)/2)
-    //         {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
 
     @Override
     void clearScene() { background(#000000); }
@@ -92,6 +50,9 @@ class SceneRandomWalk extends Scene
         {
             super(x, y, width, height);
             _pg = createGraphics((int)width, (int)height, P2D);
+            _pg.beginDraw();
+            _pg.background(#000000);
+            _pg.endDraw();
         }
 
         void initialize()
@@ -105,8 +66,8 @@ class SceneRandomWalk extends Scene
                         (int)random(36, 90),
                         this,
                         new Attribution(
-                                random(1) < .5 ? #ffffff : #00f0c0,
-                                random(1) < .5 ? DrawStyle.STROKEONLY : DrawStyle.STROKEANDFILL)));
+                                random(1) < .5 ? #ffffff : #00c0f2,
+                                DrawStyle.STROKEANDFILL)));
             }
             for (Walker walker : _walkerList)
             {
@@ -127,7 +88,9 @@ class SceneRandomWalk extends Scene
         {
             _pg.pushStyle(); 
             _pg.beginDraw();
-            _pg.background(#000000);
+            _pg.fill(#000000, 40);
+            _pg.noStroke();
+            _pg.rect(0, 0, _width, _height);
             for (Walker walker : _walkerList) { walker.drawMeAttr(_pg); }
             _pg.endDraw();
             _pg.popStyle();
