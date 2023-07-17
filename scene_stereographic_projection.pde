@@ -61,7 +61,7 @@ class SceneStereographicProjection extends Scene
                 Attribution attr2 = new Attribution(#000000, DrawStyle.FILLONLY);
                 if (attr2.equals(face.getAttribution()))
                 {
-                    _faceList.add(new Triangle(newv1   , newv2   , newv3   , attr1));
+                    _faceList.add(new Triangle(newv1, newv2, newv3, attr1));
                     continue;
                 }
                 _faceList.add(new Triangle(face._v1, newv1   , newv3   , attr1));
