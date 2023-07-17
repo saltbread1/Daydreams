@@ -358,9 +358,9 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
         for (int i = 1; i <= 5; i++)
         {
             _faceList.add(new Triangle(vertices[0], vertices[i], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[i], vertices[i%5+1], vertices[i+5]));
+            _faceList.add(new Triangle(vertices[i], vertices[i+5], vertices[i%5+1]));
             _faceList.add(new Triangle(vertices[i+5], vertices[i%5+1+5], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[11], vertices[i+5], vertices[i%5+1+5]));
+            _faceList.add(new Triangle(vertices[11], vertices[i%5+1+5], vertices[i+5]));
         }
     }
 
@@ -399,7 +399,7 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
     }
 }
 
-class TriangularPrism extends SimpleShape3D// implements Rotatable3D
+class TriangularPrism extends SimpleShape3D implements Rotatable3D
 {
     Triangle _bottomFace;
     float _height;
@@ -410,7 +410,9 @@ class TriangularPrism extends SimpleShape3D// implements Rotatable3D
     {
         _bottomFace = bottomFace;
         _height = height;
-        _normal = PVector.sub(_bottomFace._v1, _bottomFace._v2).cross(PVector.sub(_bottomFace._v2, _bottomFace._v3)).normalize();
+        _normal = PVector.sub(_bottomFace._v2, _bottomFace._v1)
+                .cross(PVector.sub(_bottomFace._v3, _bottomFace._v1))
+                .normalize();
     }
 
     TriangularPrism(PVector v1, PVector v2, PVector v3, float height)
@@ -441,12 +443,16 @@ class TriangularPrism extends SimpleShape3D// implements Rotatable3D
         for (SimpleShape face : _faceList) { face.drawMe(); }
     }
 
-    // @Override
-    // void rotate(PVector dir, float rad, PVector init)
-    // {
-    //     for (SimpleShape extends Rotatable3D face : _faceList)
-    //     {
-    //         face.rotate(dir, rad, init);
-    //     }
-    // }
+    @Override
+    void rotate(PVector dir, float rad, PVector init)
+    {
+        for (SimpleShape face : _faceList)
+        {
+            if (face instanceof Rotatable3D)
+            {
+                Rotatable3D tmp = (Rotatable3D)face;
+                tmp.rotate(dir, rad, init);
+            }
+        }
+    }
 }
