@@ -69,7 +69,7 @@ class SceneReversingRects extends Scene
             _rotAxis = DirectionType.values()[(int)random(4)*2].getDirection();
             //_rotRad = 0;
             _curRotSec = 0;
-            _totalRotSec = random(.2, 1.2);
+            _totalRotSec = random(.46, 1.24);
             _waitRotSec = random(.67);
         }
 

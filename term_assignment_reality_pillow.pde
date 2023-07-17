@@ -36,12 +36,12 @@ void initialize()
     // _sm.addScene(new SceneImageConvert(10.5, 11.5));
 
     // _sm.addScene(new SceneTrianglesRotation(3));
-    _sm.addScene(new SceneRandomWalk(300));
+    // _sm.addScene(new SceneRandomWalk(3));
     // _sm.addScene(new SceneDistortedGrid(3));
     // _sm.addScene(new SceneIcosphere(3));
     
     // _sm.addScene(new SceneReversingRects(3));
-    //_sm.addScene(new SceneStereographicProjection(3));
+    // _sm.addScene(new SceneStereographicProjection(3));
 }
 
 void draw()
