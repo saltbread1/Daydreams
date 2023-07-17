@@ -40,16 +40,17 @@ class SceneReversingRects extends Scene
         }
     }
 
-    @Override
-    void clearScene() { background(#e9e9e9); }
+    // @Override
+    // void clearScene() { background(#e9e9e9); }
 
     class QuadManager
     {
         final Quad _quad;
         PVector _rotAxis;
         float _rotRad;
-        float _curRotSec, _totalRotSec;
-        final color[] _palette = {#666666, #665c51, #666600, #2c6651, #2c6666, #000066, #4c0066, #660066};
+        float _curRotSec, _totalRotSec, _waitRotSec;
+        //final color[] _palette = {#666666, #665c51, #666600, #2c6651, #2c6666, #000066, #4c0066, #660066};
+        final color[] _palette = {#ffffff};
 
         QuadManager(Quad quad)
         {
@@ -60,6 +61,7 @@ class SceneReversingRects extends Scene
         {
             color c = _palette[(int)random(_palette.length)];
             _quad.setAttribution(new Attribution(c, DrawStyle.FILLONLY));
+            for (int i = 0; i < 80; i++) { updateQuad(); }
         }
 
         void setParameters()
@@ -67,14 +69,15 @@ class SceneReversingRects extends Scene
             _rotAxis = DirectionType.values()[(int)random(4)*2].getDirection();
             //_rotRad = 0;
             _curRotSec = 0;
-            _totalRotSec = random(.2, 2);
+            _totalRotSec = random(.2, 1.2);
+            _waitRotSec = random(.67);
         }
 
         void updateQuad()
         {
-            if (_curRotSec >= _totalRotSec) { setParameters(); }
+            if (_curRotSec-_waitRotSec >= _totalRotSec) { setParameters(); }
             _curRotSec += 1./_frameRate;
-            _rotRad = _util.easeInOutQuad(_curRotSec/_totalRotSec)*PI;
+            _rotRad = _util.easeInOutQuad((_curRotSec-_waitRotSec)/_totalRotSec)*PI;
         }
 
         void drawQuad()
