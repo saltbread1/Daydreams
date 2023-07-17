@@ -116,7 +116,7 @@ abstract class SimpleShape
 
     final Attribution getAttribution() { return _attr; }
 
-    final void drawMeAttr()
+    void drawMeAttr()
     {
         pushStyle();
         if (_attr != null) { _attr.apply(); }
@@ -158,9 +158,9 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
+        _e12 = PVector.dist(v1, v2);
         _e23 = PVector.dist(v2, v3);
         _e31 = PVector.dist(v3, v1);
-        _e12 = PVector.dist(v1, v2);
     }
 
     Triangle(PVector v1, PVector v2, PVector v3)
@@ -303,14 +303,28 @@ class Rect extends SimpleShape implements Translatable
 class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3, _v4;
+    float _e12, _e23, _e34, _e41;
+    float _area;
 
-    Quad(PVector v1, PVector v2, PVector v3, PVector v4)
+    Quad(PVector v1, PVector v2, PVector v3, PVector v4, Attribution attr)
     {
+        super(attr);
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
         _v4 = v4;
+        _e12 = PVector.dist(v1, v2);
+        _e23 = PVector.dist(v2, v3);
+        _e34 = PVector.dist(v3, v4);
+        _e41 = PVector.dist(v4, v1);
     }
+
+    Quad(PVector v1, PVector v2, PVector v3, PVector v4)
+    {
+        this(v1, v2, v3, v4, null);
+    }
+
+    Quad copy() { return new Quad(_v1.copy(), _v2.copy(), _v3.copy(), _v4.copy(), _attr); }
 
     @Override
     void drawMe()
@@ -350,7 +364,6 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
         _v2 = _util.rotate(_v2, rad, init);
         _v3 = _util.rotate(_v3, rad, init);
         _v4 = _util.rotate(_v4, rad, init);
-        //rotate(new PVector(0, 0, 1), rad, init);
     }
 
     @Override
@@ -361,7 +374,137 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
         _v3 = _util.rotate3D(_v3, dir, rad, init);
         _v4 = _util.rotate3D(_v4, dir, rad, init);
     }
+
+    PVector getCenter()
+    {
+        return PVector.add(_v1, _v2).add(_v3).add(_v4).div(4);
+    }
+
+    float getArea()
+    {
+        if (_area <= 0)
+        { // Bretschneider's formula
+            float t = (_e12 + _e23 + _e34 + _e41)/2;
+            float a = PVector.angleBetween(PVector.sub(_v2, _v1), PVector.sub(_v4, _v1));
+            float c = PVector.angleBetween(PVector.sub(_v2, _v3), PVector.sub(_v4, _v3));
+            _area = sqrt( (t-_e12)*(t-_e23)*(t-_e34)*(t-_e41) - _e12*_e23*_e34*_e41*sq(cos((a+c)/2)) );
+        }
+        return _area;
+    }
 }
+
+class DevidedQuad extends Quad
+{
+    final PVector _e1v1, _e1v2, _e2v1, _e2v2;
+    final PVector _c1v1, _c1v2, _c2v1, _c2v2;
+    final float _endArea, _minEndArea, _maxEndArea;
+    final DevidedQuad _parent;
+    DevidedQuad _child1, _child2;
+    final int _seed1, _seed2;
+
+    DevidedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea, DevidedQuad parent)
+    {
+        super(v1, v2, v3, v4);
+
+        if (PVector.sub(v2, v1).mag() + PVector.sub(v4, v3).mag()
+            > PVector.sub(v2, v3).mag() + PVector.sub(v4, v1).mag())
+        {
+            _e1v1 = v1; _e1v2 = v2; _e2v1 = v3; _e2v2 = v4;
+            _c1v1 = v4; _c1v2 = v1; _c2v1 = v3; _c2v2 = v2;
+        }
+        else
+        {
+            _e1v1 = v2; _e1v2 = v3; _e2v1 = v4; _e2v2 = v1;
+            _c1v1 = v1; _c1v2 = v2; _c2v1 = v4; _c2v2 = v3;
+        }
+        _minEndArea = minEndArea;
+        _maxEndArea = maxEndArea;
+        _endArea = minEndArea + sq(random(1))*(maxEndArea-minEndArea);
+        _parent = parent;
+        _seed1 = (int)random(65536);
+        _seed2 = (int)random(65536);
+    }
+
+    DevidedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea)
+    {
+        this(v1, v2, v3, v4, minEndArea, maxEndArea, null);
+    }
+
+    void initialize()
+    {
+        createChildren();
+        updateMe(0, 0);
+    }
+
+    void createChildren()
+    {
+        if (getArea() <= _endArea)
+        {
+            _child1 = null;
+            _child2 = null;
+            return;
+        }
+        float s1 = random(1);
+        float s2 = random(1);
+        PVector vd1 = PVector.mult(_e1v1, s1).add(PVector.mult(_e1v2, 1-s1));
+        PVector vd2 = PVector.mult(_e2v1, s2).add(PVector.mult(_e2v2, 1-s2));
+        _child1 = new DevidedQuad(_c1v1, _c1v2, vd1, vd2, _minEndArea, _maxEndArea, this);
+        _child2 = new DevidedQuad(_c2v1, _c2v2, vd1, vd2, _minEndArea, _maxEndArea, this);
+        _child1.createChildren();
+        _child2.createChildren();
+    }
+
+    void trasform(float t, float scale)
+    {
+        if (_parent == null) { return; }
+
+        //scale = (float)mouseX/width;
+        float s1 = constrain(.5 + (1-noise(t, _seed1)*2)/2 * scale*1.5, 0, 1);
+        float s2 = constrain(.5 + (1-noise(t, _seed2)*2)/2 * scale*1.5, 0, 1);
+        PVector v3 = PVector.mult(_parent._e1v1, s1).add(PVector.mult(_parent._e1v2, 1-s1));
+        PVector v4 = PVector.mult(_parent._e2v1, s2).add(PVector.mult(_parent._e2v2, 1-s2));
+        _v3.set(v3.x, v3.y, v3.z);
+        _v4.set(v4.x, v4.y, v4.z);
+    }
+
+    void updateMe(float t, float scale)
+    {
+        if (!isChildren()) { return; }
+        _child1.trasform(t, scale);
+        _child2.trasform(t, scale);
+        _child1.updateMe(t, scale);
+        _child2.updateMe(t, scale);
+    }
+
+    @Override
+    void drawMeAttr()
+    {
+        if (!isChildren())
+        {
+            super.drawMeAttr();
+            return;
+        }
+        _child1.drawMeAttr();
+        _child2.drawMeAttr();
+    }
+
+    boolean isChildren()
+    {
+        return _child1 != null && _child2 != null;
+    }
+
+    void getAllChildren(ArrayList<Quad> _childrenList)
+    {
+        if (!isChildren())
+        {
+            _childrenList.add(this);
+            return;
+        }
+        _child1.getAllChildren(_childrenList);
+        _child2.getAllChildren(_childrenList);
+    }
+}
+
 
 class Circle extends SimpleShape implements Translatable
 {

@@ -38,7 +38,8 @@ void initialize()
     //_sm.addScene(new SceneIcosphere(300));
     //_sm.addScene(new SceneTrianglesRotation(300));
     //_sm.addScene(new SceneStereographicProjection(300));
-    _sm.addScene(new SceneDistortedGrid(300));
+    //_sm.addScene(new SceneDistortedGrid(300));
+    _sm.addScene(new SceneReversingRects(300));
 }
 
 void draw()
