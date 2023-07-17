@@ -2,17 +2,20 @@ class Utility
 {
     void myVertex(PVector v)
     {
-        vertex(v.x, v.y, v.z);
+        if (v.z == 0) { vertex(v.x, v.y); }
+        else { vertex(v.x, v.y, v.z); }
+    }
+
+    void myVertex(PVector v, PGraphics pg)
+    {
+        if (v.z == 0) { pg.vertex(v.x, v.y); }
+        else { pg.vertex(v.x, v.y, v.z); }
     }
 
     void myLine(PVector v1, PVector v2)
     {
-        line(v1.x, v1.y, v2.x, v2.y);
-    }
-
-    void myLine3D(PVector v1, PVector v2)
-    {
-        line(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
+        if (v1.z == 0 && v2.z == 0) { line(v1.x, v1.y, v2.x, v2.y); }
+        else { line(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z); }
     }
 
     PVector rotate(PVector target, float rad)

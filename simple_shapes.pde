@@ -1,8 +1,80 @@
 enum DrawStyle
 {
-    ONLYSTROKE,
-    ONLYFILL,
+    STROKEONLY,
+    FILLONLY,
     STROKEANDFILL,
+}
+
+class Attribution
+{
+    final color _cStroke, _cFill;
+    final DrawStyle _style;
+
+    Attribution(color cStroke, color cFill, DrawStyle style)
+    {
+        _cStroke = cStroke;
+        _cFill = cFill;
+        _style = style;
+    }
+
+    Attribution(color cStroke, color cFill)
+    {
+        this(cStroke, cFill, DrawStyle.STROKEANDFILL);
+    }
+
+    Attribution(color colour, DrawStyle style)
+    {
+        this(colour, colour, style);
+    }
+
+    Attribution()
+    { // default colors
+        _cStroke = #000000;
+        _cFill = #ffffff;
+        _style = null;
+    }
+
+    void apply()
+    {
+        if (_style == null) { return; }
+
+        switch (_style)
+        {
+            case STROKEONLY:
+                stroke(_cStroke);
+                noFill();
+                break;
+            case FILLONLY:
+                noStroke();
+                fill(_cFill);
+                break;
+            case STROKEANDFILL:
+                stroke(_cStroke);
+                fill(_cFill);
+                break;
+        }
+    }
+
+    void apply(PGraphics pg)
+    {
+        if (_style == null) { return; }
+
+        switch (_style)
+        {
+            case STROKEONLY:
+                pg.stroke(_cStroke);
+                pg.noFill();
+                break;
+            case FILLONLY:
+                pg.noStroke();
+                pg.fill(_cFill);
+                break;
+            case STROKEANDFILL:
+                pg.stroke(_cStroke);
+                pg.fill(_cFill);
+                break;
+        }
+    }
 }
 
 interface Translatable
@@ -22,61 +94,38 @@ interface Rotatable3D
 
 abstract class SimpleShape
 {
-    color _cStroke, _cFill;
+    Attribution _attr;
 
-    SimpleShape(color cStroke, color cFill)
-    {
-        _cStroke = cStroke;
-        _cFill = cFill;
-    }
+    SimpleShape(Attribution attr) { _attr = attr; }
 
-    SimpleShape(color colour)
-    {
-        _cStroke = colour;
-        _cFill = colour;
-    }
+    SimpleShape() { _attr = null; }
 
-    SimpleShape()
-    {
-        _cStroke = #000000;
-        _cFill = #ffffff;
-    }
+    final void setAttribution(Attribution attr) { _attr = attr; }
 
-    void drawMe(DrawStyle style)
+    final void drawMeAttr()
     {
         pushStyle();
-        selectStyle(style);
+        if (_attr != null) { _attr.apply(); }
         drawMe();
         popStyle();
     }
 
+    final void drawMeAttr(PGraphics pg)
+    {
+        pg.pushStyle();
+        if (_attr != null) { _attr.apply(pg); }
+        drawMe(pg);
+        pg.popStyle();
+    }
+
     abstract void drawMe();
 
-    void selectStyle(DrawStyle style)
-    {
-        switch (style)
-        {
-            case ONLYSTROKE:
-                stroke(_cStroke);
-                noFill();
-                break;
-            case ONLYFILL:
-                noStroke();
-                fill(_cFill);
-                break;
-            case STROKEANDFILL:
-                stroke(_cStroke);
-                fill(_cFill);
-                break;
-        }
-    }
+    abstract void drawMe(PGraphics pg);
 }
 
 abstract class SimpleShape3D extends SimpleShape
 {
-    SimpleShape3D(color cStroke, color cFill) { super(cStroke, cFill); }
-
-    SimpleShape3D(color colour) { super(colour); }
+    SimpleShape3D(Attribution attr) { super(attr); }
 
     SimpleShape3D() {}
 
@@ -89,15 +138,20 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
     float _e12, _e23, _e31;
     float _area, _innerRadius;
 
-    Triangle(PVector v1, PVector v2, PVector v3)
+    Triangle(PVector v1, PVector v2, PVector v3, Attribution attr)
     {
+        super(attr);
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
-
         _e23 = PVector.dist(v2, v3);
         _e31 = PVector.dist(v3, v1);
         _e12 = PVector.dist(v1, v2);
+    }
+
+    Triangle(PVector v1, PVector v2, PVector v3)
+    {
+        this(v1, v2, v3, null);
     }
 
     Triangle copy() { return new Triangle(_v1.copy(), _v2.copy(), _v3.copy()); }
@@ -110,6 +164,16 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         _util.myVertex(_v2);
         _util.myVertex(_v3);
         endShape(CLOSE);
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.beginShape();
+        _util.myVertex(_v1, pg);
+        _util.myVertex(_v2, pg);
+        _util.myVertex(_v3, pg);
+        pg.endShape(CLOSE);
     }
 
     @Override
@@ -203,6 +267,13 @@ class Rect extends SimpleShape implements Translatable
     }
 
     @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.rectMode(CORNERS);
+        pg.rect(_upperLeft.x, _upperLeft.y, _lowerRight.x, _lowerRight.y);
+    }
+
+    @Override
     void translate(PVector dv)
     {
         _upperLeft.add(dv);
@@ -239,6 +310,17 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
     }
 
     @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.beginShape(QUADS);
+        _util.myVertex(_v1, pg);
+        _util.myVertex(_v2, pg);
+        _util.myVertex(_v3, pg);
+        _util.myVertex(_v4, pg);
+        pg.endShape();
+    }
+
+    @Override
     void translate(PVector dv)
     {
         _v1.add(dv);
@@ -264,6 +346,41 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
         _v2 = _util.rotate3D(_v2, dir, rad, init);
         _v3 = _util.rotate3D(_v3, dir, rad, init);
         _v4 = _util.rotate3D(_v4, dir, rad, init);
+    }
+}
+
+class Circle extends SimpleShape implements Translatable
+{
+    PVector _center;
+    float _radius;
+
+    Circle(PVector center, float radius)
+    {
+        _center = center;
+        _radius = radius;
+    }
+
+    Circle(float x, float y, float radius)
+    {
+        this(new PVector(x, y), radius);
+    }
+
+    @Override
+    void drawMe()
+    {
+        circle(_center.x, _center.y, _radius*2);
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.circle(_center.x, _center.y, _radius*2);
+    }
+
+    @Override
+    void translate(PVector dv)
+    {
+        _center.add(dv);
     }
 }
 
@@ -310,6 +427,12 @@ class Cone extends SimpleShape3D implements Translatable
     void drawMe()
     {
         for (Triangle face : _faceList) { face.drawMe(); }
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        for (Triangle face : _faceList) { face.drawMe(pg); }
     }
     
     @Override
@@ -390,6 +513,12 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
     }
 
     @Override
+    void drawMe(PGraphics pg)
+    {
+        for (Triangle face : _faceList) { face.drawMe(pg); }
+    }
+
+    @Override
     void rotate(PVector dir, float rad, PVector init)
     {
         for (Triangle face : _faceList)
@@ -441,6 +570,12 @@ class TriangularPrism extends SimpleShape3D implements Rotatable3D
     void drawMe()
     {
         for (SimpleShape face : _faceList) { face.drawMe(); }
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        for (SimpleShape face : _faceList) { face.drawMe(pg); }
     }
 
     @Override

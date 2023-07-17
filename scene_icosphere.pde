@@ -34,7 +34,7 @@ class SceneIcosphere extends Scene
         fill(#000000);
         _ico.drawMe();
         // strokeWeight(6);
-        // _util.myLine3D(new PVector(), rotAxis.mult(400));
+        // _util.myLine(new PVector(), rotAxis.mult(400));
         popStyle();
     }
 

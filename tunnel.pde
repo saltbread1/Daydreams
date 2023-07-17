@@ -63,7 +63,7 @@ class TunnelGate
 
     float getZ() { return _center.z; }
 
-    class TunnelCuboid extends SimpleShape3D implements Rotatable3D
+    class TunnelCuboid implements Rotatable3D
     {
         final float _minZ, _maxZ;
         final float _initRotRad;
@@ -94,7 +94,6 @@ class TunnelGate
             _rotInit.z -= _edgeLenZ/2;
         }
 
-        @Override
         void createFaces()
         {
             PVector z  = new PVector(0, 0, -_edgeLenZ);
@@ -110,7 +109,6 @@ class TunnelGate
             _faceList.add(new Quad(_fv2,  hv2,  hv3, _fv3));
         }
 
-        @Override
         void drawMe()
         {
             for (Quad face : _faceList)
