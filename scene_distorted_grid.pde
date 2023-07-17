@@ -16,8 +16,12 @@ class SceneDistortedGrid extends Scene
     @Override
     void update()
     {
+        pushStyle();
+        noStroke();
+        fill(#ffffff);
         _grid.updateMe();
         _grid.drawMe();
+        popStyle();
     }
 
     class DistortedGrid
@@ -26,7 +30,6 @@ class SceneDistortedGrid extends Scene
         final float _totalLenX, _totalLenY, _stepLenX, _stepLenY;
         final int _resX, _resY;
         final int _seedX, _seedY;
-        final Rect _limit;
         ArrayList<Rect> _rectList;
 
         DistortedGrid(PVector center, float totalLenX, float totalLenY, float stepLenX, float stepLenY)
@@ -40,9 +43,6 @@ class SceneDistortedGrid extends Scene
             _resY = (int)(_totalLenY/_stepLenY);
             _seedX = (int)random(65536);
             _seedY = (int)random(65536);
-            _limit = new Rect(
-                    new PVector(-totalLenX/2+stepLenX*2, -totalLenY/2+stepLenY*2).add(center),
-                    new PVector(totalLenX/2-stepLenX*2, totalLenY/2-stepLenY*2).add(center));
         }
 
         DistortedGrid(float totalLenX, float totalLenY, float stepLenX, float stepLenY)
@@ -89,11 +89,7 @@ class SceneDistortedGrid extends Scene
 
         void drawMe()
         {
-            pushStyle();
-            noStroke();
-            fill(#ffffff);
             for (Rect rect : _rectList) { rect.drawMe(); }
-            popStyle();
         }
     }
 }
