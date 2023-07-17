@@ -68,6 +68,11 @@ class Utility
         return x-y*floor(x/y);
     }
 
+    float fract(float x)
+    {
+        return mod(x, 1);
+    }
+
     /************************/
     /*    easing methods    */
     /************************/

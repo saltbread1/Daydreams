@@ -23,11 +23,18 @@ class SceneIcosphere extends Scene
     @Override
     void update()
     {
+        float val = _curSec*1.4;
+        float phi = val;
+        float theta = (floor(val) + _util.easeInOutQuad(_util.fract(val)))*HALF_PI;
+        PVector rotAxis = new PVector(sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi));
         _ico.updateMe();
+        _ico.rotate(rotAxis, .09, new PVector());
         pushStyle();
-        stroke(#de0000, 180);
+        stroke(#e6e6e6);
         fill(#000000);
         _ico.drawMe();
+        // strokeWeight(6);
+        // _util.myLine3D(new PVector(), rotAxis.mult(400));
         popStyle();
     }
 
@@ -64,6 +71,7 @@ class SceneIcosphere extends Scene
             for (TwistedTriangularPrism prism : _prismList)
             {
                 prism.updateMe(50, 180);
+                prism.createFaces();
             }
         }
 
@@ -72,19 +80,18 @@ class SceneIcosphere extends Scene
         {
             for (TwistedTriangularPrism prism : _prismList)
             {
-                prism.createFaces();
                 prism.drawMe();
             }
         }
 
-        // @Override
-        // void rotate(PVector dir, float rad, PVector init)
-        // {
-        //     for (TwistedTriangularPrism prism : _prismList)
-        //     {
-        //         prism.rotate(dir, rad, init);
-        //     }
-        // }
+        @Override
+        void rotate(PVector dir, float rad, PVector init)
+        {
+            for (TwistedTriangularPrism prism : _prismList)
+            {
+                prism.rotate(dir, rad, init);
+            }
+        }
     }
 
     class TwistedTriangularPrism extends TriangularPrism
@@ -94,7 +101,8 @@ class SceneIcosphere extends Scene
 
         TwistedTriangularPrism(Triangle bottomFace)
         {
-            super(bottomFace, 50);
+            super(bottomFace, 100);
+            _rotRad = TAU;
         }
 
         @Override
@@ -140,8 +148,8 @@ class SceneIcosphere extends Scene
 
         void updateMe(float minH, float maxH)
         {
-            float val1 = (1+sin(_curSec*6.7+_seed*.1))/2;
-            float val2 = _util.easeInOutQuad(noise(_curSec*2.8, _seed));
+            float val1 = (1+sin(_curSec*7.5+_seed*.1))/2;
+            float val2 = _util.easeInOutCubic(noise(_curSec*2.8, _seed));
             _height = minH + val1*(maxH-minH);
             _rotRad = map(val2, 0, 1, -TAU*3.2, TAU*3.2);
         }
@@ -149,6 +157,15 @@ class SceneIcosphere extends Scene
         PVector scaling(PVector v, PVector c, float r)
         {
             return PVector.sub(v, c).mult(r).add(c);
+        }
+
+        @Override
+        void rotate(PVector dir, float rad, PVector init)
+        {
+            _bottomFace.rotate(dir, rad, init);
+            _normal = PVector.sub(_bottomFace._v2, _bottomFace._v1)
+                    .cross(PVector.sub(_bottomFace._v3, _bottomFace._v1))
+                    .normalize();
         }
     }
 }
