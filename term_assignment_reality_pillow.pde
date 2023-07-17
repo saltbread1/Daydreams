@@ -4,6 +4,7 @@ import quaternion.*;
 import java.util.Comparator;
 import java.util.Arrays;
 import java.util.ArrayDeque;
+import java.util.HashMap;
 
 // VideoExport _videoExport;
 // boolean _isExport = false;
@@ -34,7 +35,8 @@ void initialize()
     // _sm.addScene(new SceneImageConvert(10.5, 11.5));
     //_sm.addScene(new SceneRandomWalk(5));
     //_sm.addScene(new SceneRecursiveRect(11.5, 5.5));
-    _sm.addScene(new SceneIcosphere(300));
+    //_sm.addScene(new SceneIcosphere(300));
+    _sm.addScene(new SceneTrianglesRotation(300));
 }
 
 void draw()
