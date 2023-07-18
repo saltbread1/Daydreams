@@ -48,7 +48,7 @@ class Utility
         return new PVector(qr.x, qr.y, qr.z).add(init);
     }
 
-    PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVector goal,  float t)
+    PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVector goal, float t)
     {
         t = constrain(t, 0, 1);
         PVector v1 = PVector.mult(start, pow(1-t,3));
@@ -56,6 +56,48 @@ class Utility
         PVector v3 = PVector.mult(control2, sq(t)*(1-t)*3);
         PVector v4 = PVector.mult(goal, pow(t,3));
         return v1.add(v2).add(v3).add(v4);
+    }
+
+    float calcCubicBezierLength(PVector start, PVector control1, PVector control2, PVector goal, float n)
+    {
+        float l = 0;
+        for (int i = 0; i < n; i++)
+        {
+            float t1 = (float)i/n;
+            float t2 = (float)(i+1)/n;
+            float x1 = bezierPoint(start.x, control1.x, control2.x, goal.x, t1);
+            float y1 = bezierPoint(start.y, control1.y, control2.y, goal.y, t1);
+            float x2 = bezierPoint(start.x, control1.x, control2.x, goal.x, t2);
+            float y2 = bezierPoint(start.y, control1.y, control2.y, goal.y, t2);
+            l += dist(x1, y1, x2, y2);
+        }
+        return l;
+    }
+
+    FloatList calcCubicBezierConstantParams(PVector start, PVector control1, PVector control2, PVector goal, float speed)
+    {
+        float l = calcCubicBezierLength(start, control1, control2, goal, (int)(PVector.dist(start, goal)*.1));
+        int n = (int)(l/speed*_frameRate);
+        FloatList params = new FloatList();
+        float stepDist = l/n;
+        int m = n*8;
+        float x = start.x;
+        float y = start.y;
+        int c = 0;
+        for (int i = 1; i < m; i++)
+        {
+            float t = (float)i/m;
+            float x0 = bezierPoint(start.x, control1.x, control2.x, goal.x, t);
+            float y0 = bezierPoint(start.y, control1.y, control2.y, goal.y, t);
+            if (dist(x, y, x0, y0) >= stepDist)
+            {
+                x = x0;
+                y = y0;
+                params.append(t);
+            }
+        }
+
+        return params;
     }
 
     /**
@@ -79,6 +121,12 @@ class Utility
     /************************/
     /*    easing methods    */
     /************************/
+
+    float easeInQuad(float t)
+    {
+        t = constrain(t, 0, 1);
+        return sq(t);
+    }
 
     float easeOutQuad(float t)
     {

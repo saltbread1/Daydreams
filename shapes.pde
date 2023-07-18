@@ -158,9 +158,7 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
-        _e12 = PVector.dist(v1, v2);
-        _e23 = PVector.dist(v2, v3);
-        _e31 = PVector.dist(v3, v1);
+        calcEdges();
     }
 
     Triangle(PVector v1, PVector v2, PVector v3)
@@ -169,6 +167,14 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
     }
 
     Triangle copy() { return new Triangle(_v1.copy(), _v2.copy(), _v3.copy(), _attr); }
+
+    void calcEdges()
+    {
+        if (_v1 == null || _v2 == null || _v3 == null) { return; }
+        _e12 = PVector.dist(_v1, _v2);
+        _e23 = PVector.dist(_v2, _v3);
+        _e31 = PVector.dist(_v3, _v1);
+    }
 
     @Override
     void drawMe()
@@ -511,15 +517,26 @@ class Circle extends SimpleShape implements Translatable
     PVector _center;
     float _radius;
 
-    Circle(PVector center, float radius)
+    Circle(PVector center, float radius, Attribution attr)
     {
+        super(attr);
         _center = center;
         _radius = radius;
     }
 
+    Circle(PVector center, float radius)
+    {
+        this(center, radius, null);
+    }
+
+    Circle(float x, float y, float radius, Attribution attr)
+    {
+        this(new PVector(x, y), radius, attr);
+    }
+
     Circle(float x, float y, float radius)
     {
-        this(new PVector(x, y), radius);
+        this(x, y, radius, null);
     }
 
     @Override
@@ -539,6 +556,8 @@ class Circle extends SimpleShape implements Translatable
     {
         _center.add(dv);
     }
+
+    PVector getCenter() { return _center; }
 }
 
 class Cone extends SimpleShape3D implements Translatable
