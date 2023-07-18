@@ -37,6 +37,9 @@ class SceneIntro extends Scene
         _util.resetCamera();
     }
 
+    @Override
+    void clearScene() { background(#e0e0e0); }
+
     void drawDebugInfo()
     {
         pushStyle();
@@ -56,10 +59,11 @@ class SceneIntro extends Scene
 
         FloatingTriangle(float sizeRadius, float speed)
         {
-            super(null, null, null, new Attribution(#ececec, DrawStyle.FILLONLY));
+            super(null, null, null, new Attribution(#ffffff, #000000, DrawStyle.STROKEANDFILL));
             _sizeRadius = sizeRadius;
             _speed = speed;
             _center = new PVector();
+            _stepRad = random(TAU);
             _bezierParams = new FloatList();
         }
 
@@ -80,7 +84,7 @@ class SceneIntro extends Scene
             float k1 = random(m*.32, m*.48); // length of start to control1
             float k2 = random(k1*1.6, m*.81); // length of start to control2
 
-            _stepRad += random(-1,1)*PI*.39;
+            _stepRad += random(-1,1)*PI*.31;
 
             PVector d = PVector.fromAngle(_stepRad); // direction of start to goal
             _startPos = _center.copy(); // equals previous value of "_goalPos"
@@ -225,8 +229,8 @@ class SceneIntro extends Scene
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float r = sq(random(1))*width*.044;
                 Attribution attr = random(1) < .5
-                        ? new Attribution(#ffffff, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
-                        : new Attribution(#e00000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                        ? new Attribution(#000000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
+                        : new Attribution(#900000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
                 AppearingCircle circle = new AppearingCircle(c, r, attr);
                 if (!isOverlap(circle))
                 {
@@ -259,7 +263,7 @@ class SceneIntro extends Scene
                 }
                 circle.updateMe();
             }
-            while (addCircle(1));
+            while (addCircle(3));
         }
 
         void drawCircles()

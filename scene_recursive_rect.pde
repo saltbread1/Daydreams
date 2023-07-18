@@ -110,7 +110,7 @@ class SceneRecursiveRect extends Scene
         {
             _stepTypeIndex = getNextStepTypeIndex(_stepTypeIndex);
             _stepSec = 0;
-            _stepTotalSec = random(.18, .76);
+            _stepTotalSec = map(sq(random(1)), 0, 1, .15, .76);
         }
 
         void updateMe()

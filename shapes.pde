@@ -512,7 +512,7 @@ class DevidedQuad extends Quad
 }
 
 
-class Circle extends SimpleShape implements Translatable
+class Circle extends SimpleShape implements Translatable, Rotatable
 {
     PVector _center;
     float _radius;
@@ -557,7 +557,61 @@ class Circle extends SimpleShape implements Translatable
         _center.add(dv);
     }
 
+    @Override
+    void rotate(float rad, PVector init)
+    {
+        _center = _util.rotate(_center, rad, init);
+    }
+
     PVector getCenter() { return _center; }
+}
+
+class Arc extends Circle
+{
+    float _startRad, _stopRad;
+    int _mode;
+
+    Arc(PVector center, float radius, float startRad, float stopRad, int mode, Attribution attr)
+    {
+        super(center, radius, attr);
+        _startRad = startRad;
+        _stopRad = stopRad;
+        _mode = mode;
+    }
+
+    Arc(PVector center, float radius, float startRad, float stopRad, int mode)
+    {
+        this(center, radius, startRad, stopRad, mode, null);
+    }
+
+    Arc(float x, float y, float radius, float startRad, float stopRad, int mode, Attribution attr)
+    {
+        this(new PVector(x, y), radius, startRad, stopRad, mode, attr);
+    }
+
+    Arc(float x, float y, float radius, float startRad, float stopRad, int mode)
+    {
+        this(x, y, radius, startRad, stopRad, mode, null);
+    }
+
+    @Override
+    void drawMe()
+    {
+        arc(_center.x, _center.y, _radius*2, _radius*2, _startRad, _stopRad, _mode);
+    }
+
+    @Override
+    void rotate(float rad, PVector init)
+    {
+        super.rotate(rad, init);
+        rotate(rad);
+    }
+
+    void rotate(float rad)
+    {
+        _startRad += rad;
+        _stopRad += rad;
+    }
 }
 
 class Cone extends SimpleShape3D implements Translatable
