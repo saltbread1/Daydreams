@@ -1,6 +1,6 @@
 class SceneRandomWalk extends Scene
 {
-    ArrayList<RandomWalkDisplayer> _screenList;
+    RandomWalkDisplayer _displayer;
 
     SceneRandomWalk(float totalSceneSec)
     {
@@ -10,91 +10,214 @@ class SceneRandomWalk extends Scene
     @Override
     void initialize()
     {
-        _screenList = new ArrayList<RandomWalkDisplayer>();
-        createScreens(0, 0, width, height, 2);
-        for (RandomWalkDisplayer screen : _screenList) { screen.initialize(); }
+        _displayer = new RandomWalkDisplayer(0, 0, width, height);
+        _displayer.initialize();
+        for (int i = 0; i < 200; i++) { _displayer.updateWalkers(); }
+    }
+
+    @Override
+    void start()
+    {
+        background(#000000);
     }
 
     @Override
     void update()
     {
-        for (RandomWalkDisplayer screen : _screenList)
-        {
-            for (int i = 0; i < 2; i++) { screen.updateWalkers(); }
-            screen.drawMe();
-        }
-    }
-
-    void createScreens(float x, float y, float w, float h, float n)
-    {
-        if (n <= 0)
-        {
-            _screenList.add(new RandomWalkDisplayer(x, y, w, h));
-            return;
-        }
-        createScreens(x, y, w/2, h/2, n-1);
-        createScreens(x+w/2, y, w/2, h/2, n-1);
-        createScreens(x, y+h/2, w/2, h/2, n-1);
-        createScreens(x+w/2, y+h/2, w/2, h/2, n-1);
+        for (int i = 0; i < 4; i++) { _displayer.updateWalkers(); }
+        _displayer.drawMeAttr();
     }
 
     @Override
-    void clearScene() { background(#000000); }
+    void clearScene() { /*background(#000000);*/ }
 
     class RandomWalkDisplayer extends Rect
     {
-        final PGraphics _pg;
         ArrayList<Walker> _walkerList;
+        final color[] _palette = {#ffffff, #00c0f2, #00f2c0};
 
         RandomWalkDisplayer(float x, float y, float width, float height)
         {
             super(x, y, width, height);
-            _pg = createGraphics((int)width, (int)height, P2D);
-            _pg.beginDraw();
-            _pg.background(#000000);
-            _pg.endDraw();
+            setAttribution(new Attribution(color(#000000, 60), DrawStyle.FILLONLY));
         }
 
         void initialize()
         {
             _walkerList = new ArrayList<Walker>();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 80; i++)
             {
                 _walkerList.add(new Walker(
                         new PVector(random(_width), random(_height)),
-                        max(2, sq(random(1))*sqrt(_width*_height)*.03),
+                        max(2, sq(random(1))*sqrt(_width*_height)*.01),
                         (int)random(36, 90),
                         this,
                         new Attribution(
-                                random(1) < .5 ? #ffffff : #00c0f2,
-                                DrawStyle.STROKEANDFILL)));
-            }
-            for (Walker walker : _walkerList)
-            {
-                for (int i = 0; i < walker.getTrailNum(); i++)
-                {
-                    walker.updateMe(_walkerList);
-                }
+                                color(_palette[(int)(min((1-sqrt(random(1)))*1.2, .9)*_palette.length)], 40),
+                                random(1) < .5 ? DrawStyle.STROKEANDFILL : DrawStyle.STROKEONLY)));
             }
         }
 
         void updateWalkers()
         {
-            for (Walker walker : _walkerList) { walker.updateMe(_walkerList); }
+            for (Walker walker : _walkerList) { walker.updateMe(); }
         }
 
         @Override
         void drawMe()
         {
-            _pg.pushStyle(); 
-            _pg.beginDraw();
-            _pg.fill(#000000, 40);
-            _pg.noStroke();
-            _pg.rect(0, 0, _width, _height);
-            for (Walker walker : _walkerList) { walker.drawMeAttr(_pg); }
-            _pg.endDraw();
-            _pg.popStyle();
-            image(_pg, (int)_upperLeft.x, (int)_upperLeft.y);
+            rect(0, 0, _width, _height);
+            for (Walker walker : _walkerList) { walker.drawMeAttr(); }
+        }
+
+        @Override
+        void drawMe(PGraphics pg)
+        {
+            pg.rect(0, 0, _width, _height);
+            for (Walker walker : _walkerList) { walker.drawMeAttr(pg); }
+        }
+    }
+
+    class Walker extends SimpleShape
+    {
+        final float _stepLen;
+        final int _trailNum, _dirTypeNum = 4;
+        final Rect _range;
+        ArrayDeque<Vertex> _verticesQueue;
+        Vertex _latestVertex;
+        
+        IntList _indexesList = new IntList();
+        
+        Walker(PVector startPos, float stepLen, int trailNum, Rect range, Attribution attr)
+        {
+            super(attr);
+            _stepLen = stepLen;
+            _verticesQueue = new ArrayDeque<Vertex>();
+            _latestVertex = new Vertex(startPos, -1);
+            _verticesQueue.add(_latestVertex);
+            _trailNum = trailNum;
+            _range = range;
+            for (int i = 0; i < _dirTypeNum-1; i++)
+            {
+                _indexesList.append(i);
+            }
+        }
+
+        void updateMe()
+        {
+            int n = _dirTypeNum-1;
+            _indexesList.shuffle();
+            for (int i = 0; i < n; i++)
+            {
+                Vertex newVertex = _latestVertex.getNextStepVertex(_stepLen, _indexesList.get(i));
+                if (!isOverlap(newVertex))
+                {
+                    _latestVertex = newVertex;
+                    break;
+                }
+                else if (i == n-1)
+                {
+                    _latestVertex = _latestVertex.getNextStepVertex(_stepLen, (int)random(n));
+                }
+            }
+            _verticesQueue.add(_latestVertex);
+            while (_verticesQueue.size() > _trailNum) { _verticesQueue.poll(); }
+        }
+
+        boolean isOverlap(Vertex v)
+        {
+            for (Vertex other : _verticesQueue)
+            {
+                PVector a1 = PVector.fromAngle(QUARTER_PI);
+                PVector a2 = PVector.fromAngle(QUARTER_PI*3);
+                PVector b = PVector.sub(other.getPos(), v.getPos());
+                float d = sqrt(max(production(a1, b).magSq(), production(a2, b).magSq()));
+                if (_stepLen > d) { return true; }
+            }
+            return false;
+        }
+
+        PVector production(PVector a, PVector b)
+        { // calc production vector: b to a
+            return PVector.mult(a, a.dot(b)/a.magSq());
+        }
+
+        @Override
+        void drawMe()
+        {
+            int n = 8;
+            PVector init = new PVector(width/2, height/2);
+            for (int i = 0; i < n; i++)
+            {
+                float rot = TAU/n*i;
+                PVector prePos = _util.rotate(_verticesQueue.peek().getPos(), rot, init);
+                beginShape(TRIANGLE_STRIP);
+                for (Vertex v : _verticesQueue)
+                {
+                    PVector pos = _util.rotate(v.getPos(), rot, init);
+                    if (PVector.dist(prePos, pos) > _stepLen*2)
+                    {
+                        endShape();
+                        beginShape(TRIANGLE_STRIP);
+                    }
+                    _util.myVertex(pos);
+                    prePos = pos;
+                }
+                endShape();
+            }
+        }
+
+        @Override
+        void drawMe(PGraphics pg)
+        {
+            int n = 8;
+            PVector init = new PVector(width/2, height/2);
+            for (int i = 0; i < n; i++)
+            {
+                float rot = TAU/n*i;
+                PVector prePos = _util.rotate(_verticesQueue.peek().getPos(), rot, init);
+                pg.beginShape(TRIANGLE_STRIP);
+                for (Vertex v : _verticesQueue)
+                {
+                    PVector pos = _util.rotate(v.getPos(), rot, init);
+                    if (PVector.dist(prePos, pos) > _stepLen*2)
+                    {
+                        pg.endShape();
+                        pg.beginShape(TRIANGLE_STRIP);
+                    }
+                    _util.myVertex(pos, pg);
+                    prePos = pos;
+                }
+                pg.endShape();
+            }
+        }
+
+        class Vertex
+        {
+            final PVector _pos;
+            final int _index;
+
+            Vertex(PVector pos, int index)
+            {
+                _pos = pos;
+                _index = index;
+            }
+
+            Vertex getNextStepVertex(float stepLen, int indexOffset)
+            {
+                int newIndex = _index >= 0
+                    ? (_index+_dirTypeNum/2+1+indexOffset)%_dirTypeNum
+                    : (int)random(_dirTypeNum)%_dirTypeNum;
+                PVector newPos = PVector.add(_pos,
+                        PVector.mult(DirectionType.values()[newIndex*2+1].getDirection(), stepLen));
+                if (newPos.x > _range._width) { newPos.x -= _range._width; }
+                if (newPos.y > _range._height) { newPos.y -= _range._height; }
+                if (newPos.x < 0) { newPos.x += _range._width; }
+                if (newPos.y < 0) { newPos.y += _range._height; }
+                return new Vertex(newPos, newIndex);
+            }
+
+            PVector getPos() { return _pos; }
         }
     }
 }
