@@ -110,7 +110,8 @@ class SceneIcosphere extends Scene
         {
             ArrayList<Triangle> markTriangleList = new ArrayList<Triangle>();
             Triangle latest = _bottomFace;
-            float stepLen = (latest._e12 + latest._e23 + latest._e31)/3*.08;
+            float[] edges = latest.getEdges();
+            float stepLen = (edges[0] + edges[1] + edges[2])/3*.08;
             float stepScale = (_height-stepLen)/_height;
             float minArea = 60;
             int n = (int)(log(minArea/_bottomFace.getArea())/log(stepScale));

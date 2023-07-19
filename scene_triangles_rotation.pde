@@ -31,7 +31,7 @@ class SceneTrianglesRotation extends Scene
                 circle = new Circle(c, r);
                 if (!isOverlap(circle)) { break; }
             }
-            float dRotRad = random(.02, .28)*(1-(int)random(2)*2);
+            float dRotRad = random(.02, .22)*(1-(int)random(2)*2);
             _triangleMap.put(createTriangle(circle), Float.valueOf(dRotRad));
         }
     }

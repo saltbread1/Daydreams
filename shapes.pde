@@ -192,8 +192,6 @@ abstract class SimpleShape3D extends SimpleShape
 class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3;
-    float _e12, _e23, _e31;
-    float _area, _innerRadius;
 
     Triangle(PVector v1, PVector v2, PVector v3, Attribution attr)
     {
@@ -201,7 +199,6 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         _v1 = v1;
         _v2 = v2;
         _v3 = v3;
-        calcEdges();
     }
 
     Triangle(PVector v1, PVector v2, PVector v3)
@@ -210,14 +207,6 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
     }
 
     Triangle copy() { return new Triangle(_v1.copy(), _v2.copy(), _v3.copy(), _attr); }
-
-    void calcEdges()
-    {
-        if (_v1 == null || _v2 == null || _v3 == null) { return; }
-        _e12 = PVector.dist(_v1, _v2);
-        _e23 = PVector.dist(_v2, _v3);
-        _e31 = PVector.dist(_v3, _v1);
-    }
 
     @Override
     void drawMe()
@@ -268,58 +257,73 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
         return PVector.add(_v1, _v2).add(_v3).div(3);
     }
 
+    float[] getEdges()
+    {
+        float[] edges = new float[3];
+        edges[0] = PVector.dist(_v1, _v2);
+        edges[1] = PVector.dist(_v2, _v3);
+        edges[2] = PVector.dist(_v3, _v1);
+        return edges;
+    }
+    
     PVector getInner()
     {
-        return PVector.mult(_v1, _e23)
-                .add(PVector.mult(_v2, _e31))
-                .add(PVector.mult(_v3, _e12))
-                .div(_e12+_e23+_e31);
+        float[] edges = getEdges();
+        return PVector.mult(_v1, edges[1])
+                .add(PVector.mult(_v2, edges[2]))
+                .add(PVector.mult(_v3, edges[0]))
+                .div(edges[0]+edges[1]+edges[2]);
     }
 
     float getArea()
     {
-        if (_area <= 0) { calcAreaAndInnerRadius(); }
-        return _area;
+        float[] edges = getEdges();
+        float s = (edges[0]+edges[1]+edges[2])/2;
+        return sqrt(s*(s-edges[0])*(s-edges[1])*(s-edges[2]));
     }
 
     float getInnerRadius()
     {
-        if (_innerRadius <= 0) { calcAreaAndInnerRadius(); }
-        return _innerRadius;
-    }
-
-    void calcAreaAndInnerRadius()
-    {
-        float s = (_e23+_e31+_e12)/2;
-        _area = sqrt(s*(s-_e23)*(s-_e31)*(s-_e12));
-        _innerRadius = _area/s;
+        float[] edges = getEdges();
+        float s = (edges[0]+edges[1]+edges[2])/2;
+        return sqrt(s*(s-edges[0])*(s-edges[1])*(s-edges[2])) / s;
     }
 }
 
 class Rect extends SimpleShape implements Translatable
 { // for only 2D renderer
     PVector _upperLeft, _lowerRight;
-    float _width, _height;
+
+    Rect(PVector upperLeft, PVector lowerRight, Attribution attr)
+    {
+        super(attr);
+        _upperLeft = upperLeft;
+        _lowerRight = lowerRight;
+    }
 
     Rect(PVector upperLeft, PVector lowerRight)
     {
-        _upperLeft = upperLeft;
-        _lowerRight = lowerRight;
-        _width = _lowerRight.x - _upperLeft.x;
-        _height = _lowerRight.y - _upperLeft.y;
+        this(upperLeft, lowerRight, null);
+    }
+
+    Rect(PVector upperLeft, float width, float height, Attribution attr)
+    {
+        this(upperLeft, new PVector(width, height).add(upperLeft), attr);
     }
 
     Rect(PVector upperLeft, float width, float height)
     {
-        _upperLeft = upperLeft;
-        _lowerRight = new PVector(width, height).add(upperLeft);
-        _width = width;
-        _height = height;
+        this(upperLeft, width, height, null);
+    }
+
+    Rect(float x, float y, float width, float height, Attribution attr)
+    {
+        this(new PVector(x, y), width, height, attr);
     }
 
     Rect(float x, float y, float width, float height)
     {
-        this(new PVector(x, y), width, height);
+        this(x, y, width, height, null);
     }
 
     @Override
@@ -343,6 +347,10 @@ class Rect extends SimpleShape implements Translatable
         _lowerRight.add(dv);
     }
 
+    float getWidth() { return _lowerRight.x - _upperLeft.x; }
+
+    float getHeight() { return _lowerRight.y - _upperLeft.y; }
+
     PVector getCenter()
     {
         return PVector.add(_upperLeft, _lowerRight).div(2);
@@ -352,8 +360,6 @@ class Rect extends SimpleShape implements Translatable
 class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3, _v4;
-    float _e12, _e23, _e34, _e41;
-    float _area;
 
     Quad(PVector v1, PVector v2, PVector v3, PVector v4, Attribution attr)
     {
@@ -362,10 +368,6 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
         _v2 = v2;
         _v3 = v3;
         _v4 = v4;
-        _e12 = PVector.dist(v1, v2);
-        _e23 = PVector.dist(v2, v3);
-        _e34 = PVector.dist(v3, v4);
-        _e41 = PVector.dist(v4, v1);
     }
 
     Quad(PVector v1, PVector v2, PVector v3, PVector v4)
@@ -429,16 +431,28 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
         return PVector.add(_v1, _v2).add(_v3).add(_v4).div(4);
     }
 
+    float[] getEdges()
+    {
+        float[] edges = new float[4];
+        edges[0] = PVector.dist(_v1, _v2);
+        edges[1] = PVector.dist(_v2, _v3);
+        edges[2] = PVector.dist(_v3, _v4);
+        edges[3] = PVector.dist(_v4, _v1);
+        return edges;
+    }
+
     float getArea()
     {
-        if (_area <= 0)
-        { // Bretschneider's formula
-            float t = (_e12 + _e23 + _e34 + _e41)/2;
-            float a = PVector.angleBetween(PVector.sub(_v2, _v1), PVector.sub(_v4, _v1));
-            float c = PVector.angleBetween(PVector.sub(_v2, _v3), PVector.sub(_v4, _v3));
-            _area = sqrt( (t-_e12)*(t-_e23)*(t-_e34)*(t-_e41) - _e12*_e23*_e34*_e41*sq(cos((a+c)/2)) );
-        }
-        return _area;
+        float[] edges = getEdges();
+        float e12 = edges[0];
+        float e23 = edges[1];
+        float e34 = edges[2];
+        float e41 = edges[3];
+        // Bretschneider's formula
+        float t = (e12 + e23 + e34 + e41)/2;
+        float a = PVector.angleBetween(PVector.sub(_v2, _v1), PVector.sub(_v4, _v1));
+        float c = PVector.angleBetween(PVector.sub(_v2, _v3), PVector.sub(_v4, _v3));
+        return sqrt( (t-e12)*(t-e23)*(t-e34)*(t-e41) - e12*e23*e34*e41*sq(cos((a+c)/2)) );
     }
 }
 

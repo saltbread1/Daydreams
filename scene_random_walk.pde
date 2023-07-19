@@ -34,11 +34,14 @@ class SceneRandomWalk extends Scene
     class RandomWalkDisplayer extends Rect
     {
         ArrayList<Walker> _walkerList;
+        final float _width, _height;
         final color[] _palette = {#ffffff, #00c0f2, #00f2c0};
 
         RandomWalkDisplayer(float x, float y, float width, float height)
         {
             super(x, y, width, height);
+            _width = getWidth();
+            _height = getHeight();
             setAttribution(new Attribution(color(#000000, 60), DrawStyle.FILLONLY));
         }
 
@@ -214,10 +217,12 @@ class SceneRandomWalk extends Scene
                     : (int)random(_dirTypeNum)%_dirTypeNum;
                 PVector newPos = PVector.add(_pos,
                         PVector.mult(DirectionType.values()[newIndex*2+1].getDirection(), stepLen));
-                if (newPos.x > _range._width) { newPos.x -= _range._width; }
-                if (newPos.y > _range._height) { newPos.y -= _range._height; }
-                if (newPos.x < 0) { newPos.x += _range._width; }
-                if (newPos.y < 0) { newPos.y += _range._height; }
+                float w = _range.getWidth();
+                float h = _range.getHeight();
+                if (newPos.x > w) { newPos.x -= w; }
+                if (newPos.y > h) { newPos.y -= h; }
+                if (newPos.x < 0) { newPos.x += w; }
+                if (newPos.y < 0) { newPos.y += h; }
                 return new Vertex(newPos, newIndex);
             }
 
