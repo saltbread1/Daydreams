@@ -1,9 +1,9 @@
-class SceneIntro extends Scene
+class SceneClimax extends Scene
 {
     FloatingTriangle _triangle;
-    CircleManager _cm;
+    ReactShapeManager _cm;
 
-    SceneIntro(float totalSceneSec)
+    SceneClimax(float totalSceneSec)
     {
         super(totalSceneSec);
     }
@@ -12,7 +12,7 @@ class SceneIntro extends Scene
     void initialize()
     {
         _triangle = new FloatingTriangle(width*.02, width*.8);
-        _cm = new CircleManager();
+        _cm = new ReactShapeManager();
         _cm.initialize();
     }
 
@@ -22,8 +22,8 @@ class SceneIntro extends Scene
         _triangle.updateMe();
         _triangle.updateCamera();
 
-        _cm.updateCircles();
-        _cm.drawCircles();
+        _cm.updateShapes();
+        _cm.drawShapes();
 
         _triangle.drawMeAttr();
         // _triangle.drawLight();
@@ -59,7 +59,7 @@ class SceneIntro extends Scene
 
         FloatingTriangle(float sizeRadius, float speed)
         {
-            super(null, null, null, new Attribution(#ffffff, #000000, DrawStyle.STROKEANDFILL));
+            super(null, null, null, new AttributionDetail(#ffffff, #000000, DrawStyle.STROKEANDFILL, 2, ROUND));
             _sizeRadius = sizeRadius;
             _speed = speed;
             _center = new PVector();
@@ -124,7 +124,7 @@ class SceneIntro extends Scene
         PVector getCenter() { return _center; }
 
         /**
-        * get a circle: "AppearingCircle" will swell/shrink if its center is inside/outside this circle.
+        * get a circle: "ReactShape" will swell/shrink if its center is inside/outside this circle.
         */
         Circle getReactionableRange()
         {
@@ -133,7 +133,7 @@ class SceneIntro extends Scene
         }
 
         /**
-        * get a circle: "AppearingCircle" will destroy itself if it is outside this circle.
+        * get a circle: "ReactShape" will destroy itself if it is outside this circle.
         */
         Circle getIgnoreRange()
         {
@@ -152,20 +152,21 @@ class SceneIntro extends Scene
         }
     }
 
-    class AppearingCircle extends Circle
+    class ReactCircle extends Circle implements ReactShape
     {
         final float _maxRadius;
         final float _appearTotalSec;
         float _appearSec;
         boolean _isSwell;
 
-        AppearingCircle(PVector center, float maxRadius, Attribution attr)
+        ReactCircle(PVector center, float maxRadius, Attribution attr)
         {
             super(center, 0, attr);
             _maxRadius = maxRadius;
             _appearTotalSec = .3;
         }
 
+        @Override
         void updateMe()
         {
             float r = 0;
@@ -193,11 +194,83 @@ class SceneIntro extends Scene
             return d < range._radius;
         }
 
+        void changeAlpha()
+        {
+            Circle range = _triangle.getReactionableRange();
+            int alpha = (int)(constrain(pow(sq(range._radius)/(1+PVector.sub(_center, _triangle.getCenter()).magSq()), 3), .24, 1)*255);
+            color c = _attr._cFill;
+            c = color(red(c), green(c), blue(c), alpha);
+            setAttribution(new Attribution(c, _attr._style));
+        }
+
+        @Override
         boolean isDestroy()
         {
             Circle range = _triangle.getIgnoreRange();
             float d = PVector.dist(_center, range._center);
             return d > _maxRadius + range._radius;
+        }
+
+        @Override
+        boolean isOverlap(ReactShape other)
+        {
+            if (other instanceof ReactCircle)
+            {
+                ReactCircle circle = (ReactCircle)other;
+                float d = PVector.dist(_center, circle._center);
+                if (d < _maxRadius + circle._maxRadius) { return true; }
+            }
+            return false;
+        }
+    }
+
+    class ReactRect extends SimpleShape implements ReactShape
+    {
+        final PVector _center;
+        final float _maxWidth, _maxHeight;
+        float _width, _height;
+        final float _appearTotalSec;
+        float _appearSec;
+        boolean _isSwell;
+
+        ReactRect(PVector center, float maxWidth, float maxHeight, Attribution attr)
+        {
+            super(attr);
+            _center = center;
+            _maxWidth = maxWidth;
+            _maxHeight = maxHeight;
+            _width = 0;
+            _height = 0;
+            _appearTotalSec = .3;
+        }
+
+        @Override
+        void updateMe()
+        {
+            float r = 0;
+            if (isInReactionableRange() || _isSwell)
+            {
+                r = _util.easeOutBack(_appearSec/_appearTotalSec, 8);
+                _appearSec += 1./_frameRate;
+                _isSwell = _appearSec < _appearTotalSec;
+            }
+            else
+            {
+                r = constrain(_appearSec/_appearTotalSec, 0, 1);
+                _appearSec -= 1./_frameRate;
+            }
+            _appearSec = constrain(_appearSec, 0, _appearTotalSec);
+            float t = .67;
+            _width = _maxWidth * ((1-t)+r*t);
+            _height = _maxHeight * ((1-t)+r*t);
+            changeAlpha();
+        }
+
+        boolean isInReactionableRange()
+        {
+            Circle range = _triangle.getReactionableRange();
+            float d = PVector.dist(_center, range._center);
+            return d < range._radius;
         }
 
         void changeAlpha()
@@ -208,15 +281,52 @@ class SceneIntro extends Scene
             c = color(red(c), green(c), blue(c), alpha);
             setAttribution(new Attribution(c, _attr._style));
         }
+
+        @Override
+        void drawMe()
+        {
+            rectMode(CENTER);
+            rect(_center.x, _center.y, _width, _height);
+        }
+
+        @Override
+        void drawMe(PGraphics pg)
+        {
+            pg.rectMode(CENTER);
+            pg.rect(_center.x, _center.y, _width, _height);
+        }
+
+        @Override
+        boolean isDestroy()
+        {
+            Circle range = _triangle.getIgnoreRange();
+            float d = PVector.dist(_center, range._center);
+            return d > max(_maxWidth, _maxHeight) + range._radius;
+        }
+
+        @Override
+        boolean isOverlap(ReactShape other)
+        {
+            if (other instanceof ReactRect)
+            {
+                ReactRect rect = (ReactRect)other;
+                float dx = abs(_center.x - rect._center.x);
+                float lx = (_maxWidth + rect._maxWidth)/2;
+                float dy = abs(_center.y - rect._center.y);
+                float ly = (_maxHeight + rect._maxHeight)/2;
+                if (dx < lx && dy < ly) { return true; }
+            }
+            return false;
+        }
     }
 
-    class CircleManager
+    class ReactShapeManager
     {
-        ArrayList<AppearingCircle> _circleList;
+        ArrayList<ReactShape> _shapeList;
 
         void initialize()
         {
-            _circleList = new ArrayList<AppearingCircle>();
+            _shapeList = new ArrayList<ReactShape>();
         }
 
         boolean addCircle(int maxTrialIterations)
@@ -227,51 +337,87 @@ class SceneIntro extends Scene
             for (int i = 0; i < maxTrialIterations; i++)
             {
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
-                float r = sq(random(1))*width*.044;
+                float r = sq(random(1))*width*.055;
                 Attribution attr = random(1) < .5
                         ? new Attribution(#000000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
                         : new Attribution(#900000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
-                AppearingCircle circle = new AppearingCircle(c, r, attr);
+                ReactCircle circle = new ReactCircle(c, r, attr);
                 if (!isOverlap(circle))
                 {
-                    _circleList.add(circle);
+                    _shapeList.add(circle);
                     return true;
                 }
             }
             return false;
         }
 
-        boolean isOverlap(AppearingCircle circle)
+        boolean addRect(int maxTrialIterations)
         {
-            for (AppearingCircle other : _circleList)
+            float ro = _triangle.getIgnoreRange()._radius;
+            float ri = _triangle.getReactionableRange()._radius;
+            PVector ci = _triangle.getReactionableRange()._center;
+            for (int i = 0; i < maxTrialIterations; i++)
             {
-                float d = PVector.dist(other._center, circle._center);
-                if (d < other._maxRadius + circle._maxRadius) { return true; }
+                PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
+                float w = sq(random(.2, 1))*width*.12;
+                float h = sq(random(.2, 1))*width*.12;
+                Attribution attr = random(1) < .5
+                        ? new Attribution(#000000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
+                        : new Attribution(#900000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                ReactRect rect = new ReactRect(c, w, h, attr);
+                if (!isOverlap(rect))
+                {
+                    _shapeList.add(rect);
+                    return true;
+                }
             }
             return false;
         }
 
-        void updateCircles()
+        boolean isOverlap(ReactShape shape)
         {
-            for (int i = 0; i < _circleList.size(); i++)
+            for (ReactShape other : _shapeList)
             {
-                AppearingCircle circle = _circleList.get(i);
-                if (circle.isDestroy())
-                {
-                    _circleList.remove(i--);
-                    continue;
-                }
-                circle.updateMe();
+                if (shape.isOverlap(other)) { return true; }
             }
-            while (addCircle(3));
+            return false;
         }
 
-        void drawCircles()
+        void updateShapes()
         {
-            for (AppearingCircle circle : _circleList)
+            for (int i = 0; i < _shapeList.size(); i++)
             {
-                circle.drawMeAttr();
+                ReactShape shape = _shapeList.get(i);
+                if (shape.isDestroy())
+                {
+                    _shapeList.remove(i--);
+                    continue;
+                }
+                shape.updateMe();
+            }
+            while (addCircle(3));
+            while (addRect(3));
+        }
+
+        void drawShapes()
+        {
+            for (ReactShape shape : _shapeList)
+            {
+                shape.drawMeAttr();
             }
         }
     }
+}
+
+interface ReactShape
+{
+    void updateMe();
+
+    void drawMe();
+
+    void drawMeAttr();
+
+    boolean isDestroy();
+
+    boolean isOverlap(ReactShape other);
 }
