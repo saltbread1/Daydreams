@@ -29,7 +29,7 @@ class SceneRandomWalk extends Scene
     }
 
     @Override
-    void clearScene() { /*background(#000000);*/ }
+    void clearScene() {}
 
     class RandomWalkDisplayer extends Rect
     {
@@ -45,7 +45,7 @@ class SceneRandomWalk extends Scene
         void initialize()
         {
             _walkerList = new ArrayList<Walker>();
-            for (int i = 0; i < 80; i++)
+            for (int i = 0; i < 64; i++)
             {
                 _walkerList.add(new Walker(
                         new PVector(random(_width), random(_height)),
@@ -145,16 +145,18 @@ class SceneRandomWalk extends Scene
         @Override
         void drawMe()
         {
-            int n = 8;
+            int n = 6;
             PVector init = new PVector(width/2, height/2);
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n*2; i++)
             {
                 float rot = TAU/n*i;
                 PVector prePos = _util.rotate(_verticesQueue.peek().getPos(), rot, init);
+                if (i >= n) { prePos.y = init.y - (prePos.y - init.y); }
                 beginShape(TRIANGLE_STRIP);
                 for (Vertex v : _verticesQueue)
                 {
                     PVector pos = _util.rotate(v.getPos(), rot, init);
+                    if (i >= n) { pos.y = init.y - (pos.y - init.y); }
                     if (PVector.dist(prePos, pos) > _stepLen*2)
                     {
                         endShape();
@@ -170,16 +172,18 @@ class SceneRandomWalk extends Scene
         @Override
         void drawMe(PGraphics pg)
         {
-            int n = 8;
+            int n = 6;
             PVector init = new PVector(width/2, height/2);
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n*2; i++)
             {
                 float rot = TAU/n*i;
                 PVector prePos = _util.rotate(_verticesQueue.peek().getPos(), rot, init);
+                if (i >= n) { prePos.y = init.y - (prePos.y - init.y); }
                 pg.beginShape(TRIANGLE_STRIP);
                 for (Vertex v : _verticesQueue)
                 {
                     PVector pos = _util.rotate(v.getPos(), rot, init);
+                    if (i >= n) { pos.y = init.y - (pos.y - init.y); }
                     if (PVector.dist(prePos, pos) > _stepLen*2)
                     {
                         pg.endShape();
