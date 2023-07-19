@@ -89,6 +89,49 @@ class Attribution
     }
 }
 
+class AttributionDetail extends Attribution
+{
+    final float _strokeW;
+    final int _capType; // stroke cap: ROUND, SQUARE, PROJECT
+
+    AttributionDetail(color cStroke, color cFill, DrawStyle style, float strokeW, int capType)
+    {
+        super(cStroke, cFill, style);
+        _strokeW = strokeW;
+        _capType = capType;
+    }
+
+    AttributionDetail(color cStroke, color cFill, float strokeW, int capType)
+    {
+        this(cStroke, cFill, DrawStyle.STROKEANDFILL, strokeW, capType);
+    }
+
+    AttributionDetail(color colour, DrawStyle style, float strokeW, int capType)
+    {
+        this(colour, colour, style, strokeW, capType);
+    }
+
+    AttributionDetail()
+    {
+        _strokeW = 1;
+        _capType = ROUND;
+    }
+
+    void apply()
+    {
+        super.apply();
+        strokeWeight(_strokeW);
+        strokeCap(_capType);
+    }
+
+    void apply(PGraphics pg)
+    {
+        super.apply(pg);
+        pg.strokeWeight(_strokeW);
+        pg.strokeCap(_capType);
+    }
+}
+
 interface Translatable
 {
     void translate(PVector dv);
@@ -124,7 +167,7 @@ abstract class SimpleShape
         popStyle();
     }
 
-    final void drawMeAttr(PGraphics pg)
+    void drawMeAttr(PGraphics pg)
     {
         pg.pushStyle();
         if (_attr != null) { _attr.apply(pg); }
@@ -598,6 +641,12 @@ class Arc extends Circle
     void drawMe()
     {
         arc(_center.x, _center.y, _radius*2, _radius*2, _startRad, _stopRad, _mode);
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.arc(_center.x, _center.y, _radius*2, _radius*2, _startRad, _stopRad, _mode);
     }
 
     @Override
