@@ -29,7 +29,7 @@ class SceneRecursiveRect extends Scene
 
     void addNewRect()
     {
-        RecursiveRect rect = new RecursiveRect(_latest._width*_scale, _latest._height*_scale, _latest);
+        RecursiveRect rect = new RecursiveRect(_latest.getWidth()*_scale, _latest.getHeight()*_scale, _latest);
         _rectQueue.add(rect);
         _latest = rect;
     }
@@ -47,7 +47,7 @@ class SceneRecursiveRect extends Scene
 
         if (_curSec > _scalingStartSec)
         {
-            if (_rectQueue.peek()._width > width)
+            if (_rectQueue.peek().getWidth() > width)
             {
                 _rectQueue.poll();
                 addNewRect();
@@ -82,7 +82,8 @@ class SceneRecursiveRect extends Scene
 
     class RecursiveRect extends Rect
     {
-        RecursiveRect _parent;
+        float _width, _height;
+        final RecursiveRect _parent;
         final int _rotType, _stepTypeNum;
         int _stepTypeIndex;
         float _stepSec, _stepTotalSec;
@@ -90,6 +91,8 @@ class SceneRecursiveRect extends Scene
         RecursiveRect(float width, float height, RecursiveRect parent)
         {
             super(0, 0, width, height);
+            _width = width;
+            _height = height;
             _parent = parent;
             _rotType = 1-(int)random(2)*2;
             _stepTypeNum = DirectionType.values().length/2;
