@@ -2,7 +2,7 @@ class SceneTrianglesRotation extends Scene
 {
     HashMap<Triangle, Float> _triangleMap;
     ArrayList<Circle> _circleList;
-    color[] _palette = {#333333, #332c26, #333300, #192c26, #192c2c, #000033, #260033, #330033};
+    final color[] _palette = {#333333, #332c26, #333300, #192c26, #192c2c, #000033, #260033, #330033};
 
     SceneTrianglesRotation(float totalSceneSec)
     {
