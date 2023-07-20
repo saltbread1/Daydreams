@@ -31,7 +31,6 @@ void initialize()
     _hud = new TestHUD();
     _sm = new SceneManager();
 
-    _sm.addScene(new SceneExploring(300, 3));
     // _sm.addScene(new SceneLandscape(13, 9.5));
     // _sm.addScene(new SceneTunnel(11));
     // _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
@@ -43,8 +42,11 @@ void initialize()
     // _sm.addScene(new SceneIcosphere(3));
     
     // _sm.addScene(new SceneArcsRotation(3));
+    // _sm.addScene(new Scene...(3));
     // _sm.addScene(new SceneReversingRects(3));
     // _sm.addScene(new SceneStereographicProjection(3));
+
+    _sm.addScene(new SceneExploring(12, 3));
 }
 
 void draw()
