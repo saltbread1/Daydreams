@@ -1,33 +1,35 @@
 class SceneExploring extends Scene
 {
     FloatingTriangle _triangle;
-    ReactShapeManager _cm;
+    ReactShapeManager _sm;
     final float _epochSec;
-    final color _cBg = #e0e0e0;
+    ExploringStyle _style;
+    ExploringType _type;
 
     SceneExploring(float totalSceneSec, float epochSec)
     {
         super(totalSceneSec);
         _epochSec = epochSec;
+        _style = ExploringStyle.LIGHT;
+        _type = ExploringType.PHASE1;
     }
 
     @Override
     void initialize()
     {
         _triangle = new FloatingTriangle(width*.02, width*.8);
-        _cm = new ReactShapeManager();
-        _cm.initialize();
+        _sm = new ReactShapeManager();
+        _sm.initialize();
     }
 
     @Override
     void update()
     {
+        changePhase();
         _triangle.updateMe();
         _triangle.updateCamera();
-
-        _cm.updateShapes();
-        _cm.drawShapes();
-
+        _sm.updateShapes();
+        _sm.drawShapes();
         _triangle.drawMeAttr();
         //drawDebugInfo();
     }
@@ -40,7 +42,7 @@ class SceneExploring extends Scene
     }
 
     @Override
-    void clearScene() { background(_cBg); }
+    void clearScene() { background(_style.getBackgroundColor()); }
 
     void drawDebugInfo()
     {
@@ -50,6 +52,28 @@ class SceneExploring extends Scene
         _triangle.drawDebugPath();
         _triangle.getReactionableRange().drawMe();
         popStyle();
+    }
+
+    void changePhase()
+    {
+        if (_type == ExploringType.PHASE1 && _curSec > _epochSec)
+        {
+            _style = ExploringStyle.DARK;
+            _type = ExploringType.PHASE2;
+            _sm.changeShapesColors();
+        }
+        else if (_type == ExploringType.PHASE2 && _curSec > _epochSec*2)
+        {
+            _style = ExploringStyle.LIGHT;
+            _type = ExploringType.PHASE3;
+            _sm.changeShapesColors();
+        }
+        else if (_type == ExploringType.PHASE3 && _curSec > _epochSec*3)
+        {
+            _style = ExploringStyle.DARK;
+            _type = ExploringType.PHASE4;
+            _sm.changeShapesColors();
+        }
     }
 
     class FloatingTriangle extends Triangle
@@ -191,13 +215,15 @@ class SceneExploring extends Scene
         float _appearSec;
         boolean _isSwell;
         final ReactUtility _reactUtil;
+        final int _fillIndex;
 
-        ReactCircle(PVector center, float maxRadius, Attribution attr)
+        ReactCircle(PVector center, float maxRadius, Attribution attr, int fillIndex)
         {
             super(center, 0, attr);
             _maxRadius = maxRadius;
             _appearTotalSec = .3;
             _reactUtil = new ReactUtility();
+            _fillIndex = fillIndex;
         }
 
         @Override
@@ -261,7 +287,7 @@ class SceneExploring extends Scene
         {
             pushStyle();
             beginShape(TRIANGLE_FAN);
-            new Attribution(color(_cBg, 4), _attr.getStyle()).apply();
+            new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
             for (int i = 0; i <= 16; i++)
@@ -270,6 +296,12 @@ class SceneExploring extends Scene
             }
             endShape();
             popStyle();
+        }
+
+        @Override
+        void changeColor()
+        {
+            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -280,14 +312,16 @@ class SceneExploring extends Scene
         float _appearSec;
         boolean _isSwell;
         final ReactUtility _reactUtil;
+        final int _fillIndex;
 
-        ReactRect(PVector center, float maxWidth, float maxHeight, Attribution attr)
+        ReactRect(PVector center, float maxWidth, float maxHeight, Attribution attr, int fillIndex)
         {
             super(center, 0, 0, attr);
             _maxWidth = maxWidth;
             _maxHeight = maxHeight;
             _appearTotalSec = .3;
             _reactUtil = new ReactUtility();
+            _fillIndex = fillIndex;
         }
 
         @Override
@@ -360,7 +394,7 @@ class SceneExploring extends Scene
             PVector vOff2 = new PVector(_width, -_height).div(2);
             pushStyle();
             beginShape(TRIANGLE_FAN);
-            new Attribution(color(_cBg, 4), _attr.getStyle()).apply();
+            new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
             _util.myVertex(PVector.sub(_center, vOff1));
@@ -371,6 +405,12 @@ class SceneExploring extends Scene
             endShape();
             popStyle();
         }
+
+        @Override
+        void changeColor()
+        {
+            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+        }
     }
 
     class ReactCylinder extends Cylinder implements ReactShape
@@ -380,14 +420,16 @@ class SceneExploring extends Scene
         float _appearSec;
         boolean _isSwell;
         final ReactUtility _reactUtil;
+        final int _fillIndex;
 
-        ReactCylinder(PVector bottomCenter, float maxRadius, float maxHeight, int res, Attribution attr)
+        ReactCylinder(PVector bottomCenter, float maxRadius, float maxHeight, int res, Attribution attr, int fillIndex)
         {
             super(bottomCenter, new PVector(0, 0, -1), 0, 0, res, attr);
             _maxRadius = maxRadius;
             _maxHeight = maxHeight;
             _appearTotalSec = .35;
             _reactUtil = new ReactUtility();
+            _fillIndex = fillIndex;
         }
 
         @Override
@@ -460,6 +502,12 @@ class SceneExploring extends Scene
         {
             for (SimpleShape face : _faceList) { face.drawMeAttr(); }
         }
+
+        @Override
+        void changeColor()
+        {
+            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+        }
     }
 
     class CustomQuad extends Quad
@@ -474,7 +522,7 @@ class SceneExploring extends Scene
         {
             pushStyle();
             beginShape(QUADS);
-            new Attribution(color(_cBg, 96), _attr.getStyle()).apply();
+            new Attribution(color(_style.getBackgroundColor(), 96), _attr.getStyle()).apply();
             _util.myVertex(_v1);
             _util.myVertex(_v2);
             _attr.apply();
@@ -488,7 +536,6 @@ class SceneExploring extends Scene
     class ReactShapeManager
     {
         ArrayList<ReactShape> _shapeList;
-        final color[] _palette = {#000000, #900000};
 
         void initialize()
         {
@@ -504,9 +551,10 @@ class SceneExploring extends Scene
             {
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float r = sq(random(1))*width*.055;
-                Attribution attr = new Attribution(
-                        _palette[(int)random(_palette.length)], DrawStyle.FILLONLY);
-                ReactCircle circle = new ReactCircle(c, r, attr);
+                color[] palette = _style.getFills();
+                int index = (int)random(palette.length);
+                Attribution attr = new Attribution(palette[index], DrawStyle.FILLONLY);
+                ReactCircle circle = new ReactCircle(c, r, attr, index);
                 if (!isOverlap(circle))
                 {
                     _shapeList.add(circle);
@@ -526,9 +574,10 @@ class SceneExploring extends Scene
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float w = sq(random(.2, 1))*width*.12;
                 float h = sq(random(.2, 1))*width*.12;
-                Attribution attr = new Attribution(
-                        _palette[(int)random(_palette.length)], DrawStyle.FILLONLY);
-                ReactRect rect = new ReactRect(c, w, h, attr);
+                color[] palette = _style.getFills();
+                int index = (int)random(palette.length);
+                Attribution attr = new Attribution(palette[index], DrawStyle.FILLONLY);
+                ReactRect rect = new ReactRect(c, w, h, attr, index);
                 if (!isOverlap(rect))
                 {
                     _shapeList.add(rect);
@@ -549,9 +598,10 @@ class SceneExploring extends Scene
                 float r = sq(random(1))*width*.055;
                 float h = sqrt(random(1))*width*.17;
                 int res = (int)random(5, 9);
-                Attribution attr = new Attribution(
-                        #ffffff, _palette[(int)random(_palette.length)]);
-                ReactCylinder cylinder = new ReactCylinder(c, r, h, res, attr);
+                color[] palette = _style.getFills();
+                int index = (int)random(palette.length);
+                Attribution attr = new Attribution(_style.getStroke(), palette[index]);
+                ReactCylinder cylinder = new ReactCylinder(c, r, h, res, attr, index);
                 if (!isOverlap(cylinder))
                 {
                     _shapeList.add(cylinder);
@@ -563,10 +613,26 @@ class SceneExploring extends Scene
 
         void updateShapes()
         {
-            while (addCircle(4));
-            if (_curSec > _epochSec) { while (addRect(4)); }
-            if (_curSec > _epochSec*2) { while (addCylinder(8)); }
-            //if (_curSec > _epochSec*3) { _triangle.updateRange(); }
+            switch (_type)
+            {
+                case PHASE1:
+                    while (addCircle(4));
+                    break;
+                case PHASE2:
+                    while (addCircle(4));
+                    while (addRect(4));
+                    break;
+                case PHASE3:
+                    while (addCircle(4));
+                    while (addRect(4));
+                    while (addCylinder(5));
+                    break;
+                case PHASE4:
+                    while (addCircle(4));
+                    while (addRect(4));
+                    while (addCylinder(8));
+                    break;
+            }
 
             for (int i = 0; i < _shapeList.size(); i++)
             {
@@ -596,6 +662,14 @@ class SceneExploring extends Scene
             }
             return false;
         }
+
+        void changeShapesColors()
+        {
+            for (ReactShape shape : _shapeList)
+            {
+                shape.changeColor();
+            }
+        }
     }
 }
 
@@ -608,9 +682,37 @@ interface ReactShape
     boolean isDestroy();
 
     boolean isOverlap(ReactShape other);
+
+    void changeColor();
 }
 
 enum ExploringStyle
 {
-    
+    LIGHT(#e0e0e0, #ffffff, new color[]{#000000, #900000, #0f8cbc}),
+    DARK(#000000, #1e1e1e, new color[]{#efefef, #ec0000, #05d08e});
+
+    final color _cBg;
+    final color _cStroke;
+    final color[] _cFills;
+
+    ExploringStyle(color cBg, color cStroke, color[] cFills)
+    {
+        _cBg = cBg;
+        _cStroke = cStroke;
+        _cFills = cFills;
+    }
+
+    color getBackgroundColor() { return _cBg; }
+
+    color getStroke() { return _cStroke; }
+
+    color[] getFills() { return _cFills; }
+}
+
+enum ExploringType
+{
+    PHASE1,
+    PHASE2,
+    PHASE3,
+    PHASE4,
 }
