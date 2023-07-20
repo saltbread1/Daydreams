@@ -357,6 +357,46 @@ class Rect extends SimpleShape implements Translatable
     }
 }
 
+class Rect2 extends SimpleShape implements Translatable
+{ // center base
+    PVector _center;
+    float _width, _height;
+
+    Rect2(PVector center, float width, float height, Attribution attr)
+    {
+        super(attr);
+        _center = center;
+        _width = width;
+        _height = height;
+    }
+
+    Rect2(PVector center, float width, float height)
+    {
+        this(center, width, height, null);
+    }
+
+    @Override
+    void drawMe()
+    {
+        rectMode(CENTER);
+        rect(_center.x, _center.y, _width, _height);
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.rectMode(CENTER);
+        pg.rect(_center.x, _center.y, _width, _height);
+    }
+
+    @Override
+    void translate(PVector dv)
+    {
+        _center.add(dv);
+        _center.add(dv);
+    }
+}
+
 class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3, _v4;

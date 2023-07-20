@@ -224,23 +224,18 @@ class SceneClimax extends Scene
         }
     }
 
-    class ReactRect extends SimpleShape implements ReactShape
+    class ReactRect extends Rect2 implements ReactShape
     {
-        final PVector _center;
         final float _maxWidth, _maxHeight;
-        float _width, _height;
         final float _appearTotalSec;
         float _appearSec;
         boolean _isSwell;
 
         ReactRect(PVector center, float maxWidth, float maxHeight, Attribution attr)
         {
-            super(attr);
-            _center = center;
+            super(center, 0, 0, attr);
             _maxWidth = maxWidth;
             _maxHeight = maxHeight;
-            _width = 0;
-            _height = 0;
             _appearTotalSec = .3;
         }
 
@@ -280,20 +275,6 @@ class SceneClimax extends Scene
             color c = _attr._cFill;
             c = color(red(c), green(c), blue(c), alpha);
             setAttribution(new Attribution(c, _attr._style));
-        }
-
-        @Override
-        void drawMe()
-        {
-            rectMode(CENTER);
-            rect(_center.x, _center.y, _width, _height);
-        }
-
-        @Override
-        void drawMe(PGraphics pg)
-        {
-            pg.rectMode(CENTER);
-            pg.rect(_center.x, _center.y, _width, _height);
         }
 
         @Override
