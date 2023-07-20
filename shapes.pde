@@ -726,13 +726,19 @@ class Cone extends SimpleShape3D implements Translatable
     int _res;
     ArrayList<Triangle> _faceList;
 
-    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
     {
+        super(attr);
         _bottomCenter = bottomCenter;
         _centerAxis = centerAxis;
         _radius = radius;
         _height = height;
         _res = res;
+    }
+
+    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    {
+        this(bottomCenter, centerAxis, radius, height, res, null);
     }
 
     @Override
@@ -774,6 +780,67 @@ class Cone extends SimpleShape3D implements Translatable
     void translate(PVector dv)
     {
         for (Triangle face : _faceList) { face.translate(dv); }
+    }
+}
+
+class Cylinder extends SimpleShape3D
+{
+    PVector _bottomCenter, _centerAxis;
+    float _radius, _height;
+    int _res;
+    ArrayList<SimpleShape> _faceList;
+
+    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
+    {
+        super(attr);
+        _bottomCenter = bottomCenter;
+        _centerAxis = centerAxis;
+        _radius = radius;
+        _height = height;
+        _res = res;
+    }
+
+    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    {
+        this(bottomCenter, centerAxis, radius, height, res, null);
+    }
+
+    @Override
+    void createFaces()
+    {
+        _faceList = new ArrayList<SimpleShape>();
+        float dtheta = TAU/_res;
+        for (int i = 0; i < _res; i++)
+        {
+            float theta1 = dtheta*i;
+            float theta2 = dtheta*(i+1);
+            float x1 = _radius * cos(theta1);
+            float x2 = _radius * cos(theta2);
+            float y1 = _radius * sin(theta1);
+            float y2 = _radius * sin(theta2);
+            PVector ez = new PVector(0, 0, 1);
+            PVector dir = ez.cross(_centerAxis);
+            float phi = PVector.angleBetween(ez, _centerAxis);
+            PVector v1 = _util.rotate3D(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
+            PVector v2 = _util.rotate3D(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
+            PVector v3 = _util.rotate3D(new PVector(x2, y2, _height), dir, phi).add(_bottomCenter);
+            PVector v4 = _util.rotate3D(new PVector(x1, y1, _height), dir, phi).add(_bottomCenter);
+            PVector vc = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
+            _faceList.add(new Quad(v1, v2, v3, v4));
+            _faceList.add(new Triangle(vc, v3, v4));
+        }
+    }
+
+    @Override
+    void drawMe()
+    {
+        for (SimpleShape face : _faceList) { face.drawMe(); }
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        for (SimpleShape face : _faceList) { face.drawMe(pg); }
     }
 }
 
