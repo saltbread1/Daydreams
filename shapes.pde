@@ -395,6 +395,8 @@ class Rect2 extends SimpleShape implements Translatable
         _center.add(dv);
         _center.add(dv);
     }
+
+    PVector getCenter() { return _center; }
 }
 
 class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D

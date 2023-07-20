@@ -2,10 +2,12 @@ class SceneClimax extends Scene
 {
     FloatingTriangle _triangle;
     ReactShapeManager _cm;
+    final float _epochSec;
 
-    SceneClimax(float totalSceneSec)
+    SceneClimax(float totalSceneSec, float epochSec)
     {
         super(totalSceneSec);
+        _epochSec = epochSec;
     }
 
     @Override
@@ -304,6 +306,7 @@ class SceneClimax extends Scene
     class ReactShapeManager
     {
         ArrayList<ReactShape> _shapeList;
+        final color[] _palette = {#000000, #900000};
 
         void initialize()
         {
@@ -319,9 +322,9 @@ class SceneClimax extends Scene
             {
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float r = sq(random(1))*width*.055;
-                Attribution attr = random(1) < .5
-                        ? new Attribution(#000000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
-                        : new Attribution(#900000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                Attribution attr = new Attribution(
+                        _palette[(int)random(_palette.length)],
+                        random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
                 ReactCircle circle = new ReactCircle(c, r, attr);
                 if (!isOverlap(circle))
                 {
@@ -342,9 +345,9 @@ class SceneClimax extends Scene
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float w = sq(random(.2, 1))*width*.12;
                 float h = sq(random(.2, 1))*width*.12;
-                Attribution attr = random(1) < .5
-                        ? new Attribution(#000000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY)
-                        : new Attribution(#900000, random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                Attribution attr = new Attribution(
+                        _palette[(int)random(_palette.length)],
+                        random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
                 ReactRect rect = new ReactRect(c, w, h, attr);
                 if (!isOverlap(rect))
                 {
@@ -355,13 +358,22 @@ class SceneClimax extends Scene
             return false;
         }
 
-        boolean isOverlap(ReactShape shape)
+        void addShapes(UpdateType type)
         {
-            for (ReactShape other : _shapeList)
+            switch (type)
             {
-                if (shape.isOverlap(other)) { return true; }
+                case PHASE1:
+                    while (addCircle(3));
+                    break;
+                case PHASE2:
+                    while (addCircle(3));
+                    while (addRect(3));
+                    break;
+                case PHASE3:
+                    break;
+                case PHASE4:
+                    break;
             }
-            return false;
         }
 
         void updateShapes()
@@ -376,8 +388,10 @@ class SceneClimax extends Scene
                 }
                 shape.updateMe();
             }
-            while (addCircle(3));
-            while (addRect(3));
+            if (_curSec < _epochSec) { addShapes(UpdateType.PHASE1); }
+            else if (_curSec < _epochSec*2) { addShapes(UpdateType.PHASE2); }
+            else if (_curSec < _epochSec*3) { addShapes(UpdateType.PHASE3); }
+            else { addShapes(UpdateType.PHASE4); }
         }
 
         void drawShapes()
@@ -387,18 +401,33 @@ class SceneClimax extends Scene
                 shape.drawMeAttr();
             }
         }
+
+        boolean isOverlap(ReactShape shape)
+        {
+            for (ReactShape other : _shapeList)
+            {
+                if (shape.isOverlap(other)) { return true; }
+            }
+            return false;
+        }
     }
 }
 
 interface ReactShape
 {
     void updateMe();
-
-    void drawMe();
-
+    
     void drawMeAttr();
 
     boolean isDestroy();
 
     boolean isOverlap(ReactShape other);
+}
+
+enum UpdateType
+{
+    PHASE1,
+    PHASE2,
+    PHASE3,
+    PHASE4,
 }
