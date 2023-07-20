@@ -34,6 +34,12 @@ class Attribution
         _style = null;
     }
 
+    color getStroke() { return _cStroke; }
+
+    color getFill() { return _cFill; }
+
+    DrawStyle getStyle() { return _style; }
+
     void apply()
     {
         if (_style == null) { return; }
@@ -187,6 +193,8 @@ abstract class SimpleShape3D extends SimpleShape
     SimpleShape3D() {}
 
     abstract void createFaces();
+
+    abstract void addFace(PVector... v);
 }
 
 class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable3D
@@ -355,6 +363,48 @@ class Rect extends SimpleShape implements Translatable
     {
         return PVector.add(_upperLeft, _lowerRight).div(2);
     }
+}
+
+class Rect2 extends SimpleShape implements Translatable
+{ // center base
+    PVector _center;
+    float _width, _height;
+
+    Rect2(PVector center, float width, float height, Attribution attr)
+    {
+        super(attr);
+        _center = center;
+        _width = width;
+        _height = height;
+    }
+
+    Rect2(PVector center, float width, float height)
+    {
+        this(center, width, height, null);
+    }
+
+    @Override
+    void drawMe()
+    {
+        rectMode(CENTER);
+        rect(_center.x, _center.y, _width, _height);
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.rectMode(CENTER);
+        pg.rect(_center.x, _center.y, _width, _height);
+    }
+
+    @Override
+    void translate(PVector dv)
+    {
+        _center.add(dv);
+        _center.add(dv);
+    }
+
+    PVector getCenter() { return _center; }
 }
 
 class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
@@ -684,13 +734,19 @@ class Cone extends SimpleShape3D implements Translatable
     int _res;
     ArrayList<Triangle> _faceList;
 
-    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
     {
+        super(attr);
         _bottomCenter = bottomCenter;
         _centerAxis = centerAxis;
         _radius = radius;
         _height = height;
         _res = res;
+    }
+
+    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    {
+        this(bottomCenter, centerAxis, radius, height, res, null);
     }
 
     @Override
@@ -712,8 +768,14 @@ class Cone extends SimpleShape3D implements Translatable
             PVector v1 = _util.rotate3D(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
             PVector v2 = _util.rotate3D(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
             PVector v3 = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
-            _faceList.add(new Triangle(v1, v2, v3));
+            addFace(v1, v2, v3);
         }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Triangle(v[0], v[1], v[2]));
     }
 
     @Override
@@ -732,6 +794,73 @@ class Cone extends SimpleShape3D implements Translatable
     void translate(PVector dv)
     {
         for (Triangle face : _faceList) { face.translate(dv); }
+    }
+}
+
+class Cylinder extends SimpleShape3D
+{
+    PVector _bottomCenter, _centerAxis;
+    float _radius, _height;
+    int _res;
+    ArrayList<SimpleShape> _faceList;
+
+    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
+    {
+        super(attr);
+        _bottomCenter = bottomCenter;
+        _centerAxis = centerAxis;
+        _radius = radius;
+        _height = height;
+        _res = res;
+    }
+
+    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res)
+    {
+        this(bottomCenter, centerAxis, radius, height, res, null);
+    }
+
+    @Override
+    void createFaces()
+    {
+        _faceList = new ArrayList<SimpleShape>();
+        float dtheta = TAU/_res;
+        for (int i = 0; i < _res; i++)
+        {
+            float theta1 = dtheta*i;
+            float theta2 = dtheta*(i+1);
+            float x1 = _radius * cos(theta1);
+            float x2 = _radius * cos(theta2);
+            float y1 = _radius * sin(theta1);
+            float y2 = _radius * sin(theta2);
+            PVector ez = new PVector(0, 0, 1);
+            PVector dir = ez.cross(_centerAxis);
+            float phi = PVector.angleBetween(ez, _centerAxis);
+            PVector v1 = _util.rotate3D(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
+            PVector v2 = _util.rotate3D(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
+            PVector v3 = _util.rotate3D(new PVector(x2, y2, _height), dir, phi).add(_bottomCenter);
+            PVector v4 = _util.rotate3D(new PVector(x1, y1, _height), dir, phi).add(_bottomCenter);
+            PVector vc = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
+            addFace(v1, v2, v3, v4, vc);
+        }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Quad(v[0], v[1], v[2], v[3]));
+        _faceList.add(new Triangle(v[2], v[3], v[4]));
+    }
+
+    @Override
+    void drawMe()
+    {
+        for (SimpleShape face : _faceList) { face.drawMe(); }
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        for (SimpleShape face : _faceList) { face.drawMe(pg); }
     }
 }
 
@@ -773,10 +902,10 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
         _faceList = new ArrayDeque<Triangle>();
         for (int i = 1; i <= 5; i++)
         {
-            _faceList.add(new Triangle(vertices[0], vertices[i], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[i], vertices[i+5], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[i+5], vertices[i%5+1+5], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[11], vertices[i%5+1+5], vertices[i+5]));
+            addFace(vertices[0], vertices[i], vertices[i%5+1]);
+            addFace(vertices[i], vertices[i+5], vertices[i%5+1]);
+            addFace(vertices[i+5], vertices[i%5+1+5], vertices[i%5+1]);
+            addFace(vertices[11], vertices[i%5+1+5], vertices[i+5]);
         }
     }
 
@@ -792,11 +921,17 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
             newv1.mult(_radius / newv1.mag());
             newv2.mult(_radius / newv2.mag());
             newv3.mult(_radius / newv3.mag());
-            _faceList.add(new Triangle(t._v1 , newv1, newv3));
-            _faceList.add(new Triangle(newv1, t._v2 , newv2));
-            _faceList.add(new Triangle(newv3, newv2, t._v3 ));
-            _faceList.add(new Triangle(newv1, newv2, newv3));
+            addFace(t._v1, newv1, newv3);
+            addFace(newv1, t._v2, newv2);
+            addFace(newv3, newv2, t._v3);
+            addFace(newv1, newv2, newv3);
         }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Triangle(v[0], v[1], v[2]));
     }
 
     @Override
@@ -849,14 +984,16 @@ class TriangularPrism extends SimpleShape3D implements Rotatable3D
 
         Triangle _topFace = _bottomFace.copy();
         _topFace.translate(PVector.mult(_normal, _height));
-        Quad face1 = new Quad(_bottomFace._v1, _topFace._v1, _topFace._v2, _bottomFace._v2);
-        Quad face2 = new Quad(_bottomFace._v2, _topFace._v2, _topFace._v3, _bottomFace._v3);
-        Quad face3 = new Quad(_bottomFace._v3, _topFace._v3, _topFace._v1, _bottomFace._v1);
-        _faceList.add(face1);
-        _faceList.add(face2);
-        _faceList.add(face3);
-        _faceList.add(_bottomFace);
+        addFace(_bottomFace._v1, _topFace._v1, _topFace._v2, _bottomFace._v2);
+        addFace(_bottomFace._v2, _topFace._v2, _topFace._v3, _bottomFace._v3);
+        addFace(_bottomFace._v3, _topFace._v3, _topFace._v1, _bottomFace._v1);
         _faceList.add(_topFace);
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Quad(v[0], v[1], v[2], v[3]));
     }
 
     @Override

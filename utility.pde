@@ -177,17 +177,6 @@ class Utility
         return 1 + b*pow(t-1, 3) + a*sq(t-1);
     }
 
-    float easeOutElastic(float t)
-    {
-        t = constrain(t, 0, 1);
-        return t == 0
-            ? 0
-            : t == 1
-            ? 1
-            //: pow(2, -10 * t) * sin((t * 10 - 0.75) * TAU/3) + 1;
-            : pow(1.6, -11.2 * t) * sin((t * 11.2 - 0.75) * TAU/3) + 1;
-    }
-
     float easeReturnLiner(float t)
     {
         t = constrain(t, 0, 1);
