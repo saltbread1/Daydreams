@@ -1,10 +1,11 @@
-class SceneClimax extends Scene
+class SceneExploring extends Scene
 {
     FloatingTriangle _triangle;
     ReactShapeManager _cm;
     final float _epochSec;
+    final color _cBg = #e0e0e0;
 
-    SceneClimax(float totalSceneSec, float epochSec)
+    SceneExploring(float totalSceneSec, float epochSec)
     {
         super(totalSceneSec);
         _epochSec = epochSec;
@@ -28,7 +29,7 @@ class SceneClimax extends Scene
         _cm.drawShapes();
 
         _triangle.drawMeAttr();
-        // drawDebugInfo();
+        //drawDebugInfo();
     }
 
     @Override
@@ -39,13 +40,13 @@ class SceneClimax extends Scene
     }
 
     @Override
-    void clearScene() { background(#e0e0e0); }
+    void clearScene() { background(_cBg); }
 
     void drawDebugInfo()
     {
         pushStyle();
         noFill();
-        stroke(#00ff00);
+        stroke(#0000ff);
         _triangle.drawDebugPath();
         _triangle.getReactionableRange().drawMe();
         popStyle();
@@ -57,6 +58,8 @@ class SceneClimax extends Scene
         PVector _center, _startPos, _controlPos1, _controlPos2, _goalPos, _magDir;
         float _stepRad;
         FloatList _bezierParams;
+        final float _initRangeRadius, _maxRangeRadius, _rangePeriodSec;
+        float _rangeRadius, _rangeSec;
 
         FloatingTriangle(float sizeRadius, float speed)
         {
@@ -66,6 +69,10 @@ class SceneClimax extends Scene
             _center = new PVector();
             _stepRad = random(TAU);
             _bezierParams = new FloatList();
+            _initRangeRadius = width*.20;
+            _maxRangeRadius = width*.28;
+            _rangePeriodSec = 1.6;
+            _rangeRadius = _initRangeRadius;
         }
 
         void setVertices()
@@ -109,6 +116,14 @@ class SceneClimax extends Scene
             _magDir = PVector.sub(nextCenter, _center);
             _center = nextCenter;
             setVertices();
+            updateRange();
+        }
+
+        void updateRange()
+        {
+            float r = (1-cos(TAU*_rangeSec/_rangePeriodSec))/2;
+            _rangeRadius = _initRangeRadius + (_maxRangeRadius - _initRangeRadius) * r;
+            _rangeSec += 1./_frameRate;
         }
 
         void updateCamera()
@@ -130,7 +145,7 @@ class SceneClimax extends Scene
         Circle getReactionableRange()
         {
             PVector c = PVector.mult(_magDir, 2.6).add(_center);
-            return new Circle(c, width*.24);
+            return new Circle(c, _rangeRadius);
         }
 
         /**
@@ -140,7 +155,11 @@ class SceneClimax extends Scene
         {
             PVector b = PVector.mult(_magDir, 2.6);
             PVector c = PVector.add(b, _center);
-            return new Circle(c, width/2*1.8 + b.mag());
+            float r = width + b.mag();
+            float p = _rangeRadius / _initRangeRadius;
+            // keep constant the area of "igore - reactionable"
+            float rr = sqrt(sq(r)+(sq(p)-1)*sq(_initRangeRadius));
+            return new Circle(c, rr);
         }
     }
 
@@ -157,11 +176,11 @@ class SceneClimax extends Scene
         {
             Circle range = _triangle.getReactionableRange();
             int alpha = (int)(constrain(pow(sq(range._radius)/(1+PVector.sub(center, _triangle.getCenter()).magSq()), 3), .24, 1)*255);
-            color cStroke = attr._cStroke;
-            color cFill = attr._cFill;
+            color cStroke = attr.getStroke();
+            color cFill = attr.getFill();
             cStroke = color(red(cStroke), green(cStroke), blue(cStroke), alpha);
             cFill = color(red(cFill), green(cFill), blue(cFill), alpha);
-            return new Attribution(cStroke, cFill, attr._style);
+            return new Attribution(cStroke, cFill, attr.getStyle());
         }
     }
 
@@ -197,7 +216,7 @@ class SceneClimax extends Scene
                 _appearSec -= 1./_frameRate;
             }
             _appearSec = constrain(_appearSec, 0, _appearTotalSec);
-            float t = .67;
+            float t = .56;
             _radius = _maxRadius * ((1-t)+r*t);
             setAttribution(_reactUtil.changeAlpha(_center, _attr));
         }
@@ -236,6 +255,22 @@ class SceneClimax extends Scene
             }
             return false;
         }
+
+        @Override
+        void drawMeAttr()
+        {
+            pushStyle();
+            beginShape(TRIANGLE_FAN);
+            new Attribution(color(_cBg, 4), _attr.getStyle()).apply();
+            _util.myVertex(_center);
+            _attr.apply();
+            for (int i = 0; i <= 16; i++)
+            {
+                _util.myVertex(PVector.fromAngle(TAU/16*i).mult(_radius).add(_center));
+            }
+            endShape();
+            popStyle();
+        }
     }
 
     class ReactRect extends Rect2 implements ReactShape
@@ -271,7 +306,7 @@ class SceneClimax extends Scene
                 _appearSec -= 1./_frameRate;
             }
             _appearSec = constrain(_appearSec, 0, _appearTotalSec);
-            float t = .67;
+            float t = .56;
             _width = _maxWidth * ((1-t)+r*t);
             _height = _maxHeight * ((1-t)+r*t);
             setAttribution(_reactUtil.changeAlpha(_center, _attr));
@@ -317,6 +352,25 @@ class SceneClimax extends Scene
             }
             return false;
         }
+
+        @Override
+        void drawMeAttr()
+        {
+            PVector vOff1 = new PVector(_width, _height).div(2);
+            PVector vOff2 = new PVector(_width, -_height).div(2);
+            pushStyle();
+            beginShape(TRIANGLE_FAN);
+            new Attribution(color(_cBg, 4), _attr.getStyle()).apply();
+            _util.myVertex(_center);
+            _attr.apply();
+            _util.myVertex(PVector.sub(_center, vOff1));
+            _util.myVertex(PVector.sub(_center, vOff2));
+            _util.myVertex(PVector.add(_center, vOff1));
+            _util.myVertex(PVector.add(_center, vOff2));
+            _util.myVertex(PVector.sub(_center, vOff1));
+            endShape();
+            popStyle();
+        }
     }
 
     class ReactCylinder extends Cylinder implements ReactShape
@@ -332,8 +386,15 @@ class SceneClimax extends Scene
             super(bottomCenter, new PVector(0, 0, -1), 0, 0, res, attr);
             _maxRadius = maxRadius;
             _maxHeight = maxHeight;
-            _appearTotalSec = .3;
+            _appearTotalSec = .35;
             _reactUtil = new ReactUtility();
+        }
+
+        @Override
+        void addFace(PVector... v)
+        {
+            _faceList.add(new CustomQuad(v[0], v[1], v[2], v[3], _attr));
+            _faceList.add(new Triangle(v[2], v[3], v[4], _attr));
         }
 
         @Override
@@ -342,17 +403,17 @@ class SceneClimax extends Scene
             float r = 0;
             if (_reactUtil.isInReactionableRange(_bottomCenter) || _isSwell)
             {
-                r = _util.easeOutBack(_appearSec/_appearTotalSec, 18);
+                r = _util.easeOutBack(_appearSec/_appearTotalSec, 8);
                 _appearSec += 1./_frameRate;
                 _isSwell = _appearSec < _appearTotalSec;
             }
             else
             {
-                r = constrain(_appearSec/_appearTotalSec, 0, 1);
+                r = _util.easeOutQuad(_appearSec/_appearTotalSec);
                 _appearSec -= 1./_frameRate;
             }
             _appearSec = constrain(_appearSec, 0, _appearTotalSec);
-            float t = .67;
+            float t = .56;
             _radius = _maxRadius * ((1-t)+r*t);
             _height = _maxHeight * r;
             setAttribution(_reactUtil.changeAlpha(_bottomCenter, _attr));
@@ -393,6 +454,35 @@ class SceneClimax extends Scene
             }
             return false;
         }
+
+        @Override
+        void drawMeAttr()
+        {
+            for (SimpleShape face : _faceList) { face.drawMeAttr(); }
+        }
+    }
+
+    class CustomQuad extends Quad
+    {
+        CustomQuad(PVector v1, PVector v2, PVector v3, PVector v4, Attribution attr)
+        {
+            super(v1, v2, v3, v4, attr);
+        }
+        
+        @Override
+        void drawMeAttr()
+        {
+            pushStyle();
+            beginShape(QUADS);
+            new Attribution(color(_cBg, 96), _attr.getStyle()).apply();
+            _util.myVertex(_v1);
+            _util.myVertex(_v2);
+            _attr.apply();
+            _util.myVertex(_v3);
+            _util.myVertex(_v4);
+            endShape();
+            popStyle();
+        }
     }
 
     class ReactShapeManager
@@ -415,8 +505,7 @@ class SceneClimax extends Scene
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float r = sq(random(1))*width*.055;
                 Attribution attr = new Attribution(
-                        _palette[(int)random(_palette.length)],
-                        random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                        _palette[(int)random(_palette.length)], DrawStyle.FILLONLY);
                 ReactCircle circle = new ReactCircle(c, r, attr);
                 if (!isOverlap(circle))
                 {
@@ -438,8 +527,7 @@ class SceneClimax extends Scene
                 float w = sq(random(.2, 1))*width*.12;
                 float h = sq(random(.2, 1))*width*.12;
                 Attribution attr = new Attribution(
-                        _palette[(int)random(_palette.length)],
-                        random(1) < .5 ? DrawStyle.FILLONLY : DrawStyle.STROKEONLY);
+                        _palette[(int)random(_palette.length)], DrawStyle.FILLONLY);
                 ReactRect rect = new ReactRect(c, w, h, attr);
                 if (!isOverlap(rect))
                 {
@@ -459,9 +547,10 @@ class SceneClimax extends Scene
             {
                 PVector c = PVector.random2D().mult(random(ri, ro)).add(ci);
                 float r = sq(random(1))*width*.055;
-                float h = random(.8, 1)*width*.14;
+                float h = sqrt(random(1))*width*.17;
                 int res = (int)random(5, 9);
-                Attribution attr = new Attribution(#ffffff, _palette[(int)random(_palette.length)]);
+                Attribution attr = new Attribution(
+                        #ffffff, _palette[(int)random(_palette.length)]);
                 ReactCylinder cylinder = new ReactCylinder(c, r, h, res, attr);
                 if (!isOverlap(cylinder))
                 {
@@ -472,33 +561,12 @@ class SceneClimax extends Scene
             return false;
         }
 
-        void addShapes(UpdateType type)
-        {
-            switch (type)
-            {
-                case PHASE1:
-                    while (addCircle(3));
-                    break;
-                case PHASE2:
-                    while (addCircle(3));
-                    while (addRect(3));
-                    break;
-                case PHASE3:
-                    while (addCylinder(3));
-                    break;
-                case PHASE4:
-                    break;
-            }
-        }
-
         void updateShapes()
         {
-            // if (_curSec < _epochSec) { addShapes(UpdateType.PHASE1); }
-            // else if (_curSec < _epochSec*2) { addShapes(UpdateType.PHASE2); }
-            // else if (_curSec < _epochSec*3) { addShapes(UpdateType.PHASE3); }
-            // else { addShapes(UpdateType.PHASE4); }
-            while (addCylinder(3));
-            //while (addCircle(3));
+            while (addCircle(4));
+            if (_curSec > _epochSec) { while (addRect(4)); }
+            if (_curSec > _epochSec*2) { while (addCylinder(8)); }
+            //if (_curSec > _epochSec*3) { _triangle.updateRange(); }
 
             for (int i = 0; i < _shapeList.size(); i++)
             {
@@ -542,10 +610,7 @@ interface ReactShape
     boolean isOverlap(ReactShape other);
 }
 
-enum UpdateType
+enum ExploringStyle
 {
-    PHASE1,
-    PHASE2,
-    PHASE3,
-    PHASE4,
+    
 }

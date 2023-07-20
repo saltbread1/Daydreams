@@ -33,8 +33,6 @@ class SceneIcosphere extends Scene
         stroke(#e6e6e6);
         fill(#000000);
         _ico.drawMe();
-        // strokeWeight(6);
-        // _util.myLine(new PVector(), rotAxis.mult(400));
         popStyle();
     }
 
@@ -136,12 +134,9 @@ class SceneIcosphere extends Scene
             {
                 Triangle tri1 = markTriangleList.get(i);
                 Triangle tri2 = markTriangleList.get(i+1);
-                Quad face1 = new Quad(tri1._v1, tri2._v1, tri2._v2, tri1._v2);
-                Quad face2 = new Quad(tri1._v2, tri2._v2, tri2._v3, tri1._v3);
-                Quad face3 = new Quad(tri1._v3, tri2._v3, tri2._v1, tri1._v1);
-                _faceList.add(face1);
-                _faceList.add(face2);
-                _faceList.add(face3);
+                addFace(tri1._v1, tri2._v1, tri2._v2, tri1._v2);
+                addFace(tri1._v2, tri2._v2, tri2._v3, tri1._v3);
+                addFace(tri1._v3, tri2._v3, tri2._v1, tri1._v1);
             }
             //_faceList.add(_bottomFace);
             //_faceList.add(markTriangleList.get(markTriangleList.size()-1));

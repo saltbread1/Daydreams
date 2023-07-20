@@ -34,6 +34,12 @@ class Attribution
         _style = null;
     }
 
+    color getStroke() { return _cStroke; }
+
+    color getFill() { return _cFill; }
+
+    DrawStyle getStyle() { return _style; }
+
     void apply()
     {
         if (_style == null) { return; }
@@ -187,6 +193,8 @@ abstract class SimpleShape3D extends SimpleShape
     SimpleShape3D() {}
 
     abstract void createFaces();
+
+    abstract void addFace(PVector... v);
 }
 
 class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable3D
@@ -760,8 +768,14 @@ class Cone extends SimpleShape3D implements Translatable
             PVector v1 = _util.rotate3D(new PVector(x1, y1, 0), dir, phi).add(_bottomCenter);
             PVector v2 = _util.rotate3D(new PVector(x2, y2, 0), dir, phi).add(_bottomCenter);
             PVector v3 = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
-            _faceList.add(new Triangle(v1, v2, v3));
+            addFace(v1, v2, v3);
         }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Triangle(v[0], v[1], v[2]));
     }
 
     @Override
@@ -826,9 +840,15 @@ class Cylinder extends SimpleShape3D
             PVector v3 = _util.rotate3D(new PVector(x2, y2, _height), dir, phi).add(_bottomCenter);
             PVector v4 = _util.rotate3D(new PVector(x1, y1, _height), dir, phi).add(_bottomCenter);
             PVector vc = _util.rotate3D(new PVector(0, 0, _height), dir, phi).add(_bottomCenter);
-            _faceList.add(new Quad(v1, v2, v3, v4));
-            _faceList.add(new Triangle(vc, v3, v4));
+            addFace(v1, v2, v3, v4, vc);
         }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Quad(v[0], v[1], v[2], v[3]));
+        _faceList.add(new Triangle(v[2], v[3], v[4]));
     }
 
     @Override
@@ -882,10 +902,10 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
         _faceList = new ArrayDeque<Triangle>();
         for (int i = 1; i <= 5; i++)
         {
-            _faceList.add(new Triangle(vertices[0], vertices[i], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[i], vertices[i+5], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[i+5], vertices[i%5+1+5], vertices[i%5+1]));
-            _faceList.add(new Triangle(vertices[11], vertices[i%5+1+5], vertices[i+5]));
+            addFace(vertices[0], vertices[i], vertices[i%5+1]);
+            addFace(vertices[i], vertices[i+5], vertices[i%5+1]);
+            addFace(vertices[i+5], vertices[i%5+1+5], vertices[i%5+1]);
+            addFace(vertices[11], vertices[i%5+1+5], vertices[i+5]);
         }
     }
 
@@ -901,11 +921,17 @@ class Icosphere extends SimpleShape3D implements Rotatable3D
             newv1.mult(_radius / newv1.mag());
             newv2.mult(_radius / newv2.mag());
             newv3.mult(_radius / newv3.mag());
-            _faceList.add(new Triangle(t._v1 , newv1, newv3));
-            _faceList.add(new Triangle(newv1, t._v2 , newv2));
-            _faceList.add(new Triangle(newv3, newv2, t._v3 ));
-            _faceList.add(new Triangle(newv1, newv2, newv3));
+            addFace(t._v1, newv1, newv3);
+            addFace(newv1, t._v2, newv2);
+            addFace(newv3, newv2, t._v3);
+            addFace(newv1, newv2, newv3);
         }
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Triangle(v[0], v[1], v[2]));
     }
 
     @Override
@@ -958,14 +984,16 @@ class TriangularPrism extends SimpleShape3D implements Rotatable3D
 
         Triangle _topFace = _bottomFace.copy();
         _topFace.translate(PVector.mult(_normal, _height));
-        Quad face1 = new Quad(_bottomFace._v1, _topFace._v1, _topFace._v2, _bottomFace._v2);
-        Quad face2 = new Quad(_bottomFace._v2, _topFace._v2, _topFace._v3, _bottomFace._v3);
-        Quad face3 = new Quad(_bottomFace._v3, _topFace._v3, _topFace._v1, _bottomFace._v1);
-        _faceList.add(face1);
-        _faceList.add(face2);
-        _faceList.add(face3);
-        _faceList.add(_bottomFace);
+        addFace(_bottomFace._v1, _topFace._v1, _topFace._v2, _bottomFace._v2);
+        addFace(_bottomFace._v2, _topFace._v2, _topFace._v3, _bottomFace._v3);
+        addFace(_bottomFace._v3, _topFace._v3, _topFace._v1, _bottomFace._v1);
         _faceList.add(_topFace);
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Quad(v[0], v[1], v[2], v[3]));
     }
 
     @Override

@@ -93,9 +93,6 @@ class SceneArcsRotation extends Scene
                 float start = dRad*(i*2+k1) + _radOffset;
                 float stop = dRad*(i*2+1+k2) + _radOffset;
                 Attribution attr = new Attribution(_colour, DrawStyle.FILLONLY);
-                // AttributionDetail attr1 = new AttributionDetail(#ffffff, DrawStyle.STROKEONLY, 6, ROUND);
-                // AttributionDetail attr2 = new AttributionDetail(#000000, DrawStyle.STROKEONLY, 2, ROUND);
-                //_arcList.add(new CustomArc(_track._trackCenter, _track._trackRadius, start, stop, OPEN, attr1, attr2));
                 _arcList.add(new CustomArc(_trackCenter, _trackRadius, start, stop, attr));
             }
         }
@@ -113,36 +110,6 @@ class SceneArcsRotation extends Scene
             for (Arc arc : _arcList) { arc.drawMeAttr(pg); }
         }
     }
-
-    // class CustomArc extends Arc
-    // {
-    //     Attribution _attrOuter, _attrInner;
-
-    //     CustomArc(PVector center, float radius, float startRad, float stopRad, int mode, Attribution attrOuter, Attribution attrInner)
-    //     {
-    //         super(center, radius, startRad, stopRad, mode);
-    //         _attrOuter = attrOuter;
-    //         _attrInner = attrInner;
-    //     }
-
-    //     @Override
-    //     void drawMeAttr()
-    //     {
-    //         setAttribution(_attrOuter);
-    //         super.drawMeAttr();
-    //         setAttribution(_attrInner);
-    //         super.drawMeAttr();
-    //     }
-
-    //     @Override
-    //     void drawMeAttr(PGraphics pg)
-    //     {
-    //         setAttribution(_attrOuter);
-    //         super.drawMeAttr(pg);
-    //         setAttribution(_attrInner);
-    //         super.drawMeAttr(pg);
-    //     }
-    // }
 
     class CustomArc extends Arc
     {
