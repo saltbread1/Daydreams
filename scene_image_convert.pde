@@ -2,31 +2,31 @@ class SceneImageConvert extends Scene
 {
     ImageBlockManager _ibm;
     PGraphics _base;
-    PImage _target;
     PShader _noise;
-    final float _convertStartSec, _totalMovingSec;
+    final float _colorChangeSec, _convertStartSec, _totalMovingSec;
 
-    SceneImageConvert(float convertStartSec, float totalMovingSec)
+    SceneImageConvert(float totalSceneSec, float colorChangeSec, float convertStartSec)
     {
-        super(convertStartSec + totalMovingSec);
+        super(totalSceneSec);
+        _colorChangeSec = colorChangeSec;
         _convertStartSec = convertStartSec;
-        _totalMovingSec = totalMovingSec;
+        _totalMovingSec = totalSceneSec - convertStartSec;
     }
 
     @Override
     void initialize()
     {
         // images
-        _target = loadImage("eye0.png");
-        _target.resize(width, height);
+        PImage img = loadImage("eye0.png");
+        img.resize(width, height);
         _base = createGraphics(width, height, P2D);
         _noise = loadShader("noise0.glsl");
 
         // conversion
         updateGraphics(_convertStartSec); // image at the beginning to conversion
         updateGraphics(_convertStartSec); // first update is not go well...
-        _ibm = new ImageBlockManager(_base.get(), 20);
-        _ibm.createImageBlocks(_target, _totalMovingSec);
+        _ibm = new ImageBlockManager(_base.get(), 10);
+        _ibm.createImageBlocks(img, _totalMovingSec);
         convertImage(); // first convert is so slow...
         clearScene();
     }
@@ -44,15 +44,25 @@ class SceneImageConvert extends Scene
 
     void updateGraphics(float sec)
     {
-        float t = sec/_convertStartSec;
-        float time = _convertStartSec * _util.easeOutSin(t);
+        float timeVal = (_convertStartSec - _colorChangeSec) * easeCustom(sec, _colorChangeSec, _convertStartSec, 5);
         _noise.set("resolution", (float)_base.width, (float)_base.height);
-        _noise.set("time", time);
+        _noise.set("time", timeVal);
         _noise.set("kernel_size", 5);
+        _noise.set("hue_offset", sec < _colorChangeSec ? .6 : .8);
         _base.beginDraw();
         _base.shader(_noise);
         _base.rect(0, 0, _base.width, _base.height);
         _base.endDraw();
+    }
+
+    float easeCustom(float sec, float sec1, float sec2, float a)
+    { // sec1 < sec2
+        sec = constrain(sec, 0, sec2);
+        return sec < sec1
+                ? sec/sec1+a-1
+                : sec < (sec1+sec2)/2
+                ? a-a*4*pow((sec-sec1)/(sec2-sec1), 3)
+                : a*4*pow((sec-sec2)/(sec1-sec2), 3);
     }
 
     void convertImage()
@@ -93,17 +103,15 @@ class SceneImageConvert extends Scene
 
         void setControls()
         {
-            // float t1 = random(.1, .4);
-            // float t2 = random(.6, .9);
             float t1 = random(-1, 1);
             float t2 = random(-1, 1);
             PVector c1 = PVector.mult(_start, 1-t1).add(PVector.mult(_goal, t1));
             PVector c2 = PVector.mult(_start, 1-t2).add(PVector.mult(_goal, t2));
             PVector dir = PVector.sub(_goal, _start);
             PVector n = new PVector(dir.y, -dir.x);
-            float d = PVector.dist(_start, _goal)*_totalMoveSec*.002;
-            float s1 = random(-1, 1)*d;
-            float s2 = random(-1, 1)*d;
+            float r = width*.006;
+            float s1 = random(-1, 1)*r;
+            float s2 = random(-1, 1)*r;
             _control1 = PVector.mult(n, s1).add(c1);
             _control2 = PVector.mult(n, s2).add(c2);
         }
