@@ -10,7 +10,7 @@ class SceneStereographicProjection extends Scene
     @Override
     void initialize()
     {
-        _gasket = new StereographicGasket(height*.24, 5);
+        _gasket = new StereographicGasket(height*.32, 5);
         _gasket.createFaces();
     }
 
@@ -44,37 +44,41 @@ class SceneStereographicProjection extends Scene
             super(radius, subdivision);
         }
 
-        @Override
         void split()
         {
             int len = _faceList.size();
             for (int i = 0; i < len; i++)
             {
-                Triangle face = _faceList.poll();
-                PVector newv1 = PVector.add(face._v1, face._v2).div(2.);
-                PVector newv2 = PVector.add(face._v2, face._v3).div(2.);
-                PVector newv3 = PVector.add(face._v3, face._v1).div(2.);
+                Triangle t = _faceList.poll();
+                PVector newv1 = PVector.add(t._v1, t._v2).div(2.);
+                PVector newv2 = PVector.add(t._v2, t._v3).div(2.);
+                PVector newv3 = PVector.add(t._v3, t._v1).div(2.);
                 newv1.mult(_radius / newv1.mag());
                 newv2.mult(_radius / newv2.mag());
                 newv3.mult(_radius / newv3.mag());
                 Attribution attr1 = new Attribution(#ffffff, DrawStyle.FILLONLY);
                 Attribution attr2 = new Attribution(#000000, DrawStyle.FILLONLY);
-                if (attr2.equals(face.getAttribution()))
+                if (attr2.equals(t.getAttribution()))
                 {
-                    _faceList.add(new Triangle(newv1, newv2, newv3, attr1));
+                    addFace(attr1, newv1, newv2, newv3);
                     continue;
                 }
-                _faceList.add(new Triangle(face._v1, newv1   , newv3   , attr1));
-                _faceList.add(new Triangle(newv1   , face._v2, newv2   , attr1));
-                _faceList.add(new Triangle(newv3   , newv2   , face._v3, attr1));
-                _faceList.add(new Triangle(newv1   , newv2   , newv3   , attr2));
+                addFace(attr1, t._v1, newv1, newv3);
+                addFace(attr1, newv1, t._v2, newv2);
+                addFace(attr1, newv3, newv2, t._v3);
+                addFace(attr2, newv1, newv2, newv3);
             }
+        }
+
+        void addFace(Attribution attr, PVector... v)
+        {
+            _faceList.add(new Triangle(v[0], v[1], v[2], attr));
         }
 
         @Override
         void drawMe()
         {
-            float maxDist = _radius*.5;
+            float maxDist = width*.1;
             for (Triangle face : _faceList)
             {
                 PVector v1 = projectionMapping(face._v1);
