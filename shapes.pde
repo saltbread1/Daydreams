@@ -506,16 +506,16 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
     }
 }
 
-class DevidedQuad extends Quad
+class DividedQuad extends Quad
 {
     final PVector _e1v1, _e1v2, _e2v1, _e2v2;
     final PVector _c1v1, _c1v2, _c2v1, _c2v2;
     final float _endArea, _minEndArea, _maxEndArea;
-    final DevidedQuad _parent;
-    DevidedQuad _child1, _child2;
+    final DividedQuad _parent;
+    DividedQuad _child1, _child2;
     final int _seed1, _seed2;
 
-    DevidedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea, DevidedQuad parent)
+    DividedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea, DividedQuad parent)
     {
         super(v1, v2, v3, v4);
 
@@ -538,7 +538,7 @@ class DevidedQuad extends Quad
         _seed2 = (int)random(65536);
     }
 
-    DevidedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea)
+    DividedQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea)
     {
         this(v1, v2, v3, v4, minEndArea, maxEndArea, null);
     }
@@ -561,8 +561,8 @@ class DevidedQuad extends Quad
         float s2 = random(1);
         PVector vd1 = PVector.mult(_e1v1, s1).add(PVector.mult(_e1v2, 1-s1));
         PVector vd2 = PVector.mult(_e2v1, s2).add(PVector.mult(_e2v2, 1-s2));
-        _child1 = new DevidedQuad(_c1v1, _c1v2, vd1, vd2, _minEndArea, _maxEndArea, this);
-        _child2 = new DevidedQuad(_c2v1, _c2v2, vd1, vd2, _minEndArea, _maxEndArea, this);
+        _child1 = new DividedQuad(_c1v1, _c1v2, vd1, vd2, _minEndArea, _maxEndArea, this);
+        _child2 = new DividedQuad(_c2v1, _c2v2, vd1, vd2, _minEndArea, _maxEndArea, this);
         _child1.createChildren();
         _child2.createChildren();
     }
@@ -585,7 +585,7 @@ class DevidedQuad extends Quad
     {
         if (_parent == null) { return; }
 
-        float s = random(1);
+        float s = random(.3, .7);
         PVector v3 = PVector.mult(_parent._e1v1, s).add(PVector.mult(_parent._e1v2, 1-s));
         PVector v4 = PVector.mult(_parent._e2v1, 1-s).add(PVector.mult(_parent._e2v2, s));
         _v3.set(v3.x, v3.y, v3.z);
