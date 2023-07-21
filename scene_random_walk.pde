@@ -134,15 +134,10 @@ class SceneRandomWalk extends Scene
                 PVector a1 = PVector.fromAngle(QUARTER_PI);
                 PVector a2 = PVector.fromAngle(QUARTER_PI*3);
                 PVector b = PVector.sub(other.getPos(), v.getPos());
-                float d = sqrt(max(production(a1, b).magSq(), production(a2, b).magSq()));
+                float d = sqrt(max(_util.production(a1, b).magSq(), _util.production(a2, b).magSq()));
                 if (_stepLen > d) { return true; }
             }
             return false;
-        }
-
-        PVector production(PVector a, PVector b)
-        { // calc production vector: b to a
-            return PVector.mult(a, a.dot(b)/a.magSq());
         }
 
         @Override

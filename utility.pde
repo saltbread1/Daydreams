@@ -101,6 +101,14 @@ class Utility
     }
 
     /**
+    *   calc production vector: b to a
+    */
+    PVector production(PVector a, PVector b)
+    {
+        return PVector.mult(a, a.dot(b)/a.magSq());
+    }
+
+    /**
     * reset camera to default one
     */
     void resetCamera()

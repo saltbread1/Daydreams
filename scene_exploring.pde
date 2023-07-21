@@ -1,8 +1,9 @@
 class SceneExploring extends Scene
 {
+    final float _epochSec;
     FloatingTriangle _triangle;
     ReactShapeManager _sm;
-    final float _epochSec;
+    ExploringCamera _camera;
     ExploringStyle _style;
     ExploringType _type;
 
@@ -19,6 +20,7 @@ class SceneExploring extends Scene
     {
         _triangle = new FloatingTriangle(width*.02, width*.8);
         _sm = new ReactShapeManager();
+        _camera = new ExploringCamera(new PVector(0, 0, (height/2)/tan(PI/6)));
         _sm.initialize();
     }
 
@@ -27,8 +29,10 @@ class SceneExploring extends Scene
     {
         changePhase();
         _triangle.updateMe();
-        _triangle.updateCamera();
         _sm.updateShapes();
+        _camera.update();
+        if (_type == ExploringType.PHASE4) { _camera.addVibration(.12, width*.066, PI*.3); }
+        _camera.updateCamera();
         _sm.drawShapes();
         _triangle.drawMeAttr();
         //drawDebugInfo();
@@ -73,6 +77,20 @@ class SceneExploring extends Scene
             _style = ExploringStyle.DARK;
             _type = ExploringType.PHASE4;
             _sm.changeShapesColors();
+        }
+    }
+
+    class ExploringCamera extends Camera
+    {
+        ExploringCamera(PVector center2eye)
+        {
+            super(center2eye);
+        }
+
+        @Override
+        void update()
+        {
+            _centerPos = _triangle.getCenter();
         }
     }
 
@@ -148,11 +166,6 @@ class SceneExploring extends Scene
             float r = (1-cos(TAU*_rangeSec/_rangePeriodSec))/2;
             _rangeRadius = _initRangeRadius + (_maxRangeRadius - _initRangeRadius) * r;
             _rangeSec += 1./_frameRate;
-        }
-
-        void updateCamera()
-        {
-            camera(_center.x, _center.y, (height/2)/tan(PI/6), _center.x, _center.y, 0, 0, 1, 0);
         }
 
         void drawDebugPath()
@@ -267,9 +280,10 @@ class SceneExploring extends Scene
             if (other instanceof ReactRect)
             {
                 ReactRect rect = (ReactRect)other;
-                float dx = abs(_center.x - rect._center.x);
+                PVector b = PVector.sub(rect._center, _center);
+                float dx = _util.production(PVector.fromAngle(QUARTER_PI), b).mag();
+                float dy = _util.production(PVector.fromAngle(QUARTER_PI+HALF_PI), b).mag();
                 float lx = _maxRadius + rect._maxWidth/2;
-                float dy = abs(_center.y - rect._center.y);
                 float ly = _maxRadius + rect._maxHeight/2;
                 if (dx < lx && dy < ly) { return true; }
             }
@@ -301,7 +315,7 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -360,27 +374,30 @@ class SceneExploring extends Scene
             if (other instanceof ReactCircle)
             {
                 ReactCircle circle = (ReactCircle)other;
-                float dx = abs(_center.x - circle._center.x);
+                PVector b = PVector.sub(circle._center, _center);
+                float dx = _util.production(PVector.fromAngle(QUARTER_PI), b).mag();
+                float dy = _util.production(PVector.fromAngle(QUARTER_PI+HALF_PI), b).mag();
                 float lx = _maxWidth/2 + circle._maxRadius;
-                float dy = abs(_center.y - circle._center.y);
                 float ly = _maxHeight/2 + circle._maxRadius;
                 if (dx < lx && dy < ly) { return true; }
             }
             else if (other instanceof ReactRect)
             {
                 ReactRect rect = (ReactRect)other;
-                float dx = abs(_center.x - rect._center.x);
+                PVector b = PVector.sub(rect._center, _center);
+                float dx = _util.production(PVector.fromAngle(QUARTER_PI), b).mag();
+                float dy = _util.production(PVector.fromAngle(QUARTER_PI+HALF_PI), b).mag();
                 float lx = (_maxWidth + rect._maxWidth)/2;
-                float dy = abs(_center.y - rect._center.y);
                 float ly = (_maxHeight + rect._maxHeight)/2;
                 if (dx < lx && dy < ly) { return true; }
             }
             else if (other instanceof ReactCylinder)
             {
                 ReactCylinder cylinder = (ReactCylinder)other;
-                float dx = abs(_center.x - cylinder._bottomCenter.x);
+                PVector b = PVector.sub(cylinder._bottomCenter, _center);
+                float dx = _util.production(PVector.fromAngle(QUARTER_PI), b).mag();
+                float dy = _util.production(PVector.fromAngle(QUARTER_PI+HALF_PI), b).mag();
                 float lx = _maxWidth/2 + cylinder._maxRadius;
-                float dy = abs(_center.y - cylinder._bottomCenter.y);
                 float ly = _maxHeight/2 + cylinder._maxRadius;
                 if (dx < lx && dy < ly) { return true; }
             }
@@ -390,18 +407,16 @@ class SceneExploring extends Scene
         @Override
         void drawMeAttr()
         {
-            PVector vOff1 = new PVector(_width, _height).div(2);
-            PVector vOff2 = new PVector(_width, -_height).div(2);
             pushStyle();
             beginShape(TRIANGLE_FAN);
             new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
-            _util.myVertex(PVector.sub(_center, vOff1));
-            _util.myVertex(PVector.sub(_center, vOff2));
-            _util.myVertex(PVector.add(_center, vOff1));
-            _util.myVertex(PVector.add(_center, vOff2));
-            _util.myVertex(PVector.sub(_center, vOff1));
+            _util.myVertex(new PVector(-_width, -_height).div(2).rotate(QUARTER_PI).add(_center));
+            _util.myVertex(new PVector(-_width, _height).div(2).rotate(QUARTER_PI).add(_center));
+            _util.myVertex(new PVector(_width, _height).div(2).rotate(QUARTER_PI).add(_center));
+            _util.myVertex(new PVector(_width, -_height).div(2).rotate(QUARTER_PI).add(_center));
+            _util.myVertex(new PVector(-_width, -_height).div(2).rotate(QUARTER_PI).add(_center));
             endShape();
             popStyle();
         }
@@ -409,7 +424,7 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -482,9 +497,10 @@ class SceneExploring extends Scene
             if (other instanceof ReactRect)
             {
                 ReactRect rect = (ReactRect)other;
-                float dx = abs(_bottomCenter.x - rect._center.x);
+                PVector b = PVector.sub(rect._center, _bottomCenter);
+                float dx = _util.production(PVector.fromAngle(QUARTER_PI), b).mag();
+                float dy = _util.production(PVector.fromAngle(QUARTER_PI+HALF_PI), b).mag();
                 float lx = _maxRadius + rect._maxWidth/2;
-                float dy = abs(_bottomCenter.y - rect._center.y);
                 float ly = _maxRadius + rect._maxHeight/2;
                 if (dx < lx && dy < ly) { return true; }
             }
@@ -506,7 +522,7 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_attr.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -620,7 +636,7 @@ class SceneExploring extends Scene
                     break;
                 case PHASE2:
                     while (addCircle(4));
-                    while (addRect(4));
+                    while (addRect(6));
                     break;
                 case PHASE3:
                     while (addCircle(4));
