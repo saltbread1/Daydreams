@@ -184,12 +184,6 @@ class Utility
         float b = a+1;
         return 1 + b*pow(t-1, 3) + a*sq(t-1);
     }
-
-    float easeReturnLiner(float t)
-    {
-        t = constrain(t, 0, 1);
-        return acos(cos(TAU*t))/PI;
-    }
 }
 
 enum DirectionType

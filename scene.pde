@@ -109,5 +109,5 @@ abstract class Camera
         _vibCurSec += 1./_frameRate;
     }
 
-    PVector getCenter() { return _centerPos; }
+    PVector getCenter() { return PVector.add(_centerPos, _vibOffset); }
 }
