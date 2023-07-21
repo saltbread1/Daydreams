@@ -1,6 +1,6 @@
 class SceneReversingRects extends Scene
 {
-    DevidedQuad _devidedQuad;
+    DividedQuad _dividedQuad;
     ArrayList<QuadManager> _quadManagerList;
 
     SceneReversingRects(float totalSceneSec)
@@ -11,16 +11,16 @@ class SceneReversingRects extends Scene
     @Override
     void initialize()
     {
-        _devidedQuad = new DevidedQuad(
+        _dividedQuad = new DividedQuad(
                 new PVector(0, 0),
                 new PVector(0, height),
                 new PVector(width, height),
                 new PVector(width, 0),
                 width*.42, width*2.5); // width*.52, width*11.8
-        _devidedQuad.initialize();
+        _dividedQuad.initialize();
 
         ArrayList<Quad> quadList = new ArrayList<Quad>();
-        _devidedQuad.getAllChildren(quadList);
+        _dividedQuad.getAllChildren(quadList);
         _quadManagerList = new ArrayList<QuadManager>();
         for (Quad quad : quadList)
         {
