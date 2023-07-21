@@ -10,6 +10,7 @@ vec2 n_offsets[WARP_ITERATIONS*2];
 uniform vec2 resolution;
 uniform float time;
 uniform int kernel_size;
+uniform float hue_offset;
 
 float random(const vec2 st)
 {
@@ -70,7 +71,6 @@ vec3 hsb2rgb(const vec3 hsb)
 
 void main()
 {
-    float h_offset = .6;
     for (int i = 0; i < WARP_ITERATIONS*2; i++)
     {
         n_offsets[i] = random2d(vec2(i)) * 10.;
@@ -79,7 +79,7 @@ void main()
     vec2 st = floor(gl_FragCoord.xy / kernel_size) / min(resolution.x, resolution.y);
     
     float n_val = domainWarp(st*NOISE_SCALE);
-    float h_val = fract(n_val*1.36 + h_offset);
+    float h_val = fract(n_val*1.36 + hue_offset);
     float s_val = clamp(n_val*.71, 0., 1.);
     float b_val = clamp((1.-n_val)*1.64, 0., 1.);
     vec3 hsb = vec3(h_val, s_val, b_val);

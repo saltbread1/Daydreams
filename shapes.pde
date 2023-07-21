@@ -546,7 +546,7 @@ class DevidedQuad extends Quad
     void initialize()
     {
         createChildren();
-        updateMe(0, 0);
+        updateMe0();
     }
 
     void createChildren()
@@ -567,26 +567,59 @@ class DevidedQuad extends Quad
         _child2.createChildren();
     }
 
-    void trasform(float t, float scale)
+    void trasform(float t)
     {
         if (_parent == null) { return; }
 
-        //scale = (float)mouseX/width;
-        float s1 = constrain(.5 + (1-noise(t, _seed1)*2)/2 * scale*1.5, 0, 1);
-        float s2 = constrain(.5 + (1-noise(t, _seed2)*2)/2 * scale*1.5, 0, 1);
+        // float s1 = constrain(.5 + (1-noise(t, _seed1)*2)/2 * scale*1.5, 0, 1);
+        // float s2 = constrain(.5 + (1-noise(t, _seed2)*2)/2 * scale*1.5, 0, 1);
+        float s1 = _util.easeInOutQuad(noise(t, _seed1));
+        float s2 = _util.easeInOutQuad(noise(t, _seed2));
         PVector v3 = PVector.mult(_parent._e1v1, s1).add(PVector.mult(_parent._e1v2, 1-s1));
         PVector v4 = PVector.mult(_parent._e2v1, s2).add(PVector.mult(_parent._e2v2, 1-s2));
         _v3.set(v3.x, v3.y, v3.z);
         _v4.set(v4.x, v4.y, v4.z);
     }
 
-    void updateMe(float t, float scale)
+    void trasform0()
+    {
+        if (_parent == null) { return; }
+
+        float s = random(1);
+        PVector v3 = PVector.mult(_parent._e1v1, s).add(PVector.mult(_parent._e1v2, 1-s));
+        PVector v4 = PVector.mult(_parent._e2v1, 1-s).add(PVector.mult(_parent._e2v2, s));
+        _v3.set(v3.x, v3.y, v3.z);
+        _v4.set(v4.x, v4.y, v4.z);
+    }
+
+    void updateMe(float t)
     {
         if (!isChildren()) { return; }
-        _child1.trasform(t, scale);
-        _child2.trasform(t, scale);
-        _child1.updateMe(t, scale);
-        _child2.updateMe(t, scale);
+        _child1.trasform(t);
+        _child2.trasform(t);
+        _child1.updateMe(t);
+        _child2.updateMe(t);
+    }
+
+    void updateMe0()
+    {
+        if (!isChildren()) { return; }
+        _child1.trasform0();
+        _child2.trasform0();
+        _child1.updateMe0();
+        _child2.updateMe0();
+    }
+
+    @Override
+    void drawMe()
+    {
+        if (!isChildren())
+        {
+            super.drawMe();
+            return;
+        }
+        _child1.drawMe();
+        _child2.drawMe();
     }
 
     @Override

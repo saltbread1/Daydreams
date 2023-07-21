@@ -17,7 +17,7 @@ TestHUD _hud;
 void setup()
 {
     //size(1920, 1080, P3D); // full HD
-    size(800, 450, P3D); // for test
+    size(800, 450, P3D);
     smooth();
     frameRate(_frameRate);
     background(#000000);
@@ -34,19 +34,19 @@ void initialize()
     // _sm.addScene(new SceneLandscape(13, 9.5));
     // _sm.addScene(new SceneTunnel(11));
     // _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
-    // _sm.addScene(new SceneImageConvert(10.5, 11.5));
+    // _sm.addScene(new SceneImageConvert(22, 5, 10.5));
 
-    // _sm.addScene(new SceneTrianglesRotation(3));
-    _sm.addScene(new SceneRandomWalk(300));
-    // _sm.addScene(new SceneDistortedGrid(3));
-    // _sm.addScene(new SceneIcosphere(3));
+    _sm.addScene(new SceneTrianglesRotation(3));
+    _sm.addScene(new SceneRandomWalk(3));
+    _sm.addScene(new SceneDistortedGrid(3));
+    _sm.addScene(new SceneIcosphere(3));
     
-    // _sm.addScene(new SceneArcsRotation(3));
+    _sm.addScene(new SceneArcsRotation(3));
     // _sm.addScene(new Scene...(3));
-    // _sm.addScene(new SceneReversingRects(3));
-    // _sm.addScene(new SceneStereographicProjection(3));
+    _sm.addScene(new SceneReversingRects(3));
+    _sm.addScene(new SceneStereographicProjection(3));
 
-    // _sm.addScene(new SceneExploring(12, 3));
+    _sm.addScene(new SceneExploring(12, 3));
 }
 
 void draw()
