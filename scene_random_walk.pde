@@ -35,14 +35,14 @@ class SceneRandomWalk extends Scene
     {
         ArrayList<Walker> _walkerList;
         final float _width, _height;
-        final color[] _palette = {#ffffff, #00c0f2, #00f2c0};
+        final color[] _palette = {#e0e0e0, #00c0f2, #00f2c0};
 
         RandomWalkDisplayer(float x, float y, float width, float height)
         {
             super(x, y, width, height);
             _width = getWidth();
             _height = getHeight();
-            setAttribution(new Attribution(color(#000000, 60), DrawStyle.FILLONLY));
+            setAttribution(new Attribution(color(#000000), DrawStyle.FILLONLY));
         }
 
         void initialize()
@@ -50,13 +50,14 @@ class SceneRandomWalk extends Scene
             _walkerList = new ArrayList<Walker>();
             for (int i = 0; i < 64; i++)
             {
+                float areaSqrt = sqrt(_width*_height);
                 _walkerList.add(new Walker(
                         new PVector(random(_width), random(_height)),
-                        max(2, sq(random(1))*sqrt(_width*_height)*.01),
-                        (int)random(36, 90),
+                        max(areaSqrt*.004, sq(random(1))*areaSqrt*.02),
+                        (int)random(30, 50),
                         this,
                         new Attribution(
-                                color(_palette[(int)(min((1-sqrt(random(1)))*1.2, .9)*_palette.length)], 40),
+                                color(_palette[(int)(min((1-sqrt(random(1)))*1.2, .9)*_palette.length)], 60),
                                 random(1) < .5 ? DrawStyle.STROKEANDFILL : DrawStyle.STROKEONLY)));
             }
         }
