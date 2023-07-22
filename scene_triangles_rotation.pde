@@ -13,15 +13,15 @@ class SceneTrianglesRotation extends Scene
     void initialize()
     {
         _circleList = new ArrayList<Circle>();
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 8; i++)
         {
-            PVector c = new PVector(random(width), random(height));
-            float r = width*.002;
+            PVector c = new PVector(random(i, i+1)*width/8, random(height));
+            float r = width*.001;
             _circleList.add(new Circle(c, r));
         }
 
         _triangleMap = new HashMap<Triangle, Float>();
-        for (int i = 0; i < 256; i++)
+        for (int i = 0; i < 444; i++)
         {
             Circle circle = null;
             for (int j = 0; j < 100; j++)
@@ -29,7 +29,7 @@ class SceneTrianglesRotation extends Scene
                 PVector c = new PVector(random(width), random(height));
                 float r = random(width*.02, width*.24);
                 circle = new Circle(c, r);
-                if (!isOverlap(circle)) { break; }
+                if (i < 40 || !isOverlap(circle)) { break; }
             }
             float dRotRad = random(.02, .22)*(1-(int)random(2)*2);
             _triangleMap.put(createTriangle(circle), Float.valueOf(dRotRad));
