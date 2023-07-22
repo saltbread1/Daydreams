@@ -17,7 +17,7 @@ float random(const vec2 st)
     return fract(sin(dot(st, vec2(12.9898,78.233))) * 43758.5453);
 }
 
-vec2 random2d(const vec2 st)
+vec2 random2D(const vec2 st)
 {
     vec2 val = vec2( dot(st,vec2(127.1,311.7)),
                      dot(st,vec2(269.5,183.3)) );
@@ -73,7 +73,7 @@ void main()
 {
     for (int i = 0; i < WARP_ITERATIONS*2; i++)
     {
-        n_offsets[i] = random2d(vec2(i)) * 10.;
+        n_offsets[i] = random2D(vec2(i)) * 10.;
     }
     
     vec2 st = floor(gl_FragCoord.xy / kernel_size) / min(resolution.x, resolution.y);
