@@ -13,8 +13,7 @@ class SceneKaleidoscope extends Scene
     @Override
     void initialize()
     {
-        _baseImg = loadImage("hand0.png");
-        _baseImg.filter(POSTERIZE, 5);
+        _baseImg = _dm.getHandImage();
         _pg = createGraphics(width, height, P2D);
         _fm = new FloatQuadManager();
         _km = new KaleidoscopeQuadManager();

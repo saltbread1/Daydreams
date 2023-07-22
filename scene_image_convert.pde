@@ -17,10 +17,10 @@ class SceneImageConvert extends Scene
     void initialize()
     {
         // images
-        PImage img = loadImage("eye0.png");
+        PImage img = _dm.getEyeImage().copy();
         img.resize(width, height);
         _base = createGraphics(width, height, P2D);
-        _noise = loadShader("noise0.glsl");
+        _noise = _dm.getNoiseShader();
 
         // conversion
         updateGraphics(_convertStartSec); // image at the beginning to conversion

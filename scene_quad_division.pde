@@ -11,11 +11,7 @@ class SceneQuadDivision extends Scene
     @Override
     void initialize()
     {
-        _textureImages = new PImage[3];
-        _textureImages[0] = loadImage("eye1.png");
-        _textureImages[1] = loadImage("eye2.png");
-        _textureImages[2] = loadImage("eye3.png");
-        for (PImage img : _textureImages) { img.filter(POSTERIZE, 5); }
+        _textureImages = _dm.getEyeImages();
         _quad = new TextureDivideQuad(
                 new PVector(0, 0),
                 new PVector(0, height),
