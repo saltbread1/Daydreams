@@ -49,22 +49,9 @@ class SceneQuadDivision extends Scene
         }
 
         @Override
-        void createChildren()
+        DividedQuad createChild(PVector v1, PVector v2, PVector v3, PVector v4)
         {
-            if (getArea() <= _endArea)
-            {
-                _child1 = null;
-                _child2 = null;
-                return;
-            }
-            float s1 = random(1);
-            float s2 = random(1);
-            PVector vd1 = PVector.mult(_e1v1, s1).add(PVector.mult(_e1v2, 1-s1));
-            PVector vd2 = PVector.mult(_e2v1, s2).add(PVector.mult(_e2v2, 1-s2));
-            _child1 = new TextureDivideQuad(_c1v1, _c1v2, vd1, vd2, _minEndArea, _maxEndArea, this);
-            _child2 = new TextureDivideQuad(_c2v1, _c2v2, vd1, vd2, _minEndArea, _maxEndArea, this);
-            _child1.createChildren();
-            _child2.createChildren();
+            return new TextureDivideQuad(v1, v2, v3, v4, _minEndArea, _maxEndArea, this);
         }
 
         @Override
@@ -82,34 +69,7 @@ class SceneQuadDivision extends Scene
         }
 
         @Override
-        void drawMe()
-        {
-            if (!isChildren())
-            {
-                drawMeLeaf();
-                return;
-            }
-            TextureDivideQuad c1 = (TextureDivideQuad)_child1;
-            TextureDivideQuad c2 = (TextureDivideQuad)_child2;
-            c1.drawMe();
-            c2.drawMe();
-        }
-
-        @Override
-        void drawMeAttr()
-        {
-            if (!isChildren())
-            {
-                super.drawMeAttr();
-                return;
-            }
-            TextureDivideQuad c1 = (TextureDivideQuad)_child1;
-            TextureDivideQuad c2 = (TextureDivideQuad)_child2;
-            c1.drawMeAttr();
-            c2.drawMeAttr();
-        }
-
-        void drawMeLeaf()
+        void drawLeaf()
         {
             beginShape();
             texture(_curImg);

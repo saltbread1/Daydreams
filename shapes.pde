@@ -546,7 +546,7 @@ class DividedQuad extends Quad
     void initialize()
     {
         createChildren();
-        updateMe0();
+        updateMe(-1);
     }
 
     void createChildren()
@@ -561,33 +561,25 @@ class DividedQuad extends Quad
         float s2 = random(1);
         PVector vd1 = PVector.mult(_e1v1, s1).add(PVector.mult(_e1v2, 1-s1));
         PVector vd2 = PVector.mult(_e2v1, s2).add(PVector.mult(_e2v2, 1-s2));
-        _child1 = new DividedQuad(_c1v1, _c1v2, vd1, vd2, _minEndArea, _maxEndArea, this);
-        _child2 = new DividedQuad(_c2v1, _c2v2, vd1, vd2, _minEndArea, _maxEndArea, this);
+        _child1 = createChild(_c1v1, _c1v2, vd1, vd2);
+        _child2 = createChild(_c2v1, _c2v2, vd1, vd2);
         _child1.createChildren();
         _child2.createChildren();
+    }
+
+    DividedQuad createChild(PVector v1, PVector v2, PVector v3, PVector v4)
+    {
+        return new DividedQuad(v1, v2, v3, v4, _minEndArea, _maxEndArea, this);
     }
 
     void trasform(float t)
     {
         if (_parent == null) { return; }
 
-        // float s1 = constrain(.5 + (1-noise(t, _seed1)*2)/2 * scale*1.5, 0, 1);
-        // float s2 = constrain(.5 + (1-noise(t, _seed2)*2)/2 * scale*1.5, 0, 1);
-        float s1 = _util.easeInOutQuad(noise(t, _seed1));
-        float s2 = _util.easeInOutQuad(noise(t, _seed2));
+        float s1 = t < 0 ? random(.3, .7) : _util.easeInOutQuad(noise(t, _seed1));
+        float s2 = t < 0 ? 1-s1 : _util.easeInOutQuad(noise(t, _seed2));
         PVector v3 = PVector.mult(_parent._e1v1, s1).add(PVector.mult(_parent._e1v2, 1-s1));
         PVector v4 = PVector.mult(_parent._e2v1, s2).add(PVector.mult(_parent._e2v2, 1-s2));
-        _v3.set(v3.x, v3.y, v3.z);
-        _v4.set(v4.x, v4.y, v4.z);
-    }
-
-    void trasform0()
-    {
-        if (_parent == null) { return; }
-
-        float s = random(.3, .7);
-        PVector v3 = PVector.mult(_parent._e1v1, s).add(PVector.mult(_parent._e1v2, 1-s));
-        PVector v4 = PVector.mult(_parent._e2v1, 1-s).add(PVector.mult(_parent._e2v2, s));
         _v3.set(v3.x, v3.y, v3.z);
         _v4.set(v4.x, v4.y, v4.z);
     }
@@ -601,21 +593,14 @@ class DividedQuad extends Quad
         _child2.updateMe(t);
     }
 
-    void updateMe0()
-    {
-        if (!isChildren()) { return; }
-        _child1.trasform0();
-        _child2.trasform0();
-        _child1.updateMe0();
-        _child2.updateMe0();
-    }
+    void drawLeaf() { super.drawMe(); }
 
     @Override
     void drawMe()
     {
         if (!isChildren())
         {
-            super.drawMe();
+            drawLeaf();
             return;
         }
         _child1.drawMe();
