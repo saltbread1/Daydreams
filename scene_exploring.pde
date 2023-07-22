@@ -31,6 +31,7 @@ class SceneExploring extends Scene
         _triangle.updateMe();
         _sm.updateShapes();
         _camera.update();
+        if (_type == ExploringType.PHASE3) { _camera.addVibration(.12, width*.026, PI*.15); }
         if (_type == ExploringType.PHASE4) { _camera.addVibration(.12, width*.066, PI*.3); }
         _camera.updateCamera();
         _sm.drawShapes();
@@ -704,7 +705,7 @@ interface ReactShape
 
 enum ExploringStyle
 {
-    LIGHT(#e0e0e0, #ffffff, new color[]{#000000, #900000, #0f8cbc}),
+    LIGHT(#dfdfdf, #ffffff, new color[]{#000000, #900000, #0f8cbc}),
     DARK(#000000, #1e1e1e, new color[]{#efefef, #ec0000, #05d08e});
 
     final color _cBg;

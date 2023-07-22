@@ -40,9 +40,6 @@ class SceneReversingRects extends Scene
         }
     }
 
-    // @Override
-    // void clearScene() { background(#e9e9e9); }
-
     class QuadManager
     {
         final Quad _quad;
