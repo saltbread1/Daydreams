@@ -98,7 +98,7 @@ class SceneExploring extends Scene
     class FloatingTriangle extends Triangle
     {
         final float _sizeRadius, _speed;
-        PVector _center, _startPos, _controlPos1, _controlPos2, _goalPos, _magDir;
+        PVector _center, _startPos, _controlPos1, _controlPos2, _goalPos, _velocity;
         float _stepRad;
         FloatList _bezierParams;
         final float _initRangeRadius, _maxRangeRadius, _rangePeriodSec;
@@ -120,8 +120,8 @@ class SceneExploring extends Scene
 
         void setVertices()
         {
-            float rad1 = PVector.angleBetween(_magDir, new PVector(1, 0));
-            if (_magDir.y < 0) { rad1 *= -1; }
+            float rad1 = PVector.angleBetween(_velocity, new PVector(1, 0));
+            if (_velocity.y < 0) { rad1 *= -1; }
             float rad2 = rad1 + PI - PI*.24;
             float rad3 = rad1 + PI + PI*.24;
             _v1 = PVector.fromAngle(rad1).mult(_sizeRadius).add(_center);
@@ -156,7 +156,7 @@ class SceneExploring extends Scene
             float r = _bezierParams.get(0);
             _bezierParams.remove(0);
             PVector nextCenter = _util.cubicBezierPath(_startPos, _controlPos1, _controlPos2, _goalPos, r);
-            _magDir = PVector.sub(nextCenter, _center);
+            _velocity = PVector.sub(nextCenter, _center);
             _center = nextCenter;
             setVertices();
             updateRange();
@@ -182,7 +182,7 @@ class SceneExploring extends Scene
         */
         Circle getReactionableRange()
         {
-            PVector c = PVector.mult(_magDir, 2.6).add(_center);
+            PVector c = PVector.mult(_velocity, 2.6).add(_center);
             return new Circle(c, _rangeRadius);
         }
 
@@ -191,7 +191,7 @@ class SceneExploring extends Scene
         */
         Circle getIgnoreRange()
         {
-            PVector b = PVector.mult(_magDir, 2.6);
+            PVector b = PVector.mult(_velocity, 2.6);
             PVector c = PVector.add(b, _center);
             float r = width + b.mag();
             float p = _rangeRadius / _initRangeRadius;
