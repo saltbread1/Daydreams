@@ -506,6 +506,43 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
     }
 }
 
+class TextureQuad extends Quad
+{
+    PImage _img;
+
+    TextureQuad(PVector v1, PVector v2, PVector v3, PVector v4, PImage img)
+    {
+        super(v1, v2, v3, v4, new Attribution(#ffffff, DrawStyle.FILLONLY));
+        _img = img;
+    }
+
+    void setImage(PImage img) { _img = img; }
+
+    @Override
+    void drawMe()
+    {
+        beginShape();
+        texture(_img);
+        vertex(_v1.x, _v1.y, 0, 0);
+        vertex(_v2.x, _v2.y, 0, 1);
+        vertex(_v3.x, _v3.y, 1, 1);
+        vertex(_v4.x, _v4.y, 1, 0);
+        endShape();
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        pg.beginShape();
+        pg.texture(_img);
+        pg.vertex(_v1.x, _v1.y, 0, 0);
+        pg.vertex(_v2.x, _v2.y, 0, 1);
+        pg.vertex(_v3.x, _v3.y, 1, 1);
+        pg.vertex(_v4.x, _v4.y, 1, 0);
+        pg.endShape();
+    }
+}
+
 class DividedQuad extends Quad
 {
     final PVector _e1v1, _e1v2, _e2v1, _e2v2;

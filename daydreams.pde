@@ -38,21 +38,21 @@ void draw()
             _dm.setFilter();
             break;
         case 2:
-            _sm.addScene(new SceneLandscape(13, 9.5));
-            _sm.addScene(new SceneTunnel(11));
-            _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
-            _sm.addScene(new SceneImageConvert(22, 5, 10.5));
+            // _sm.addScene(new SceneLandscape(13, 9.5));
+            // _sm.addScene(new SceneTunnel(11));
+            // _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
+            // _sm.addScene(new SceneImageConvert(22, 5, 10.5));
             break;
         case 3:
-            _sm.addScene(new SceneTrianglesRotation(3));
-            _sm.addScene(new SceneArcsRotation(3));
-            _sm.addScene(new SceneDistortedGrid(3));
-            _sm.addScene(new SceneIcosphere(3));
+            // _sm.addScene(new SceneTrianglesRotation(3));
+            // _sm.addScene(new SceneArcsRotation(3));
+            // _sm.addScene(new SceneDistortedGrid(3));
+            // _sm.addScene(new SceneIcosphere(3));
             break;
         case 4:
-            _sm.addScene(new SceneQuadDivision(3));
-            _sm.addScene(new SceneKaleidoscope(3));
-            _sm.addScene(new SceneReversingRects(3));
+            // _sm.addScene(new SceneQuadDivision(3));
+            // _sm.addScene(new SceneKaleidoscope(3));
+            // _sm.addScene(new SceneReversingRects(3));
             _sm.addScene(new SceneStereographicProjection(3));
             break;
         case 5:
