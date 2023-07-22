@@ -16,17 +16,13 @@ class SceneImageConvert extends Scene
     @Override
     void initialize()
     {
-        // images
-        PImage img = _dm.getEyeImage().copy();
-        img.resize(width, height);
         _base = createGraphics(width, height, P2D);
         _noise = _dm.getNoiseShader();
 
-        // conversion
         updateGraphics(_convertStartSec); // image at the beginning to conversion
         updateGraphics(_convertStartSec); // first update is not go well...
         _ibm = new ImageBlockManager(_base.get(), 10);
-        _ibm.createImageBlocks(img, _totalMovingSec);
+        _ibm.createImageBlocks(_dm.getEyeImage(), _totalMovingSec);
         convertImage(); // first convert is so slow...
         clearScene();
     }
