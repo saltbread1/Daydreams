@@ -58,8 +58,8 @@ class SceneDistortedGrid extends Scene
             {
                 for (int j = 0; j <= _resY; j++)
                 {
-                    float x = map(i, 0, _resX, -_totalLenX/2, _totalLenX/2);
-                    float y = map(j, 0, _resY, -_totalLenY/2, _totalLenY/2);
+                    float x = -_totalLenX/2 + _stepLenX * i;
+                    float y = -_totalLenY/2 + _stepLenY * j;
                     float nValX = noise(i*noiseScale+s*1.8, j*noiseScale+s, _seedX+t);
                     float nValY = noise(i*noiseScale+s*.6, j*noiseScale+s*1.3, _seedY+t);
                     float offX = constrain((1-nValX*2)*4, -1, 1)*_stepLenX*1.6;
@@ -74,10 +74,8 @@ class SceneDistortedGrid extends Scene
             {
                 for (int j = 0; j < _resY; j++)
                 {
-                    Rect rect1 = new Rect(vertices[i][j], vertices[i+1][j]);
-                    Rect rect2 = new Rect(vertices[i][j], vertices[i][j+1]);
-                    _rectList.add(rect1);
-                    _rectList.add(rect2);
+                    _rectList.add(new Rect(vertices[i][j], vertices[i+1][j]));
+                    _rectList.add(new Rect(vertices[i][j], vertices[i][j+1]));
                 }
             }
         }

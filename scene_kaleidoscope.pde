@@ -118,7 +118,7 @@ class SceneKaleidoscope extends Scene
                     for (int j = 0; j < 2; j++)
                     {
                         quad.reverseY(init.y);
-                        quad.drawMeAttr(pg);
+                        quad.drawMeAttr(pg, 180);
                     }
                 }
             }

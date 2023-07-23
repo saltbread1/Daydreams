@@ -35,7 +35,7 @@ void draw()
     switch (frameCount)
     {
         case 1:
-            _dm.setFilter();
+            _dm.preprocessing();
             break;
         case 2:
             // _sm.addScene(new SceneLandscape(13, 9.5));
@@ -53,14 +53,15 @@ void draw()
             // _sm.addScene(new SceneQuadDivision(3));
             // _sm.addScene(new SceneKaleidoscope(3));
             // _sm.addScene(new SceneReversingRects(3));
-            _sm.addScene(new SceneStereographicProjection(3));
+            _sm.addScene(new SceneAbsorption(this, 300));
+            // _sm.addScene(new SceneStereographicProjection(3));
             break;
         case 5:
             _sm.addScene(new SceneExploring(12, 3));
             break;
         default:
             if (frameCount < 1) { break; }
-            //println("FPS: "+_hud.getFPS());
+            println("FPS: "+_hud.getFPS());
             _sm.advanceOneFrame();
             // if (_isExport) { exportFrame(_exportingMs); }
             break;
