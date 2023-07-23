@@ -6,9 +6,9 @@ class SceneLandscape extends Scene
     LandscapeStyle _style;
     LandscapeType _type;
 
-    SceneLandscape(float totalSceneSec, float visualChangeSec)
+    SceneLandscape(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float visualChangeSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
         _visualChangeSec = visualChangeSec;
         _style = LandscapeStyle.NORMAL;
         _type = LandscapeType.PHASE1;
@@ -54,6 +54,34 @@ class SceneLandscape extends Scene
             _type = LandscapeType.PHASE2;
             _style = LandscapeStyle.VIRTUAL;
         }
+    }
+
+    @Override
+    void applyBeginTransitionEffect()
+    {
+        if (_beginEffect == null) { return; }
+        pushMatrix();
+        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
+        rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
+        hint(DISABLE_DEPTH_TEST);
+        _beginEffect.applyEffect();
+        hint(ENABLE_DEPTH_TEST);
+        popMatrix();
+        _beginEffect.timeCount();
+    }
+    
+    @Override
+    void applyEndTransitionEffect()
+    {
+        if (_endEffect == null) { return; }
+        pushMatrix();
+        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
+        rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
+        hint(DISABLE_DEPTH_TEST);
+        _endEffect.applyEffect();
+        hint(ENABLE_DEPTH_TEST);
+        popMatrix();
+        _endEffect.timeCount();
     }
 
     class LandscapeCamera extends Camera

@@ -2,9 +2,9 @@ class SceneIcosphere extends Scene
 {
     SpikeIcosphere _ico;
 
-    SceneIcosphere(float totalSceneSec)
+    SceneIcosphere(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
     }
 
     @Override

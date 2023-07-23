@@ -13,6 +13,7 @@ SceneManager _sm;
 DataManager _dm;
 Utility _util;
 TestHUD _hud;
+Scene[] _scenes;
 
 void setup()
 {
@@ -27,45 +28,40 @@ void setup()
     _dm = new DataManager();
     _util = new Utility();
     _hud = new TestHUD();
-    // if (_isExport) { exportStart(); }
+    _scenes = new Scene[]{
+            new SceneAppearing(null, null, 2.65*4),
+            new SceneLandscape(new TransitionFadeOut(2, #000000), new TransitionFadeIn(1, #ffffff), 13, 9.5),
+            new SceneTunnel(new TransitionFadeOut(1, #ffffff), new TransitionBlink(.5, 1, #000000), 11),
+            new SceneRecursiveRect(null, new TransitionFadeIn(.3, #000000), 11.5, 5.5),
+            new SceneImageConvert(new TransitionFadeOut(.3, #000000), null, 22, 5, 10.5),
+            new SceneTrianglesRotation(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneArcsRotation(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneDistortedGrid(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneIcosphere(null, null, 3),
+            new SceneQuadDivision(new TransitionFadeOut(.6, #000000), new TransitionBlink(.33, 1, #000000), 3),
+            new SceneKaleidoscope(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneAbsorption(this, null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneReversingRects(null, null, 3),
+            new SceneExploring(new TransitionFadeOut(2, #ffffff), null, 12, 3)
+    };
 }
 
 void draw()
 {
-    switch (frameCount)
+    // preprocessing
+    if (frameCount == 1) { _dm.preprocessing(); }
+    else if (frameCount < _scenes.length+2) { _sm.addScene(_scenes[frameCount-2]); }
+
+    if (frameCount == _scenes.length+2)
     {
-        case 1:
-            _dm.preprocessing();
-            break;
-        case 2:
-            // _sm.addScene(new SceneAppearing(2.65*4));
-            // _sm.addScene(new SceneLandscape(13, 9.5));
-            // _sm.addScene(new SceneTunnel(11));
-            // _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
-            // _sm.addScene(new SceneImageConvert(22, 5, 10.5));
-            break;
-        case 3:
-            // _sm.addScene(new SceneTrianglesRotation(3));
-            // _sm.addScene(new SceneArcsRotation(3));
-            // _sm.addScene(new SceneDistortedGrid(3));
-            // _sm.addScene(new SceneIcosphere(3));
-            break;
-        case 4:
-            // _sm.addScene(new SceneQuadDivision(3));
-            // _sm.addScene(new SceneKaleidoscope(3));
-            // _sm.addScene(new SceneAbsorption(this, 3));
-            // _sm.addScene(new SceneReversingRects(3));
-            // _sm.addScene(new SceneStereographicProjection(3));
-            break;
-        case 5:
-            // _sm.addScene(new SceneExploring(12, 3));
-            break;
-        default:
-            if (frameCount < 1) { break; }
-            // println("FPS: "+_hud.getFPS());
-            _sm.advanceOneFrame();
-            // if (_isExport) { exportFrame(_exportingMs); }
-            break;
+        println("The movie has just started.");
+        // if (_isExport) { exportStart(); }
+    }
+    if (frameCount >= _scenes.length+2)
+    {
+        // println("FPS: "+_hud.getFPS());
+        _sm.advanceOneFrame();
+        // if (_isExport) { exportFrame(_exportingMs); }
     }
 }
 

@@ -5,9 +5,9 @@ class SceneKaleidoscope extends Scene
     FloatQuadManager _fm;
     KaleidoscopeQuadManager _km;
 
-    SceneKaleidoscope(float totalSceneSec)
+    SceneKaleidoscope(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
     }
 
     @Override
@@ -70,6 +70,7 @@ class SceneKaleidoscope extends Scene
     class KaleidoscopeQuadManager
     {
         ArrayList<TextureQuadLiner> _quadList;
+        float _threshSec;
 
         KaleidoscopeQuadManager() { _quadList = new ArrayList<TextureQuadLiner>(); }
 
@@ -90,10 +91,11 @@ class SceneKaleidoscope extends Scene
 
         void updateQuads(float intervalSec)
         {
-            if (_util.mod(_curSec, intervalSec) > intervalSec/2
-                && _util.mod(_curSec+1./_frameRate, intervalSec) < intervalSec/2)
+            _threshSec += 1./_frameRate;
+            if (_threshSec >= intervalSec)
             {
                 addQuad();
+                _threshSec = 0;
             }
             for (int i = 0; i < _quadList.size(); i++)
             {

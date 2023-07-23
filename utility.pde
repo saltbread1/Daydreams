@@ -125,6 +125,7 @@ class Utility
     {
         return mod(x, 1);
     }
+    
 
     /************************/
     /*    easing methods    */
