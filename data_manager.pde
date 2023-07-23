@@ -2,7 +2,7 @@ class DataManager
 {
     final PImage _imgEye, _imgHand, _imgMouth;
     final PImage[] _imgEyes, _imgEyesAlpha;
-    final PShader _shaderNoise;
+    final PShader _shaderNoise0, _shaderNoise1;
 
     DataManager()
     {
@@ -16,14 +16,15 @@ class DataManager
             _imgEyes[i] = loadImage("eye"+i+".png");
             _imgEyesAlpha[i] = loadImage("eye"+i+"_a.png");
         }
-        _shaderNoise = loadShader("noise.glsl");
+        _shaderNoise0 = loadShader("noise0.glsl");
+        _shaderNoise1 = loadShader("noise1.glsl");
     }
 
     void preprocessing()
     {
         int cNum = 4;
         _imgEye.resize(width, height);
-        _imgMouth.resize((int)((height*.84)*_imgMouth.width/_imgMouth.height), (int)(height*.84));
+        _imgMouth.resize(height*_imgMouth.width/_imgMouth.height, height);
         _imgHand.filter(POSTERIZE, cNum);
         _imgMouth.filter(POSTERIZE, cNum);
         for (int i = 0; i < 3; i++)
@@ -43,5 +44,7 @@ class DataManager
 
     PImage[] getEyeAlphaImages() { return _imgEyesAlpha; }
 
-    PShader getNoiseShader() { return _shaderNoise; }
+    PShader getNoiseShader0() { return _shaderNoise0; }
+
+    PShader getNoiseShader1() { return _shaderNoise1; }
 }

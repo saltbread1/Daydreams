@@ -58,8 +58,6 @@ class SceneManager
             float t = millis();
             _curScene.start();
             println("Start of \""+_curScene.getClass().getSimpleName()+"\": "+(millis()-t)+" ms.");
-            _curScene.timeCount();
-            return;
         }
         _curScene.update();
         _curScene.timeCount();
