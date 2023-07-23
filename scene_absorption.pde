@@ -1,8 +1,8 @@
 class SceneAbsorption extends Scene
 {
     PGraphics _pg;
+    PShader _noise;
     QuadManager _qm;
-    ImageDistorter _distorter;
     
     SceneAbsorption(PApplet papplet, float totalSceneSec)
     {
@@ -13,80 +13,31 @@ class SceneAbsorption extends Scene
     void initialize()
     {
         _pg = createGraphics(width, height, P3D);
+        _noise = _dm.getNoiseShader1();
+        _noise.set("resolution", (float)_pg.width, (float)_pg.height);
         _qm = new QuadManager();
-        _distorter = new ImageDistorter();
     }
 
     @Override
     void update()
     {
         _qm.updateQuads(.1, 4);
+        _noise.set("time", _curSec*2.3);
 
         _pg.beginDraw();
         _pg.textureMode(NORMAL);
-        _pg.blendMode(ADD);
-        _pg.background(#000000);
+        //_pg.blendMode(ADD);
+        _pg.background(#600000);
         _pg.hint(DISABLE_DEPTH_TEST);
         _pg.pushStyle();
         _pg.imageMode(CENTER);
         _pg.image(_dm.getMouthImage(), width/2, height/2);
         _pg.popStyle();
         _qm.drawQuads(_pg);
+        _pg.filter(_noise);
         _pg.endDraw();
 
-        //image(_distorter.getDistort(_pg, 16, 9, _curSec*1.2), 0, 0);
         image(_pg, 0, 0);
-    }
-
-    class ImageDistorter
-    {
-        final int _seedX, _seedY;
-
-        ImageDistorter()
-        {
-            _seedX = (int)random(65536);
-            _seedY = (int)random(65536);
-        }
-
-        PImage getDistort(PImage img, int resX, int resY, float t)
-        {
-            float stepLenX = (float)img.width/resX;
-            float stepLenY = (float)img.height/resY;
-            float noiseScale = .1;
-            PVector[][] vertices = new PVector[resX+1][resY+1];
-            for (int i = 0; i <= resX; i++)
-            {
-                for (int j = 0; j <= resY; j++)
-                {
-                    float x = min(stepLenX * i, img.width);
-                    float y = min(stepLenY * j, img.height);
-                    float nValX = noise(i*noiseScale, j*noiseScale, _seedX+t);
-                    float nValY = noise(i*noiseScale, j*noiseScale, _seedY+t);
-                    float offX = i == 0 || i == resX ? 0 : constrain((1-nValX*2)*4, -1, 1)*stepLenX*.5;
-                    float offY = j == 0 || j == resY ? 0 : constrain((1-nValY*2)*4, -1, 1)*stepLenY*.5;
-                    vertices[i][j] = new PVector(x+offX, y+offY);
-                }
-            }
-
-            ArrayList<TextureQuad> quadList = new ArrayList<TextureQuad>();
-            for (int i = 0; i < resX; i++)
-            {
-                for (int j = 0; j < resY; j++)
-                {
-                    PImage imgBlock = img.get((int)(stepLenX * i), (int)(stepLenY * j), (int)stepLenX, (int)stepLenY);
-                    quadList.add(new TextureQuad(vertices[i][j], vertices[i][j+1], vertices[i+1][j+1], vertices[i+1][j], imgBlock));
-                }
-            }
-
-            PGraphics pg = createGraphics(width, height, P2D);
-            pg.beginDraw();
-            pg.textureMode(NORMAL);
-            pg.background(#000000);
-            for (TextureQuad quad : quadList) { quad.drawMeAttr(pg); }
-            pg.endDraw();
-
-            return pg;
-        }
     }
 
     class AbsorbedTextureQuad extends TextureQuad
@@ -119,8 +70,8 @@ class SceneAbsorption extends Scene
             _control2 = PVector.mult(n, s2).add(c2);
 
             _prePos = getCenter();
-            _start2MiddleSec = random(.62, 3.2);
-            _middle2GoalSec = random(.44, .73);
+            _start2MiddleSec = random(.31, 1.6);
+            _middle2GoalSec = random(.22, .37);
             _seed1 = (int)random(65536);
             _seed2 = (int)random(65536);
         }

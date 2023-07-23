@@ -17,7 +17,7 @@ class SceneImageConvert extends Scene
     void initialize()
     {
         _base = createGraphics(width, height, P2D);
-        _noise = _dm.getNoiseShader();
+        _noise = _dm.getNoiseShader0();
 
         updateGraphics(_convertStartSec); // image at the beginning to conversion
         updateGraphics(_convertStartSec); // first update is not go well...
@@ -104,8 +104,8 @@ class SceneImageConvert extends Scene
             PVector c1 = PVector.mult(_start, 1-t1).add(PVector.mult(_goal, t1));
             PVector c2 = PVector.mult(_start, 1-t2).add(PVector.mult(_goal, t2));
             PVector dir = PVector.sub(_goal, _start);
-            PVector n = new PVector(dir.y, -dir.x);
-            float r = width*.006;
+            PVector n = new PVector(dir.y, -dir.x).normalize();
+            float r = PVector.dist(_start, _goal)*2.4;
             float s1 = random(-1, 1)*r;
             float s2 = random(-1, 1)*r;
             _control1 = PVector.mult(n, s1).add(c1);
