@@ -541,6 +541,24 @@ class TextureQuad extends Quad
         pg.vertex(_v4.x, _v4.y, 1, 0);
         pg.endShape();
     }
+
+    void drawMeAttr(int alpha)
+    {
+        pushStyle();
+        tint(255, alpha);
+        if (_attr != null) { _attr.apply(); }
+        drawMe();
+        popStyle();
+    }
+
+    void drawMeAttr(PGraphics pg, int alpha)
+    {
+        pg.pushStyle();
+        pg.tint(255, alpha);
+        if (_attr != null) { _attr.apply(pg); }
+        drawMe(pg);
+        pg.popStyle();
+    }
 }
 
 class DividedQuad extends Quad

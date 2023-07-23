@@ -1,9 +1,20 @@
 abstract class Scene
 {
+    final PApplet _papplet;
     final float _totalSceneSec;
     float _curSec;
 
-    Scene(float totalSceneSec) { _totalSceneSec = totalSceneSec; }
+    Scene(PApplet papplet, float totalSceneSec)
+    {
+        _papplet = papplet;
+        _totalSceneSec = totalSceneSec;
+    }
+
+    Scene(float totalSceneSec)
+    {
+        _papplet = null;
+        _totalSceneSec = totalSceneSec;
+    }
     
     abstract void initialize();
 

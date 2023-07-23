@@ -148,6 +148,12 @@ class Utility
         return t < .5 ? 2*sq(t) : 1-2*sq(t-1);
     }
 
+    float easeInCubic(float t)
+    {
+        t = constrain(t, 0, 1);
+        return pow(t, 3);
+    }
+
     float easeOutCubic(float t)
     {
         t = constrain(t, 0, 1);
@@ -172,10 +178,10 @@ class Utility
         return pow(t, 5);
     }
 
-    float easeOutSin(float t)
+    float easeOutQuint(float t)
     {
         t = constrain(t, 0, 1);
-        return sin(HALF_PI*t);
+        return 1-pow(1-t, 5);
     }
 
     float easeOutBack(float t, float a)
