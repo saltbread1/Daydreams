@@ -38,6 +38,7 @@ void draw()
             _dm.preprocessing();
             break;
         case 2:
+            // _sm.addScene(new SceneAppearing(2.65*4));
             // _sm.addScene(new SceneLandscape(13, 9.5));
             // _sm.addScene(new SceneTunnel(11));
             // _sm.addScene(new SceneRecursiveRect(11.5, 5.5));
@@ -57,7 +58,7 @@ void draw()
             // _sm.addScene(new SceneStereographicProjection(3));
             break;
         case 5:
-            _sm.addScene(new SceneExploring(12, 3));
+            // _sm.addScene(new SceneExploring(12, 3));
             break;
         default:
             if (frameCount < 1) { break; }
