@@ -4,9 +4,9 @@ class SceneAbsorption extends Scene
     PShader _noise;
     QuadManager _qm;
     
-    SceneAbsorption(PApplet papplet, float totalSceneSec)
+    SceneAbsorption(PApplet papplet, TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(papplet, totalSceneSec);
+        super(papplet, beginEffect, endEffect, totalSceneSec);
     }
 
     @Override
@@ -21,7 +21,7 @@ class SceneAbsorption extends Scene
     @Override
     void update()
     {
-        _qm.updateQuads(.1, 4);
+        _qm.updateQuads(.1, 6);
         _noise.set("time", _curSec*2.3);
 
         _pg.beginDraw();
@@ -131,6 +131,7 @@ class SceneAbsorption extends Scene
     {
         PImage[] _imgs;
         ArrayList<AbsorbedTextureQuad> _quadList;
+        float _threshSec;
 
         QuadManager()
         {
@@ -155,10 +156,11 @@ class SceneAbsorption extends Scene
 
         void updateQuads(float intervalSec, int maxiterations)
         {
-            if (_util.mod(_curSec, intervalSec) > intervalSec/2
-                && _util.mod(_curSec+1./_frameRate, intervalSec) < intervalSec/2)
+            _threshSec += 1./_frameRate;
+            if (_threshSec >= intervalSec)
             {
                 for (int i = 0; i < maxiterations; i++) { addQuad(); }
+                _threshSec = 0;
             }
             for (int i = 0; i < _quadList.size(); i++)
             {

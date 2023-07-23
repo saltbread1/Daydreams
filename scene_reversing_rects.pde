@@ -4,9 +4,9 @@ class SceneReversingRects extends Scene
     ArrayList<QuadManager> _quadManagerList;
     CustomBackground _bg;
 
-    SceneReversingRects(float totalSceneSec)
+    SceneReversingRects(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
     }
 
     @Override

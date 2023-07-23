@@ -29,20 +29,20 @@ void setup()
     _util = new Utility();
     _hud = new TestHUD();
     _scenes = new Scene[]{
-            // new SceneAppearing(2.65*4),
-            // new SceneLandscape(13, 9.5),
-            // new SceneTunnel(11),
-            // new SceneRecursiveRect(11.5, 5.5),
-            // new SceneImageConvert(22, 5, 10.5),
-            // new SceneTrianglesRotation(3),
-            // new SceneArcsRotation(3),
-            // new SceneDistortedGrid(3),
-            // new SceneIcosphere(3),
-            new SceneQuadDivision(3),
-            new SceneKaleidoscope(3),
-            new SceneAbsorption(this, 3),
-            new SceneReversingRects(3)
-            //new SceneExploring(12, 3)
+            new SceneAppearing(null, null, 2.65*4),
+            new SceneLandscape(new TransitionFadeOut(2, #000000), new TransitionFadeIn(1, #ffffff), 13, 9.5),
+            new SceneTunnel(new TransitionFadeOut(1, #ffffff), new TransitionBlink(.5, 1, #000000), 11),
+            new SceneRecursiveRect(null, new TransitionFadeIn(.3, #000000), 11.5, 5.5),
+            new SceneImageConvert(new TransitionFadeOut(.3, #000000), null, 22, 5, 10.5),
+            new SceneTrianglesRotation(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneArcsRotation(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneDistortedGrid(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneIcosphere(null, null, 3),
+            new SceneQuadDivision(new TransitionFadeOut(.6, #000000), new TransitionBlink(.33, 1, #000000), 3),
+            new SceneKaleidoscope(null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneAbsorption(this, null, new TransitionBlink(.33, 1, #000000), 3),
+            new SceneReversingRects(null, null, 3),
+            new SceneExploring(new TransitionFadeOut(2, #ffffff), null, 12, 3)
     };
 }
 

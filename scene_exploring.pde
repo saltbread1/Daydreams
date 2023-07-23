@@ -7,9 +7,9 @@ class SceneExploring extends Scene
     ExploringStyle _style;
     ExploringType _type;
 
-    SceneExploring(float totalSceneSec, float epochSec)
+    SceneExploring(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float epochSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
         _epochSec = epochSec;
         _style = ExploringStyle.LIGHT;
         _type = ExploringType.PHASE1;

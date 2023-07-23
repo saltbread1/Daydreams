@@ -4,9 +4,9 @@ class SceneTunnel extends Scene
     float _radius, _spaceZ, _minZ, _maxZ;
     int _rectNum;
 
-    SceneTunnel(float totalSceneSec)
+    SceneTunnel(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
     }
 
     @Override

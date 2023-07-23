@@ -3,12 +3,12 @@ class SceneAppearing extends Scene
     PGraphics _pg;
     PShader _glitch;
     CircleManager _cm;
-    int[] _createNum = {8, 24, 64, 128};
+    int[] _createNum = {8, 24, 48, 128};
     int _createIndex;
     
-    SceneAppearing(float totalSceneSec)
+    SceneAppearing(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(beginEffect, endEffect, totalSceneSec);
     }
 
     @Override
