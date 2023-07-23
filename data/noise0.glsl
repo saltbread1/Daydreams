@@ -57,8 +57,8 @@ float domainWarp(const vec2 v)
     for (int i = 0; i < WARP_ITERATIONS; i++)
     {
         vec2 val = n_val * 4. + v;
-        float n1 = fbm(val + n_offsets[i*2] + time*.16*4);
-        float n2 = fbm(val + n_offsets[i*2+1] + time*.62*4);
+        float n1 = fbm(val + n_offsets[i*2] + time*.16*4.);
+        float n2 = fbm(val + n_offsets[i*2+1] + time*.62*4.);
         n_val = vec2(n1, n2);
     }
     return n_val.x;
@@ -76,7 +76,7 @@ void main()
         n_offsets[i] = random2D(vec2(i)) * 10.;
     }
     
-    vec2 st = floor(gl_FragCoord.xy / kernel_size) / min(resolution.x, resolution.y);
+    vec2 st = floor(gl_FragCoord.xy / vec2(kernel_size)) / min(resolution.x, resolution.y);
     
     float n_val = domainWarp(st*NOISE_SCALE);
     float h_val = fract(n_val*1.36 + hue_offset);

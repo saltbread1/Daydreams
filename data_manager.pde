@@ -2,7 +2,7 @@ class DataManager
 {
     final PImage _imgEye, _imgHand, _imgMouth;
     final PImage[] _imgEyes, _imgEyesAlpha;
-    final PShader _shaderNoise0, _shaderNoise1;
+    final PShader _shaderNoise0, _shaderNoise1, _shaderGlitch;
 
     DataManager()
     {
@@ -18,6 +18,7 @@ class DataManager
         }
         _shaderNoise0 = loadShader("noise0.glsl");
         _shaderNoise1 = loadShader("noise1.glsl");
+        _shaderGlitch = loadShader("glitch.glsl");
     }
 
     void preprocessing()
@@ -47,4 +48,6 @@ class DataManager
     PShader getNoiseShader0() { return _shaderNoise0; }
 
     PShader getNoiseShader1() { return _shaderNoise1; }
+
+    PShader getGlitchShader() { return _shaderGlitch; }
 }
