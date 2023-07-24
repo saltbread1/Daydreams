@@ -18,6 +18,12 @@ class Utility
         else { line(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z); }
     }
 
+    void myLine(PVector v1, PVector v2, PGraphics pg)
+    {
+        if (v1.z == 0 && v2.z == 0) { pg.line(v1.x, v1.y, v2.x, v2.y); }
+        else { pg.line(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z); }
+    }
+
     PVector rotate(PVector target, float rad)
     {
         return target.copy().rotate(rad);
