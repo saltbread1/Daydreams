@@ -1,14 +1,14 @@
 class SceneLandscape extends Scene
 {
     Landscape _landscape;
-    LandscapeCamera _camera;
+    Rect _cameraLimit;
     final float _visualChangeSec;
     LandscapeStyle _style;
     LandscapeType _type;
 
-    SceneLandscape(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float visualChangeSec)
+    SceneLandscape(LandscapeCamera camera, float totalSceneSec, float visualChangeSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
         _visualChangeSec = visualChangeSec;
         _style = LandscapeStyle.NORMAL;
         _type = LandscapeType.PHASE1;
@@ -22,128 +22,29 @@ class SceneLandscape extends Scene
 
         PVector offset = new PVector(width, width).div(2);
         Rect range = _landscape.getRange();
-        Rect limit = new Rect(
+        _cameraLimit = new Rect(
                 PVector.add(range._upperLeft, offset),
                 PVector.sub(range._lowerRight, offset));
-        _camera = new LandscapeCamera(new PVector(0, height, height*.49), limit);
     }
 
     @Override
     void update()
-    {
-        ambientLight(32, 32, 32);
-        directionalLight(255, 255, 255, -.5, 0, -1);
-        changePhase();
-        _camera.update();
-        if (_type == LandscapeType.PHASE2) { _camera.addVibration(.12, width*.22, PI*.3); }
-        _camera.updateCamera();
-        _landscape.drawMe();
-    }
-
-    @Override
-    void postProcessing()
-    {
-        super.postProcessing();
-        _util.resetCamera();
-    }
-
-    void changePhase()
     {
         if (_type == LandscapeType.PHASE1 && _curSec > _visualChangeSec)
         {
             _type = LandscapeType.PHASE2;
             _style = LandscapeStyle.VIRTUAL;
         }
-    }
-
-    @Override
-    void applyBeginTransitionEffect()
-    {
-        if (_beginEffect == null) { return; }
-        pushMatrix();
-        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
-        rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
-        hint(DISABLE_DEPTH_TEST);
-        _beginEffect.applyEffect();
-        hint(ENABLE_DEPTH_TEST);
-        popMatrix();
-        _beginEffect.timeCount();
-    }
-    
-    @Override
-    void applyEndTransitionEffect()
-    {
-        if (_endEffect == null) { return; }
-        pushMatrix();
-        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
-        rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
-        hint(DISABLE_DEPTH_TEST);
-        _endEffect.applyEffect();
-        hint(ENABLE_DEPTH_TEST);
-        popMatrix();
-        _endEffect.timeCount();
-    }
-
-    class LandscapeCamera extends Camera
-    {
-        final Rect _limit;
-        PVector _startPos, _goalPos;
-        float _preStepRad, _stepCurSec, _stepTotalSec, _stepEndSec;
-
-        LandscapeCamera(PVector center2eye, PVector centerPos, Rect limit)
+        ambientLight(32, 32, 32);
+        directionalLight(255, 255, 255, -.5, 0, -1);
+        if (_camera instanceof LandscapeCamera)
         {
-            super(center2eye, centerPos);
-            _limit = limit;
-            _preStepRad = random(TAU);
+            LandscapeCamera landCam = (LandscapeCamera)_camera;
+            landCam.update(_cameraLimit, _type);
         }
-
-        LandscapeCamera(PVector center2eye, Rect limit)
-        {
-            this(center2eye, new PVector(), limit);
-        }
-
-        void setStepParameters()
-        {
-            PVector virtualGoalPos;
-            float rad;
-            int c = 0;
-
-            _startPos = _centerPos.copy();
-            do
-            {
-                float d = width + sqrt(random(1))*width*2;
-                rad = ++c < 20 ? _preStepRad + random(-1,1)*PI*.4 : _preStepRad + random(-1,1)*PI*.8;
-                PVector dir = PVector.fromAngle(rad);
-                _stepTotalSec = _type == LandscapeType.PHASE1 ? d*.0013 : d*.0004;
-                _stepEndSec = _stepTotalSec * sq(random(.44, .82));
-                _goalPos = PVector.add(_startPos, dir.mult(d));
-                float r = _util.easeOutQuad(_stepEndSec/_stepTotalSec);
-                virtualGoalPos = PVector.mult(_startPos, 1-r).add(PVector.mult(_goalPos, r));
-            }
-            while (!isInIimitRange(virtualGoalPos));
-            
-            _preStepRad = rad;
-            _stepCurSec = 0;
-        }
-
-        void update()
-        {
-            if (_stepCurSec >= _stepEndSec) { setStepParameters(); }
-            float r = _util.easeOutQuad(_stepCurSec/_stepTotalSec);
-            _centerPos = PVector.mult(_startPos, 1-r).add(PVector.mult(_goalPos, r));
-            _stepCurSec += 1./_frameRate;
-        }
-
-        boolean isInIimitRange(PVector pos)
-        {
-            PVector ul = _limit._upperLeft;
-            PVector lr = _limit._lowerRight;
-            if (pos.x > ul.x && pos.x < lr.x && pos.y > ul.y && pos.y < lr.y)
-            {
-                return true;
-            }
-            return false;
-        }
+        if (_type == LandscapeType.PHASE2) { _camera.addVibration(.12, width*.22, PI*.3); }
+        _camera.setCamera();
+        _landscape.drawMe();
     }
 
     class Landscape

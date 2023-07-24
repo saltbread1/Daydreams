@@ -2,9 +2,9 @@ class SceneRandomWalk extends Scene
 {
     RandomWalkDisplayer _displayer;
 
-    SceneRandomWalk(float totalSceneSec)
+    SceneRandomWalk(Camera camera, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override
@@ -18,6 +18,7 @@ class SceneRandomWalk extends Scene
     @Override
     void start()
     {
+        super.start();
         background(#000000);
     }
 

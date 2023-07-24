@@ -3,13 +3,12 @@ class SceneExploring extends Scene
     final float _epochSec;
     FloatingTriangle _triangle;
     ReactShapeManager _sm;
-    ExploringCamera _camera;
     ExploringStyle _style;
     ExploringType _type;
 
-    SceneExploring(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float epochSec)
+    SceneExploring(Camera camera, float totalSceneSec, float epochSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
         _epochSec = epochSec;
         _style = ExploringStyle.LIGHT;
         _type = ExploringType.PHASE1;
@@ -20,7 +19,6 @@ class SceneExploring extends Scene
     {
         _triangle = new FloatingTriangle(width*.02, width*.8);
         _sm = new ReactShapeManager();
-        _camera = new ExploringCamera(new PVector(0, 0, (height/2)/tan(PI/6)));
         _sm.initialize();
     }
 
@@ -30,20 +28,17 @@ class SceneExploring extends Scene
         changePhase();
         _triangle.updateMe();
         _sm.updateShapes();
-        _camera.update();
+        if (_camera instanceof ExploringCamera)
+        {
+            ExploringCamera expCam = (ExploringCamera)_camera;
+            expCam.update(_triangle.getCenter());
+        }
         if (_type == ExploringType.PHASE3) { _camera.addVibration(.12, width*.026, PI*.15); }
         if (_type == ExploringType.PHASE4) { _camera.addVibration(.12, width*.066, PI*.3); }
-        _camera.updateCamera();
+        _camera.setCamera();
         _sm.drawShapes();
         _triangle.drawMeAttr();
         //drawDebugInfo();
-    }
-
-    @Override
-    void postProcessing()
-    {
-        super.postProcessing();
-        _util.resetCamera();
     }
 
     @Override
@@ -78,20 +73,6 @@ class SceneExploring extends Scene
             _style = ExploringStyle.DARK;
             _type = ExploringType.PHASE4;
             _sm.changeShapesColors();
-        }
-    }
-
-    class ExploringCamera extends Camera
-    {
-        ExploringCamera(PVector center2eye)
-        {
-            super(center2eye);
-        }
-
-        @Override
-        void update()
-        {
-            _centerPos = _triangle.getCenter();
         }
     }
 

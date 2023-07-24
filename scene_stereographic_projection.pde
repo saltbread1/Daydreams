@@ -2,9 +2,9 @@ class SceneStereographicProjection extends Scene
 {
     StereographicGasket _gasket;
 
-    SceneStereographicProjection(float totalSceneSec)
+    SceneStereographicProjection(Camera camera, float totalSceneSec)
     {
-        super(totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override
@@ -15,12 +15,6 @@ class SceneStereographicProjection extends Scene
     }
 
     @Override
-    void start()
-    {
-        camera(0, 0, (height/2)/tan(PI/6), 0, 0, 0, 0, 1, 0);
-    }
-
-    @Override
     void update()
     {
         float phi = _curSec*4.4;
@@ -28,13 +22,6 @@ class SceneStereographicProjection extends Scene
         PVector rotAxis = new PVector(sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi));
         _gasket.rotate(rotAxis, .12, new PVector());
         _gasket.drawMe();
-    }
-
-    @Override
-    void postProcessing()
-    {
-        super.postProcessing();
-        _util.resetCamera();
     }
 
     class StereographicGasket extends Icosphere

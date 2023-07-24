@@ -1,80 +1,42 @@
 abstract class Scene
 {
-    final PApplet _papplet;
-    final TransitionEffect _beginEffect, _endEffect;
+    final Camera _camera;
     final float _totalSceneSec;
     float _curSec;
 
-    Scene(PApplet papplet, TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    Scene(Camera camera, float totalSceneSec)
     {
-        _papplet = papplet;
-        _beginEffect = beginEffect;
-        _endEffect = endEffect;
+        _camera = camera;
         _totalSceneSec = totalSceneSec;
-    }
-
-    Scene(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
-    {
-        this(null, beginEffect, endEffect, totalSceneSec);
-    }
-
-    Scene(PApplet papplet, float totalSceneSec)
-    {
-        this(papplet, null, null, totalSceneSec);
-    }
-
-    Scene(float totalSceneSec)
-    {
-        this(null, null, null, totalSceneSec);
     }
     
     abstract void initialize();
 
-    void start() {}
+    void start() { _camera.setCamera(); }
 
     abstract void update();
 
-    void timeCount() { _curSec += 1./_frameRate; }
+    final void timeCount() { _curSec += 1./_frameRate; }
 
-    boolean isEnd() { return _curSec > _totalSceneSec; }
+    final boolean isEnd() { return _curSec > _totalSceneSec; }
 
     void postProcessing() { println("End \""+this.getClass().getSimpleName()+"\"."); }
 
     void clearScene() { background(#000000); }
 
-    float getCurrentSecond() { return _curSec; }
+    final float getCurrentSecond() { return _curSec; }
 
-    float getTotalSecond() { return _totalSceneSec; }
+    final float getTotalSecond() { return _totalSceneSec; }
 
-    void applyBeginTransitionEffect()
-    {
-        if (_beginEffect == null) { return; }
-        hint(DISABLE_DEPTH_TEST);
-        _beginEffect.applyEffect();
-        hint(ENABLE_DEPTH_TEST);
-        _beginEffect.timeCount();
-    }
+    final Camera getCamera() { return _camera; }
+
+    final void applyBeginTransitionEffect() { _camera.applyBeginTransitionEffect(); }
     
-    void applyEndTransitionEffect()
-    {
-        if (_endEffect == null) { return; }
-        hint(DISABLE_DEPTH_TEST);
-        _endEffect.applyEffect();
-        hint(ENABLE_DEPTH_TEST);
-        _endEffect.timeCount();
-    }
+    final void applyEndTransitionEffect() { _camera.applyEndTransitionEffect(); }
 
-    float getBeginEffectTotalSecound()
-    {
-        if (_beginEffect == null) { return -1; }
-        return _beginEffect.getTotalSecond();
-    }
+    final float getBeginEffectTotalSecound() { return _camera.getBeginEffectTotalSecound(); }
 
-    float getEndEffectTotalSecound()
-    {
-        if (_endEffect == null) { return -1; }
-        return _endEffect.getTotalSecond();
-    }
+    final float getEndEffectTotalSecound() { return _camera.getEndEffectTotalSecound(); }
 }
 
 class SceneManager
@@ -132,45 +94,4 @@ class SceneManager
         println("The movie has just finished.");
         noLoop();
     }
-}
-
-abstract class Camera
-{
-    final PVector _center2eye;
-    PVector _centerPos, _vibOffset;
-    float _vibRotRad, _vibCurSec;
-
-    Camera(PVector center2eye, PVector centerPos)
-    {
-        _center2eye = center2eye;
-        _centerPos = centerPos;
-        _vibOffset = new PVector();
-        _vibRotRad = random(TAU);
-    }
-
-    Camera(PVector center2eye)
-    {
-        this(center2eye, new PVector());
-    }
-
-    abstract void update();
-
-    void updateCamera()
-    {
-        PVector c = PVector.add(_centerPos, _vibOffset);
-        PVector eye = PVector.add(c, _center2eye);
-        camera(eye.x, eye.y, eye.z, c.x, c.y, c.z, 0, 1, 0);
-    }
-
-    void addVibration(float vibPeriodSec, float vibScaleRadius, float vibRotMaxSpd)
-    {
-        float r = acos(cos(TAU*_vibCurSec/vibPeriodSec))/PI;
-        _vibRotRad += vibRotMaxSpd * random(.36, 1);
-        _vibOffset = PVector.fromAngle(_vibRotRad).mult(vibScaleRadius * r);
-        _vibCurSec += 1./_frameRate;
-    }
-
-    PVector getCenter() { return PVector.add(_centerPos, _vibOffset); }
-
-    PVector getCenter2Eye() { return _center2eye; }
 }

@@ -6,9 +6,9 @@ class SceneAppearing extends Scene
     int[] _createNum = {8, 24, 48, 128};
     int _createIndex;
     
-    SceneAppearing(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneAppearing(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

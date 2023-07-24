@@ -4,9 +4,9 @@ class SceneTunnel extends Scene
     float _radius, _spaceZ, _minZ, _maxZ;
     int _rectNum;
 
-    SceneTunnel(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneTunnel(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override
@@ -25,12 +25,6 @@ class SceneTunnel extends Scene
     }
 
     @Override
-    void start()
-    {
-        camera(0, 0, (height/2)/tan(PI/6), 0, 0, 0, 0, 1, 0);
-    }
-
-    @Override
     void update()
     {
         ambientLight(128, 128, 128);
@@ -42,12 +36,7 @@ class SceneTunnel extends Scene
         popMatrix();
     }
 
-    @Override
-    void postProcessing()
-    {
-        super.postProcessing();
-        _util.resetCamera();
-    }
+    PVector getCameraCenter() { return new PVector(); }
 
     TunnelGate createNewGate(float z)
     {

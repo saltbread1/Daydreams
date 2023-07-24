@@ -4,9 +4,9 @@ class SceneTrianglesRotation extends Scene
     ArrayList<Circle> _circleList;
     final color[] _palette = {#333333, #332c26, #333300, #192c26, #192c2c, #000033, #260033, #330033};
 
-    SceneTrianglesRotation(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneTrianglesRotation(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

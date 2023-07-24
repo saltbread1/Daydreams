@@ -2,9 +2,9 @@ class SceneIcosphere extends Scene
 {
     SpikeIcosphere _ico;
 
-    SceneIcosphere(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneIcosphere(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override
@@ -12,12 +12,6 @@ class SceneIcosphere extends Scene
     {
         _ico = new SpikeIcosphere(height*.24, 1);
         _ico.createFaces();
-    }
-
-    @Override
-    void start()
-    {
-        camera(0, 0, (height/2)/tan(PI/6), 0, 0, 0, 0, 1, 0);
     }
 
     @Override
@@ -30,17 +24,10 @@ class SceneIcosphere extends Scene
         _ico.updateMe();
         _ico.rotate(rotAxis, .09, new PVector());
         pushStyle();
-        stroke(#e6e6e6);
-        fill(#000000);
+        stroke(#000000);
+        fill(#ffffff);
         _ico.drawMe();
         popStyle();
-    }
-
-    @Override
-    void postProcessing()
-    {
-        super.postProcessing();
-        _util.resetCamera();
     }
 
     class SpikeIcosphere extends Icosphere

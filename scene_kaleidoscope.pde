@@ -5,9 +5,9 @@ class SceneKaleidoscope extends Scene
     FloatQuadManager _fm;
     KaleidoscopeQuadManager _km;
 
-    SceneKaleidoscope(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneKaleidoscope(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

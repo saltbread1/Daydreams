@@ -29,20 +29,71 @@ void setup()
     _util = new Utility();
     _hud = new TestHUD();
     _scenes = new Scene[]{
-            new SceneAppearing(null, null, 2.65*4),
-            new SceneLandscape(new TransitionFadeOut(2, #000000), new TransitionFadeIn(1, #ffffff), 13, 9.5),
-            new SceneTunnel(new TransitionFadeOut(1, #ffffff), new TransitionBlink(.5, 1, #000000), 11),
-            new SceneRecursiveRect(null, new TransitionFadeIn(.3, #ffffff), 11.5, 5.5),
-            new SceneImageConvert(new TransitionFadeOut(.3, #ffffff), null, 22, 5, 10.5),
-            new SceneTrianglesRotation(null, new TransitionBlink(.33, 1, #000000), 3),
-            new SceneArcsRotation(null, new TransitionBlink(.33, 1, #000000), 3),
-            new SceneDistortedGrid(null, new TransitionBlink(.33, 1, #000000), 3),
-            new SceneIcosphere(null, null, 3),
-            new SceneQuadDivision(new TransitionFadeOut(.6, #000000), new TransitionBlink(.33, 1, #000000), 3),
-            new SceneKaleidoscope(null, new TransitionBlink(.33, 1, #000000), 3),
-            new SceneAbsorption(this, null, new TransitionBlink(.33, 1, #000000), 3),
-            new SceneReversingRects(null, null, 3),
-            new SceneExploring(new TransitionFadeOut(2, #ffffff), null, 12, 3)
+            // new SceneAppearing(new Camera(
+            //             null,
+            //             null),
+            //         2.65*4),
+            // new SceneLandscape(
+            //         new LandscapeCamera(
+            //             new PVector(0, 1, .49).normalize().mult((height/2)/tan(PI/6)),
+            //             new PVector(),
+            //             new TransitionFadeOut(2, #000000),
+            //             new TransitionFadeIn(1, #ffffff)),
+            //         13, 9.5),
+            // new SceneTunnel(new Camera(
+            //             new PVector(0, 0, (height/2)/tan(PI/6)),
+            //             new PVector(),
+            //             new TransitionFadeOut(1, #ffffff),
+            //             new TransitionBlink(.5, 1, #000000)),
+            //         11),
+            // new SceneRecursiveRect(new Camera(
+            //             null,
+            //             new TransitionFadeIn(.3, #ffffff)),
+            //         11.5, 5.5),
+            // new SceneImageConvert(new Camera(
+            //             new TransitionFadeOut(.3, #ffffff),
+            //             null),
+            //         22, 5, 10.5),
+            // new SceneTrianglesRotation(new Camera(
+            //             null,
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            // new SceneArcsRotation(new Camera(
+            //             null,
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            // new SceneDistortedGrid(new Camera(
+            //             null,
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            new SceneIcosphere(new Camera(
+                        new PVector(0, 0, (height/2)/tan(PI/6)),
+                        new PVector(),
+                        null,
+                        new TransitionRecursive(.8, 5, .8)),
+                    3),
+            new SceneQuadDivision(new Camera(
+                        new TransitionFadeOut(.6, #000000),
+                        new TransitionBlink(.33, 1, #000000)),
+                    3),
+            new SceneKaleidoscope(new Camera(
+                        null,
+                        new TransitionBlink(.33, 1, #000000)),
+                    3),
+            new SceneAbsorption(new Camera(
+                        null,
+                        new TransitionBlink(.33, 1, #000000)),
+                    3),
+            new SceneReversingRects(new Camera(
+                        null,
+                        null),
+                    3),
+            new SceneExploring(new ExploringCamera(
+                        new PVector(0, 0, (height/2)/tan(PI/6)),
+                        new PVector(),
+                        new TransitionFadeOut(2, #ffffff),
+                        null),
+                    12, 3)
     };
 }
 

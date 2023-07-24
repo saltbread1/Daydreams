@@ -8,9 +8,9 @@ class SceneRecursiveRect extends Scene
     final float _scalingStartSec;
     final float _scale = .5;
 
-    SceneRecursiveRect(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float scalingStartSec)
+    SceneRecursiveRect(Camera camera, float totalSceneSec, float scalingStartSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
         _scalingStartSec = scalingStartSec;
     }
 

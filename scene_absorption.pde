@@ -4,9 +4,9 @@ class SceneAbsorption extends Scene
     PShader _noise;
     QuadManager _qm;
     
-    SceneAbsorption(PApplet papplet, TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneAbsorption(Camera camera, float totalSceneSec)
     {
-        super(papplet, beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override
@@ -92,15 +92,6 @@ class SceneAbsorption extends Scene
             translate(PVector.sub(pos, _prePos));
             _prePos = pos;
             _moveSec += 1./_frameRate;
-        }
-
-        @Override
-        void drawMe()
-        {
-            pushMatrix();
-            _papplet.translate(0, 0, _prePos.z);
-            super.drawMe();
-            popMatrix();
         }
 
         @Override
