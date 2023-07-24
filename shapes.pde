@@ -360,6 +360,11 @@ class TextureQuad extends Quad
         _img = img;
     }
 
+    TextureQuad(PVector v1, PVector v2, PVector v3, PVector v4)
+    {
+        this(v1, v2, v3, v4, null);
+    }
+
     void setImage(PImage img) { _img = img; }
 
     @Override

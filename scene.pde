@@ -16,27 +16,27 @@ abstract class Scene
 
     abstract void update();
 
-    void timeCount() { _curSec += 1./_frameRate; }
+    final void timeCount() { _curSec += 1./_frameRate; }
 
-    boolean isEnd() { return _curSec > _totalSceneSec; }
+    final boolean isEnd() { return _curSec > _totalSceneSec; }
 
     void postProcessing() { println("End \""+this.getClass().getSimpleName()+"\"."); }
 
     void clearScene() { background(#000000); }
 
-    float getCurrentSecond() { return _curSec; }
+    final float getCurrentSecond() { return _curSec; }
 
-    float getTotalSecond() { return _totalSceneSec; }
+    final float getTotalSecond() { return _totalSceneSec; }
 
-    Camera getCamera() { return _camera; }
+    final Camera getCamera() { return _camera; }
 
-    void applyBeginTransitionEffect() { _camera.applyBeginTransitionEffect(); }
+    final void applyBeginTransitionEffect() { _camera.applyBeginTransitionEffect(); }
     
-    void applyEndTransitionEffect() { _camera.applyEndTransitionEffect(); }
+    final void applyEndTransitionEffect() { _camera.applyEndTransitionEffect(); }
 
-    float getBeginEffectTotalSecound() { return _camera.getBeginEffectTotalSecound(); }
+    final float getBeginEffectTotalSecound() { return _camera.getBeginEffectTotalSecound(); }
 
-    float getEndEffectTotalSecound() { return _camera.getEndEffectTotalSecound(); }
+    final float getEndEffectTotalSecound() { return _camera.getEndEffectTotalSecound(); }
 }
 
 class SceneManager

@@ -8,13 +8,9 @@ abstract class TransitionEffect
         _totalEffectSec = totalEffectSec;
     }
 
-    void applyEffect(PVector cameraCenter, PVector cameraCenter2Eye)
+    final void applyEffect(PVector cameraCenter, PVector cameraCenter2Eye)
     {
-        Quad effectQuad = new Quad(
-                new PVector(-width, -height),
-                new PVector(-width, height),
-                new PVector(width, height),
-                new PVector(width, -height));
+        Quad effectQuad = createBaseEffectQuad();
         PVector ez = new PVector(0, 0, 1);
         PVector axis = ez.cross(cameraCenter2Eye);
         float rad = PVector.angleBetween(ez, cameraCenter2Eye);
@@ -25,11 +21,20 @@ abstract class TransitionEffect
         hint(ENABLE_DEPTH_TEST);
     }
 
+    Quad createBaseEffectQuad()
+    {
+        return new Quad(
+                new PVector(-width/2, -height/2),
+                new PVector(-width/2,  height/2),
+                new PVector( width/2,  height/2),
+                new PVector( width/2, -height/2));
+    }
+
     abstract void drawEffect(Quad effectQuad);
 
-    void timeCount() { _curSec += 1./_frameRate; }
+    final void timeCount() { _curSec += 1./_frameRate; }
 
-    float getTotalSecond() { return _totalEffectSec; }
+    final float getTotalSecond() { return _totalEffectSec; }
 }
 
 abstract class TransitionFade extends TransitionEffect
@@ -107,16 +112,60 @@ class TransitionBlink extends TransitionEffect
     }
 }
 
-class TransitionDivision extends TransitionEffect
+class TransitionRecursive extends TransitionEffect
 {
-    TransitionDivision(float totalEffectSec)
+    final int _maxiterations;
+    final float _recursiveScale;
+    int _recursiveNum;
+    float _iterateSec;
+    final PShader _glitch;
+
+    TransitionRecursive(float totalEffectSec, int maxiterations, float scale)
     {
         super(totalEffectSec);
+        _maxiterations = maxiterations;
+        _recursiveScale = scale;
+        _recursiveNum = 1;
+        _glitch = _dm.getGlitchShader();
+        _glitch.set("resolution", (float)width, (float)height);
+    }
+
+    @Override
+    Quad createBaseEffectQuad()
+    {
+        PImage img = get(0, 0, width, height);
+        PGraphics pg = createGraphics(width, height, P2D);
+        pg.beginDraw();
+        pg.pushStyle();
+        pg.imageMode(CENTER);
+        float scale = 1;
+        for (int i = 0; i <= _recursiveNum; i++)
+        {
+            pg.image(img, width/2, height/2, (int)(width*scale), (int)(height*scale));
+            scale *= _recursiveScale;
+        }
+        pg.popStyle();
+        pg.filter(_glitch);
+        pg.endDraw();
+        return new TextureQuad(
+                new PVector(-width/2, -height/2),
+                new PVector(-width/2,  height/2),
+                new PVector( width/2,  height/2),
+                new PVector( width/2, -height/2),
+                pg);
     }
 
     @Override
     void drawEffect(Quad effectQuad)
     {
+        _glitch.set("time", _curSec*16);
 
+        if (_iterateSec > _totalEffectSec / _maxiterations)
+        {
+            _recursiveNum++;
+            _iterateSec = 0;
+        }
+        effectQuad.drawMeAttr();
+        _iterateSec += 1./_frameRate;
     }
 }

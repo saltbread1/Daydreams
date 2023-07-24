@@ -24,8 +24,8 @@ class SceneIcosphere extends Scene
         _ico.updateMe();
         _ico.rotate(rotAxis, .09, new PVector());
         pushStyle();
-        stroke(#e6e6e6);
-        fill(#000000);
+        stroke(#000000);
+        fill(#ffffff);
         _ico.drawMe();
         popStyle();
     }
