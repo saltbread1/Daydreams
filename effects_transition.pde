@@ -169,3 +169,67 @@ class TransitionRecursive extends TransitionEffect
         _iterateSec += 1./_frameRate;
     }
 }
+
+class TransitionDivision extends TransitionEffect
+{
+    final int _maxiterations;
+    int _divisionDepth;
+    float _iterateSec;
+    final PShader _glitch;
+
+    TransitionDivision(float totalEffectSec, int maxiterations)
+    {
+        super(totalEffectSec);
+        _maxiterations = maxiterations;
+        _divisionDepth = 1;
+        _glitch = _dm.getGlitchShader();
+        _glitch.set("resolution", (float)width, (float)height);
+    }
+
+    @Override
+    Quad createBaseEffectQuad()
+    {
+        PImage img = get(0, 0, width, height);
+        PGraphics pg = createGraphics(width, height, P2D);
+        pg.beginDraw();
+        pg.background(#000000);
+        pg.pushStyle();
+        drawDivisionImage(pg, img, 0, 0, width, height, 0);
+        pg.popStyle();
+        pg.filter(_glitch);
+        pg.endDraw();
+        return new TextureQuad(
+                new PVector(-width/2, -height/2),
+                new PVector(-width/2,  height/2),
+                new PVector( width/2,  height/2),
+                new PVector( width/2, -height/2),
+                pg);
+    }
+
+    void drawDivisionImage(PGraphics pg, PImage img, int x, int y, int w, int h, int depth)
+    {
+        if (depth >= _divisionDepth)
+        {
+            pg.image(img, x, y, w, h); 
+            return;
+        }
+        drawDivisionImage(pg, img, x, y, w/2, h/2, depth+1);
+        drawDivisionImage(pg, img, x+w/2, y, w/2, h/2, depth+1);
+        drawDivisionImage(pg, img, x, y+h/2, w/2, h/2, depth+1);
+        drawDivisionImage(pg, img, x+w/2, y+h/2, w/2, h/2, depth+1);
+    }
+
+    @Override
+    void drawEffect(Quad effectQuad)
+    {
+        _glitch.set("time", _curSec*16);
+
+        if (_iterateSec > _totalEffectSec / _maxiterations)
+        {
+            _divisionDepth++;
+            _iterateSec = 0;
+        }
+        effectQuad.drawMeAttr();
+        _iterateSec += 1./_frameRate;
+    }
+}
