@@ -3,9 +3,9 @@ class SceneArcsRotation extends Scene
     PGraphics _pg;
     ArcRingManager _rm;
 
-    SceneArcsRotation(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneArcsRotation(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

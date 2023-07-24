@@ -5,9 +5,9 @@ class SceneImageConvert extends Scene
     PShader _noise;
     final float _colorChangeSec, _convertStartSec, _totalMovingSec;
 
-    SceneImageConvert(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float colorChangeSec, float convertStartSec)
+    SceneImageConvert(Camera camera, float totalSceneSec, float colorChangeSec, float convertStartSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
         _colorChangeSec = colorChangeSec;
         _convertStartSec = convertStartSec;
         _totalMovingSec = totalSceneSec - convertStartSec;

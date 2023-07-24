@@ -2,9 +2,9 @@ class SceneQuadDivision extends Scene
 {
     TextureDivideQuad _quad;
 
-    SceneQuadDivision(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneQuadDivision(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

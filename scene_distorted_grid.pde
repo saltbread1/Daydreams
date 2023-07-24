@@ -2,9 +2,9 @@ class SceneDistortedGrid extends Scene
 {
     DistortedGrid _grid;
 
-    SceneDistortedGrid(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec)
+    SceneDistortedGrid(Camera camera, float totalSceneSec)
     {
-        super(beginEffect, endEffect, totalSceneSec);
+        super(camera, totalSceneSec);
     }
 
     @Override

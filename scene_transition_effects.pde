@@ -8,7 +8,24 @@ abstract class TransitionEffect
         _totalEffectSec = totalEffectSec;
     }
 
-    abstract void applyEffect();
+    void applyEffect(PVector cameraCenter, PVector cameraCenter2Eye)
+    {
+        Quad effectQuad = new Quad(
+                new PVector(-width, -height),
+                new PVector(-width, height),
+                new PVector(width, height),
+                new PVector(width, -height));
+        PVector ez = new PVector(0, 0, 1);
+        PVector axis = ez.cross(cameraCenter2Eye);
+        float rad = PVector.angleBetween(ez, cameraCenter2Eye);
+        effectQuad.rotate(axis, rad, effectQuad.getCenter());
+        effectQuad.translate(cameraCenter);
+        hint(DISABLE_DEPTH_TEST);
+        drawEffect(effectQuad);
+        hint(ENABLE_DEPTH_TEST);
+    }
+
+    abstract void drawEffect(Quad effectQuad);
 
     void timeCount() { _curSec += 1./_frameRate; }
 
@@ -26,14 +43,10 @@ abstract class TransitionFade extends TransitionEffect
     }
 
     @Override
-    void applyEffect()
+    void drawEffect(Quad effectQuad)
     {
-        pushStyle();
-        noStroke();
-        fill(_colour, getAlpha());
-        rectMode(CENTER);
-        rect(0, 0, width*4, height*4);
-        popStyle();
+        effectQuad.setAttribution(new Attribution(color(_colour, getAlpha()), DrawStyle.FILLONLY));
+        effectQuad.drawMeAttr();
     }
 
     abstract int getAlpha();
@@ -83,16 +96,12 @@ class TransitionBlink extends TransitionEffect
     }
 
     @Override
-    void applyEffect()
+    void drawEffect(Quad effectQuad)
     {
         if (_threshFrame < _blinkFrame)
         {
-            pushStyle();
-            noStroke();
-            fill(_colour);
-            rectMode(CENTER);
-            rect(0, 0, width*4, height*4);
-            popStyle();
+            effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+            effectQuad.drawMeAttr();
         }
         _threshFrame = (_threshFrame+1)%(_blinkFrame*2);
     }
@@ -106,7 +115,7 @@ class TransitionDivision extends TransitionEffect
     }
 
     @Override
-    void applyEffect()
+    void drawEffect(Quad effectQuad)
     {
 
     }

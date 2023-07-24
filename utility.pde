@@ -107,19 +107,13 @@ class Utility
     }
 
     /**
-    *   calc production vector: b to a
+    *   calc production vector: b -> a
+    *   @pram  a projection vector
+    *   @pram  b projected vector
     */
     PVector production(PVector a, PVector b)
     {
         return PVector.mult(a, a.dot(b)/a.magSq());
-    }
-
-    /**
-    * reset camera to default one
-    */
-    void resetCamera()
-    {
-        camera(width/2, height/2, (height/2)/tan(PI/6), width/2, height/2, 0, 0, 1, 0);
     }
 
     float mod(float x, float y)
@@ -133,9 +127,7 @@ class Utility
     }
     
 
-    /************************/
-    /*    easing methods    */
-    /************************/
+    /****    easing methods    ****/
 
     float easeInQuad(float t)
     {
