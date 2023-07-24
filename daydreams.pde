@@ -31,9 +31,9 @@ void setup()
     _scenes = new Scene[]{
             // new SceneAppearing(null, null, 2.65*4),
             // new SceneLandscape(new TransitionFadeOut(2, #000000), new TransitionFadeIn(1, #ffffff), 13, 9.5),
-            new SceneTunnel(new TransitionFadeOut(1, #ffffff), new TransitionBlink(.5, 1, #000000), 300)
-            // new SceneRecursiveRect(null, new TransitionFadeIn(.3, #000000), 11.5, 5.5),
-            // new SceneImageConvert(new TransitionFadeOut(.3, #000000), null, 22, 5, 10.5),
+            // new SceneTunnel(new TransitionFadeOut(1, #ffffff), new TransitionBlink(.5, 1, #000000), 11),
+            new SceneRecursiveRect(null, new TransitionFadeIn(.3, #ffffff), 11.5, 5.5)
+            // new SceneImageConvert(new TransitionFadeOut(.3, #ffffff), null, 22, 5, 10.5),
             // new SceneTrianglesRotation(null, new TransitionBlink(.33, 1, #000000), 3),
             // new SceneArcsRotation(null, new TransitionBlink(.33, 1, #000000), 3),
             // new SceneDistortedGrid(null, new TransitionBlink(.33, 1, #000000), 3),

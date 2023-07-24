@@ -1,8 +1,12 @@
 class SceneRecursiveRect extends Scene
 {
+    PGraphics _pg;
+    PShader _glitch;
     ArrayDeque<RecursiveRect> _rectQueue;
     RecursiveRect _latest;
-    final float _scalingStartSec, _scale = .5;
+    FloatingCircleManager _cm;
+    final float _scalingStartSec;
+    final float _scale = .5;
 
     SceneRecursiveRect(TransitionEffect beginEffect, TransitionEffect endEffect, float totalSceneSec, float scalingStartSec)
     {
@@ -13,6 +17,13 @@ class SceneRecursiveRect extends Scene
     @Override
     void initialize()
     {
+        _pg = createGraphics(width, height, P2D);
+        _pg.beginDraw();
+        _pg.background(#000000);
+        _pg.endDraw();
+        _glitch = _dm.getGlitchShader();
+        _glitch.set("resolution", (float)width, (float)height);
+
         _latest = new RecursiveRect(width, height);
         _rectQueue = new ArrayDeque<RecursiveRect>();
         _rectQueue.add(_latest);
@@ -25,6 +36,8 @@ class SceneRecursiveRect extends Scene
             _latest = rect;
             w *= _scale; h *= _scale;
         }
+        _cm = new FloatingCircleManager();
+        _cm.createCircles(16);
     }
 
     void addNewRect()
@@ -35,16 +48,17 @@ class SceneRecursiveRect extends Scene
     }
 
     @Override
-    void start()
-    {
-        background(#000000);
-    }
-
-    @Override
     void update()
     {
-        float dh = 8;
+        _glitch.set("time", _curSec*16);
+        updateShapes();
+        drawShapes();
+        image(_pg, 0, 0);
+    }
 
+    void updateShapes()
+    {
+        float dh = 8;
         if (_curSec > _scalingStartSec)
         {
             if (_rectQueue.peek().getWidth() > width)
@@ -62,22 +76,27 @@ class SceneRecursiveRect extends Scene
         for (RecursiveRect rect : _rectQueue)
         {
             rect.updateMe();
-            pushStyle();
-            stroke(#ffffff);
-            noFill();
-            if (rect._parent != null) { rect.drawMe(); }
-            popStyle();
+            _cm.updateCirclesSize(rect);
         }
+        _cm.updateCircles(_curSec*.6);
     }
 
-    @Override
-    void clearScene()
+    void drawShapes()
     {
-        pushStyle();
-        noStroke();
-        fill(#000000, 80);
-        rect(0, 0, width, height);
-        popStyle();
+        _pg.beginDraw();
+        _pg.pushStyle();
+        _pg.noStroke();
+        _pg.fill(#000000, 80);
+        _pg.rect(0, 0, width, height);
+        _pg.popStyle();
+        for (RecursiveRect rect : _rectQueue)
+        {
+            if (rect._parent != null) { rect.drawMeAttr(_pg); }
+        }
+        _cm.drawCircles(_pg);
+        //if (_curSec > _scalingStartSec) { _pg.filter(_glitch); }
+        _pg.filter(_glitch);
+        _pg.endDraw();
     }
 
     class RecursiveRect extends Rect
@@ -90,7 +109,7 @@ class SceneRecursiveRect extends Scene
 
         RecursiveRect(float width, float height, RecursiveRect parent)
         {
-            super(0, 0, width, height);
+            super(0, 0, width, height, new Attribution(#ffffff, DrawStyle.STROKEONLY));
             _width = width;
             _height = height;
             _parent = parent;
@@ -146,6 +165,16 @@ class SceneRecursiveRect extends Scene
             line(_lowerRight.x, _upperLeft.y, _parent._lowerRight.x, _parent._upperLeft.y);
         }
 
+        @Override
+        void drawMe(PGraphics pg)
+        {
+            super.drawMe(pg);
+            _util.myLine(_upperLeft, _parent._upperLeft, pg);
+            _util.myLine(_lowerRight, _parent._lowerRight, pg);
+            pg.line(_upperLeft.x, _lowerRight.y, _parent._upperLeft.x, _parent._lowerRight.y);
+            pg.line(_lowerRight.x, _upperLeft.y, _parent._lowerRight.x, _parent._upperLeft.y);
+        }
+
         PVector getStartPosition(int stepTypeIndex)
         {
             DirectionType type = DirectionType.values()[stepTypeIndex*2];
@@ -180,6 +209,70 @@ class SceneRecursiveRect extends Scene
         PVector getGoalPosition(int stepTypeIndex)
         {
             return getStartPosition(getNextStepTypeIndex(stepTypeIndex));
+        }
+    }
+
+    class FloatingCircle extends Circle
+    {
+        final float _initRadius;
+        final int _seed1, _seed2;
+
+        FloatingCircle(float radius)
+        {
+            super(new PVector(), radius, new Attribution(color(#ffffff, 216), DrawStyle.FILLONLY));
+            _initRadius = radius;
+            _seed1 = (int)random(65536);
+            _seed2 = (int)random(65536);
+        }
+
+        void updateMe(float t)
+        {
+            float x = _util.easeInOutCubic(noise(t, _seed1))*width;
+            float y = _util.easeInOutCubic(noise(t, _seed2))*height;
+            _center.set(x, y);
+        }
+
+        void updateSize(Rect rect)
+        {
+            if (!isInRect(rect)) { return; }
+            float r = rect.getWidth() / width;
+            _radius = _initRadius * r;
+        }
+
+        boolean isInRect(Rect rect)
+        {
+            return _center.x > rect._upperLeft.x && _center.x < rect._lowerRight.x
+                && _center.y > rect._upperLeft.y && _center.y < rect._lowerRight.y;
+        }
+    }
+
+    class FloatingCircleManager
+    {
+        ArrayList<FloatingCircle> _circleList;
+
+        void createCircles(int n)
+        {
+            _circleList = new ArrayList<FloatingCircle>();
+            for (int i = 0; i < n; i++)
+            {
+                float r = sq(random(.34, 1))*width*.06;
+                _circleList.add(new FloatingCircle(r));
+            }
+        }
+
+        void updateCircles(float t)
+        {
+            for (FloatingCircle circle : _circleList) { circle.updateMe(t); }
+        }
+
+        void updateCirclesSize(Rect rect)
+        {
+            for (FloatingCircle circle : _circleList) { circle.updateSize(rect); }
+        }
+
+        void drawCircles(PGraphics pg)
+        {
+            for (FloatingCircle circle : _circleList) { circle.drawMeAttr(pg); }
         }
     }
 }
