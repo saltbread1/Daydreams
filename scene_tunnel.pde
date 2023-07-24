@@ -37,7 +37,7 @@ class SceneTunnel extends Scene
         clearScene();
         updateGates();
         pushMatrix();
-        rotate(sin(_curSec*3)*PI*.1);
+        rotate(sin(_curSec*3)*PI*.12);
         drawGates();
         popMatrix();
     }
@@ -69,7 +69,7 @@ class SceneTunnel extends Scene
 
     void drawGates()
     {
-        for (TunnelGate gate : _gateQueue) { gate.drawMe(); }
+        for (TunnelGate gate : _gateQueue) { gate.drawMeAttr(); }
     }
 
     class TunnelGate
@@ -114,20 +114,21 @@ class SceneTunnel extends Scene
                 TunnelCuboid cuboid = _cuboidArray[i];
                 PVector dir = PVector.fromAngle(rad);
                 PVector dirMaxHeight = PVector.mult(dir, maxHeight);
-                PVector v1 = PVector.fromAngle(rad - PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
-                PVector v2 = PVector.fromAngle(rad + PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
-                cuboid.setParameters(v1, v2, dir.mult(-1), heights[i]);
+                PVector v1 = PVector.fromAngle(rad + PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
+                PVector v2 = PVector.fromAngle(rad - PI/_num).mult(minorRadius).add(dirMaxHeight).add(_center);
+                PVector offZ = new PVector(0, 0, PVector.dist(v1, v2));
+                cuboid.setParameters(new Quad(v1, v2, PVector.add(v2, offZ), PVector.add(v1, offZ)), heights[i]);
                 cuboid.createFaces();
-                cuboid.rotate(sec*1.7);
+                cuboid.rotate(sec*2.7);
                 rad += TAU/_num;
             }
 
             _center.z += dz;
         }
 
-        void drawMe()
+        void drawMeAttr()
         {
-            for (TunnelCuboid cuboid : _cuboidArray) { cuboid.drawMe(); }
+            for (TunnelCuboid cuboid : _cuboidArray) { cuboid.drawMeAttr(); }
         }
 
         float myNoise(float val, float scale, float seed)
@@ -137,15 +138,11 @@ class SceneTunnel extends Scene
 
         float getZ() { return _center.z; }
 
-        class TunnelCuboid implements Rotatable3D
+        class TunnelCuboid extends QuadPrism implements Rotatable3D
         {
-            final float _minZ, _maxZ;
-            final float _initRotRad;
+            final float _minZ, _maxZ, _initRotRad;
             final int _rotDir;
-            PVector _fv1, _fv2, _fv3, _fv4;
             float _edgeLenZ;
-            PVector _dir, _rotInit;
-            ArrayList<Quad> _faceList;
 
             TunnelCuboid(float minZ, float maxZ)
             {
@@ -155,36 +152,19 @@ class SceneTunnel extends Scene
                 _rotDir = 1-(int)random(2)*2;
             }
 
-            void setParameters(PVector fv1, PVector fv2, PVector dir, float height)
+            void setParameters(Quad bottomFace, float height)
             {
-                PVector xy = PVector.mult(dir, height);
-                _fv1 = fv1;
-                _fv2 = fv2;
-                _fv3 = PVector.add(fv2, xy);
-                _fv4 = PVector.add(fv1, xy);
-                _edgeLenZ = PVector.dist(fv1, fv2);
-                _dir = dir;
-                _rotInit = PVector.add(_fv3, _fv4).div(2);
-                _rotInit.z -= _edgeLenZ/2;
+                _bottomFace = bottomFace;
+                _height = height;
+                _normal = PVector.sub(_bottomFace._v2, _bottomFace._v1)
+                        .cross(PVector.sub(_bottomFace._v4, _bottomFace._v1))
+                        .normalize();
             }
 
-            void createFaces()
+            @Override
+            void drawMeAttr()
             {
-                PVector z  = new PVector(0, 0, -_edgeLenZ);
-                PVector hv1 = PVector.add(_fv1, z);
-                PVector hv2 = PVector.add(_fv2, z);
-                PVector hv3 = PVector.add(_fv3, z);
-                PVector hv4 = PVector.add(_fv4, z);
-                
-                _faceList = new ArrayList<Quad>();
-                _faceList.add(new Quad(_fv1, _fv2, _fv3, _fv4));
-                _faceList.add(new Quad( hv1,  hv2,  hv3,  hv4));
-                _faceList.add(new Quad(_fv1,  hv1,  hv4, _fv4));
-                _faceList.add(new Quad(_fv2,  hv2,  hv3, _fv3));
-            }
-
-            void drawMe()
-            {
+                pushStyle();
                 for (Quad face : _faceList)
                 {
                     PVector v1 = face._v1;
@@ -204,6 +184,7 @@ class SceneTunnel extends Scene
                     _util.myVertex(v4);
                     endShape();
                 }
+                popStyle();
             }
 
             @Override
@@ -215,7 +196,7 @@ class SceneTunnel extends Scene
             void rotate(float rad)
             {
                 rad = _initRotRad + rad * _rotDir;
-                for (Quad face : _faceList) { rotate(_dir, rad, _rotInit); }
+                for (Quad face : _faceList) { rotate(_normal, rad, _bottomFace.getCenter()); }
             }
         }
     }
