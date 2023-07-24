@@ -1094,3 +1094,71 @@ class TriangularPrism extends SimpleShape3D implements Rotatable3D
         }
     }
 }
+
+class QuadPrism extends SimpleShape3D implements Rotatable3D
+{
+    Quad _bottomFace;
+    float _height;
+    PVector _normal;
+    ArrayList<Quad> _faceList;
+
+    QuadPrism(Quad bottomFace, float height, Attribution attr)
+    {
+        super(attr);
+        _bottomFace = bottomFace;
+        _height = height;
+        _normal = PVector.sub(_bottomFace._v2, _bottomFace._v1)
+                .cross(PVector.sub(_bottomFace._v4, _bottomFace._v1))
+                .normalize();
+    }
+
+    QuadPrism(Quad bottomFace, float height)
+    {
+        this(bottomFace, height, null);
+    }
+
+    QuadPrism()
+    {
+        _bottomFace = null;
+        _height = 0;
+        _normal = null;
+    }
+
+    @Override
+    void createFaces()
+    {
+        _faceList = new ArrayList<Quad>();
+
+        Quad _topFace = _bottomFace.copy();
+        _topFace.translate(PVector.mult(_normal, _height));
+        addFace(_bottomFace._v1, _bottomFace._v2, _topFace._v2, _topFace._v1);
+        addFace(_bottomFace._v2, _bottomFace._v3, _topFace._v3, _topFace._v2);
+        addFace(_bottomFace._v3, _bottomFace._v4, _topFace._v4, _topFace._v3);
+        addFace(_bottomFace._v4, _bottomFace._v1, _topFace._v1, _topFace._v4);
+        _faceList.add(_topFace);
+    }
+
+    @Override
+    void addFace(PVector... v)
+    {
+        _faceList.add(new Quad(v[0], v[1], v[2], v[3]));
+    }
+
+    @Override
+    void drawMe()
+    {
+        for (Quad face : _faceList) { face.drawMe(); }
+    }
+
+    @Override
+    void drawMe(PGraphics pg)
+    {
+        for (Quad face : _faceList) { face.drawMe(pg); }
+    }
+
+    @Override
+    void rotate(PVector dir, float rad, PVector init)
+    {
+        for (Quad face : _faceList) { face.rotate(dir, rad, init); }
+    }
+}
