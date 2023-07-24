@@ -49,6 +49,9 @@ class SceneExploring extends Scene
     @Override
     void clearScene() { background(_style.getBackgroundColor()); }
 
+    @Override
+    PVector getCameraCenter() { return _camera.getCenter(); }
+
     void drawDebugInfo()
     {
         pushStyle();

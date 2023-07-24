@@ -46,21 +46,29 @@ abstract class Scene
 
     float getTotalSecond() { return _totalSceneSec; }
 
+    PVector getCameraCenter() { return new PVector(width/2, height/2); }
+
     void applyBeginTransitionEffect()
     {
         if (_beginEffect == null) { return; }
+        pushMatrix();
+        translate(getCameraCenter().x, getCameraCenter().y, getCameraCenter().z);
         hint(DISABLE_DEPTH_TEST);
         _beginEffect.applyEffect();
         hint(ENABLE_DEPTH_TEST);
+        popMatrix();
         _beginEffect.timeCount();
     }
     
     void applyEndTransitionEffect()
     {
         if (_endEffect == null) { return; }
+        pushMatrix();
+        translate(getCameraCenter().x, getCameraCenter().y, getCameraCenter().z);
         hint(DISABLE_DEPTH_TEST);
         _endEffect.applyEffect();
         hint(ENABLE_DEPTH_TEST);
+        popMatrix();
         _endEffect.timeCount();
     }
 

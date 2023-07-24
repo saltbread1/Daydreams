@@ -43,6 +43,9 @@ class SceneIcosphere extends Scene
         _util.resetCamera();
     }
 
+    @Override
+    PVector getCameraCenter() { return new PVector(); }
+
     class SpikeIcosphere extends Icosphere
     {
         ArrayList<TwistedTriangularPrism> _prismList;

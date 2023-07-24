@@ -47,6 +47,9 @@ class SceneLandscape extends Scene
         _util.resetCamera();
     }
 
+    @Override
+    PVector getCameraCenter() { return _camera.getCenter(); }
+
     void changePhase()
     {
         if (_type == LandscapeType.PHASE1 && _curSec > _visualChangeSec)
@@ -61,7 +64,7 @@ class SceneLandscape extends Scene
     {
         if (_beginEffect == null) { return; }
         pushMatrix();
-        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
+        translate(getCameraCenter().x, getCameraCenter().y, getCameraCenter().z);
         rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
         hint(DISABLE_DEPTH_TEST);
         _beginEffect.applyEffect();
@@ -75,7 +78,7 @@ class SceneLandscape extends Scene
     {
         if (_endEffect == null) { return; }
         pushMatrix();
-        translate(_camera.getCenter().x, _camera.getCenter().y, _camera.getCenter().z);
+        translate(getCameraCenter().x, getCameraCenter().y, getCameraCenter().z);
         rotateX(-PVector.angleBetween(_camera.getCenter2Eye(), new PVector(0, 0, 1)));
         hint(DISABLE_DEPTH_TEST);
         _endEffect.applyEffect();

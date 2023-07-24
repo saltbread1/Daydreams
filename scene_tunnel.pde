@@ -49,6 +49,8 @@ class SceneTunnel extends Scene
         _util.resetCamera();
     }
 
+    PVector getCameraCenter() { return new PVector(); }
+
     TunnelGate createNewGate(float z)
     {
         TunnelGate gate = new TunnelGate(new PVector(0, 0, z), _radius, _rectNum);

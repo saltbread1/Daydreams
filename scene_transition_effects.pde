@@ -32,7 +32,7 @@ abstract class TransitionFade extends TransitionEffect
         noStroke();
         fill(_colour, getAlpha());
         rectMode(CENTER);
-        rect(0, 0, width*10, height*10);
+        rect(0, 0, width*4, height*4);
         popStyle();
     }
 
@@ -91,9 +91,23 @@ class TransitionBlink extends TransitionEffect
             noStroke();
             fill(_colour);
             rectMode(CENTER);
-            rect(0, 0, width*10, height*10);
+            rect(0, 0, width*4, height*4);
             popStyle();
         }
         _threshFrame = (_threshFrame+1)%(_blinkFrame*2);
+    }
+}
+
+class TransitionDivision extends TransitionEffect
+{
+    TransitionDivision(float totalEffectSec)
+    {
+        super(totalEffectSec);
+    }
+
+    @Override
+    void applyEffect()
+    {
+
     }
 }
