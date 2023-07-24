@@ -77,22 +77,22 @@ void setup()
                         new TransitionBlink(.33, 1, #000000)),
                     3),
             new SceneKaleidoscope(new Camera(
-                        null,
+                        new TransitionFadeOut(.6, #000000),
                         new TransitionBlink(.33, 1, #000000)),
                     3),
             new SceneAbsorption(new Camera(
-                        null,
+                        new TransitionFadeOut(.6, #000000),
                         new TransitionBlink(.33, 1, #000000)),
                     3),
             new SceneReversingRects(new Camera(
-                        null,
+                        new TransitionFadeOut(.6, #000000),
                         null),
                     3),
             new SceneExploring(new ExploringCamera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),
                         new TransitionFadeOut(2, #ffffff),
-                        null),
+                        new TransitionDivision(.8, 3)),
                     12, 3)
     };
 }
