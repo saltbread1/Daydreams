@@ -1,5 +1,73 @@
 class Utility
 {
+    class Quaternion
+    {
+        float _x, _y, _z, _w;
+
+        Quaternion() { _w = 1; }
+
+        Quaternion(float x, float y, float z, float w) { set(x, y, z, w); }
+
+        Quaternion(PVector dir, float theta)
+        {
+            PVector normDir = dir.normalize(null);
+            _x = sin((theta/2))*normDir.x;
+            _y = sin((theta/2))*normDir.y;
+            _z = sin((theta/2))*normDir.z;
+            _w = cos((theta/2));
+        }
+
+        void set(float x, float y, float z, float w)
+        {
+            _x = x;
+            _y = y;
+            _z = z;
+            _w = w;
+        }
+
+        Quaternion mult(Quaternion q)
+        {
+            float w1 = _w;
+            float w2 = q._w;
+            PVector v1 = new PVector(_x, _y, _z);
+            PVector v2 = new PVector(q._x, q._y, q._z);
+            float neww = w1*w2 - PVector.dot(v1, v2);
+            PVector newv = PVector.mult(v2, w1).add(PVector.mult(v1, w2)).add(v1.cross(v2));
+            return new Quaternion(newv.x, newv.y, newv.z, neww);
+        }
+
+        Quaternion mult(PVector v) { return mult(new Quaternion(v.x, v.y, v.z, 0)); }
+
+        Quaternion multeq(Quaternion q)
+        {
+            float w1 = _w;
+            float w2 = q._w;
+            PVector v1 = new PVector(_x, _y, _z);
+            PVector v2 = new PVector(q._x, q._y, q._z);
+            float neww = w1*w2 - PVector.dot(v1, v2);
+            PVector newv = PVector.mult(v2, w1).add(PVector.mult(v1, w2)).add(v1.cross(v2));
+            _x = newv.x; _y = newv.y; _z = newv.z; _w = neww;
+            return this;
+        }
+
+        Quaternion diveq(float n)
+        {
+            _x /= n; _y /= n; _z /= n; _w /= n;
+            return this;
+        }
+
+        Quaternion inverse(Quaternion target)
+        {
+            if (target == null) { target = new Quaternion(); }
+            target.set(_x*(-1), _y*(-1), _z*(-1), _w);
+            float msq = sq(_x)+sq(_y)+sq(_z)+sq(_w);
+            if (msq > 0 && msq != 1) { target.diveq(msq); }
+            return target;
+        }
+
+        PVector getVector() { return new PVector(_x, _y, _z); }
+    }
+
     void myVertex(PVector v)
     {
         if (v.z == 0) { vertex(v.x, v.y); }
@@ -54,16 +122,16 @@ class Utility
     {
         Quaternion q = new Quaternion(dir, rad);
         Quaternion qi = q.inverse(null);
-        Quaternion qr = q.multr(target).multreq(qi);
-        return new PVector(qr.x, qr.y, qr.z);
+        Quaternion qr = q.mult(target).multeq(qi);
+        return qr.getVector();
     }
 
     PVector rotate3D(PVector target, PVector dir, float rad, PVector init)
     {
         Quaternion q = new Quaternion(dir, rad);
         Quaternion qi = q.inverse(null);
-        Quaternion qr = q.multr(PVector.sub(target, init)).multreq(qi);
-        return new PVector(qr.x, qr.y, qr.z).add(init);
+        Quaternion qr = q.mult(PVector.sub(target, init)).multeq(qi);
+        return qr.getVector().add(init);
     }
 
     PVector cubicBezierPath(PVector start, PVector control1, PVector control2, PVector goal, float t)

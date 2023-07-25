@@ -24,7 +24,7 @@ class SceneSlidingCircles extends Scene
         _glitch.set("resolution", (float)width, (float)height);
         _type = SlidingType.LINER;
         _style = SlidingStyle.GLITCH1;
-        _cm = new CircleManager(6, .3);
+        _cm = new CircleManager(6, .32);
         _cm.initialize();
     }
 
@@ -106,16 +106,16 @@ class SceneSlidingCircles extends Scene
             switch (_type)
             {
                 case BEZIER1:
-                    s1 = random(-1, 1);
-                    s2 = random(-1, 1)+1;
-                    t1 = random(-.8, .8);
-                    t2 = random(-.8, .8);
+                    s1 = random(.5);
+                    s2 = 1-random(.5);
+                    t1 = random(-.5, .5);
+                    t2 = random(-.5, .5);
                     break;
                 case BEZIER2:
-                    s1 = random(-3, 3);
-                    s2 = random(-3, 3)+1;
-                    t1 = random(-3, 3);
-                    t2 = random(-3, 3);
+                    s1 = random(-8, 8);
+                    s2 = random(-8, 8)+1;
+                    t1 = random(-8, 8);
+                    t2 = random(-8, 8);
                     break;
 
             }
