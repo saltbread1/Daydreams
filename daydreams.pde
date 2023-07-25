@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 
 VideoExport _videoExport;
-boolean _isExport = false;
+boolean _isExport = true;
 SceneManager _sm;
 DataManager _dm;
 Utility _util;
@@ -26,79 +26,79 @@ void setup()
     _dm = new DataManager();
     _util = new Utility();
     _scenes = new Scene[]{
-            // new SceneAppearing(new Camera(
-            //             null,
-            //             null),
-            //         11.6, 1, .9, 1),
-            // new SceneLandscape(
-            //         new LandscapeCamera(
-            //             new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
-            //             new PVector(),
-            //             new TransitionFadeOut(2, #000000),
-            //             new TransitionFadeIn(1, #ffffff)),
-            //         25.644-11.6, 22.771-11.6),
+            new SceneAppearing(new Camera(
+                        null,
+                        null),
+                    11.4, 1, .85, 1),
+            new SceneLandscape(
+                    new LandscapeCamera(
+                        new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
+                        new PVector(),
+                        new TransitionFadeOut(2, #000000),
+                        new TransitionFadeIn(1, #ffffff)),
+                    14.1, 11.3),
             new SceneTunnel(new Camera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),
                         new TransitionFadeOut(1, #ffffff),
-                        new TransitionBlink(37.2-36.45, 1, #000000)),
-                    37.2-25.664)
-            // new SceneRecursiveRect(new Camera(
-            //             null,
-            //             new TransitionFadeIn(.3, #ffffff)),
-            //         11.5, 5.5),
-            // new SceneImageConvert(new Camera(
-            //             new TransitionFadeOut(.3, #ffffff),
-            //             null),
-            //         22, 5, 10.5),
-            // new SceneTrianglesRotation(new Camera(
-            //             null,
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneArcsRotation(new Camera(
-            //             null,
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneDistortedGrid(new Camera(
-            //             null,
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneIcosphere(new Camera(
-            //             new PVector(0, 0, (height/2)/tan(PI/6)),
-            //             new PVector(),
-            //             null,
-            //             new TransitionRecursive(.8, 5, .8)),
-            //         3),
-            // new SceneQuadDivision(new Camera(
-            //             new TransitionFadeOut(.6, #000000),
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneKaleidoscope(new Camera(
-            //             new TransitionFadeOut(.6, #000000),
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneAbsorption(new Camera(
-            //             new TransitionFadeOut(.6, #000000),
-            //             new TransitionBlink(.33, 1, #000000)),
-            //         3),
-            // new SceneReversingRects(new Camera(
-            //             new TransitionFadeOut(.6, #000000),
-            //             null),
-            //         3),
-            // new SceneExploring(new ExploringCamera(
-            //             new PVector(0, 0, (height/2)/tan(PI/6)),
-            //             new PVector(),
-            //             new TransitionFadeOut(2, #ffffff),
-            //             new TransitionDivision(.8, 3)),
-            //         12, 3),
-            // new SceneSlidingCircles(new Camera(
-            //             new TransitionFadeOut(1, #000000),
-            //             new TransitionSlide(12, #000000)),
-            //         24, 3),
-            // new SceneLogo(new Camera(
-            //             null,
-            //             null),
-            //         300, 3)
+                        new TransitionBlink(.5, 1, #000000)),
+                    11.5), // total: 37
+            new SceneRecursiveRect(new Camera(
+                        null,
+                        new TransitionFadeIn(.3, #ffffff)),
+                    11.8, 5.9) // total: 48.8 sec
+            new SceneImageConvert(new Camera(
+                        new TransitionFadeOut(.3, #ffffff),
+                        null), // new Transition(74.2-72.7)
+                    74.2-48.8, 61-55, 61-48.8), // 25.4, 6, 12.2; total: 74.2 sec
+            new SceneTrianglesRotation(new Camera(
+                        null,
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneArcsRotation(new Camera(
+                        null,
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneDistortedGrid(new Camera(
+                        null,
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneIcosphere(new Camera(
+                        new PVector(0, 0, (height/2)/tan(PI/6)),
+                        new PVector(),
+                        null,
+                        new TransitionRecursive(1.4, 7, .8)),
+                    2.95),
+            new SceneQuadDivision(new Camera(
+                        new TransitionFadeOut(.7, #000000),
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneKaleidoscope(new Camera(
+                        new TransitionFadeOut(.7, #000000),
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneAbsorption(new Camera(
+                        new TransitionFadeOut(.7, #000000),
+                        new TransitionBlink(.35, 1, #000000)),
+                    2.95),
+            new SceneReversingRects(new Camera(
+                        new TransitionFadeOut(.7, #000000),
+                        null),
+                    2.95),
+            new SceneExploring(new ExploringCamera(
+                        new PVector(0, 0, (height/2)/tan(PI/6)),
+                        new PVector(),
+                        new TransitionFadeOut(2, #ffffff),
+                        new TransitionDivision(.8, 3)),
+                    11.8, 2.95), // total: 109.8 sec
+            new SceneSlidingCircles(new Camera(
+                        new TransitionFadeOut(1, #000000),
+                        new TransitionSlide(11.8, #000000)),
+                    2.95*8, 2.95), // total: 133.4 sec
+            new SceneLogo(new Camera(
+                        null,
+                        null),
+                    8.9, 6.1) // total: 142.3 sec
     };
 }
 
