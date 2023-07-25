@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 
 VideoExport _videoExport;
-boolean _isExport = true;
+boolean _isExport = false;
 SceneManager _sm;
 DataManager _dm;
 Utility _util;
@@ -29,39 +29,39 @@ void setup()
             new SceneAppearing(new Camera(
                         null,
                         null),
-                    11.4, 1, .85, 1),
+                    11.4, 1, .85, 1), // total: 11.4 sec
             new SceneLandscape(
                     new LandscapeCamera(
                         new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
                         new PVector(),
                         new TransitionFadeOut(2, #000000),
                         new TransitionFadeIn(1, #ffffff)),
-                    14.1, 11.3),
+                    14.1, 11.3), // total; 25.5 sec
             new SceneTunnel(new Camera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),
                         new TransitionFadeOut(1, #ffffff),
-                        new TransitionBlink(.5, 1, #000000)),
-                    11.5), // total: 37
+                        new TransitionBlinkAlternating(.5, 1, #000000)),
+                    11.6), // total: 37.1 sec
             new SceneRecursiveRect(new Camera(
                         null,
                         new TransitionFadeIn(.3, #ffffff)),
-                    11.8, 5.9) // total: 48.8 sec
+                    11.8, 5.9) // total: 48.9 sec
             new SceneImageConvert(new Camera(
                         new TransitionFadeOut(.3, #ffffff),
-                        null), // new Transition(74.2-72.7)
-                    74.2-48.8, 61-55, 61-48.8), // 25.4, 6, 12.2; total: 74.2 sec
+                        new TransitionBlinkOnce(1.5, .3, #ffffff)),
+                    25.3, 6.1, 12.1), // total: 74.2 sec    48.9, 55, 61, 72.7, 74.2
             new SceneTrianglesRotation(new Camera(
-                        null,
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionFadeOut(.35, #ffffff),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneArcsRotation(new Camera(
                         null,
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneDistortedGrid(new Camera(
                         null,
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneIcosphere(new Camera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
@@ -71,15 +71,15 @@ void setup()
                     2.95),
             new SceneQuadDivision(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneKaleidoscope(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneAbsorption(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlink(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, 1, #000000)),
                     2.95),
             new SceneReversingRects(new Camera(
                         new TransitionFadeOut(.7, #000000),

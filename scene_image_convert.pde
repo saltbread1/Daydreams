@@ -21,7 +21,7 @@ class SceneImageConvert extends Scene
 
         updateGraphics(_convertStartSec); // image at the beginning to conversion
         updateGraphics(_convertStartSec); // first update is not go well...
-        _ibm = new ImageBlockManager(_base.get(), 10);
+        _ibm = new ImageBlockManager(_base.get(), width/80);
         _ibm.createImageBlocks(_dm.getEyeImage(), _totalMovingSec);
         convertImage(); // first convert is so slow...
         clearScene();

@@ -92,13 +92,13 @@ class TransitionFadeOut extends TransitionFade
     }
 }
 
-class TransitionBlink extends TransitionEffect
-{
+class TransitionBlinkAlternating extends TransitionEffect
+{ // alternate at the constant interval(frame)
     final int _blinkFrame;
     final color _colour;
     int _threshFrame;
 
-    TransitionBlink(float totalEffectSec, int blinkFrame, color colour)
+    TransitionBlinkAlternating(float totalEffectSec, int blinkFrame, color colour)
     {
         super(totalEffectSec);
         _blinkFrame = blinkFrame;
@@ -114,6 +114,33 @@ class TransitionBlink extends TransitionEffect
             effectQuad.drawMeAttr();
         }
         _threshFrame = (_threshFrame+1)%(_blinkFrame*2);
+    }
+}
+
+class TransitionBlinkOnce extends TransitionEffect
+{ // only once every constant interval(sec)
+    final float _intervalSec;
+    final color _colour;
+    float _blinkSec;
+
+    TransitionBlinkOnce(float totalEffectSec, float intervalSec, color colour)
+    {
+        super(totalEffectSec);
+        _intervalSec = intervalSec;
+        _colour = colour;
+        _blinkSec = intervalSec;
+    }
+
+    @Override
+    void drawEffect(Quad effectQuad)
+    {
+        if (_blinkSec >= _intervalSec)
+        {
+            effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+            effectQuad.drawMeAttr();
+            _blinkSec = 0;
+        }
+        _blinkSec += 1./_frameRate;
     }
 }
 
