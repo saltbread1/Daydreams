@@ -64,6 +64,22 @@ class Utility
         return v1.add(v2).add(v3).add(v4);
     }
 
+    /**
+    *   calculate control points of cubic bezier
+    *   @param  s1, s2 the internal division points ratio of start to goal
+    *   @param  t1, t2 the amount of distortion (usually set .5-3)
+    */
+    PVector[] setCubicBezierControls(PVector start, PVector goal, float s1, float s2, float t1, float t2)
+    {
+        PVector[] controls = new PVector[2];
+        PVector d = PVector.sub(goal, start);
+        PVector n = new PVector(d.y, -d.x).normalize();
+        float m = d.mag();
+        controls[0] = PVector.mult(d, s1).add(start).add(PVector.mult(n, m*t1));
+        controls[1] = PVector.mult(d, s2).add(start).add(PVector.mult(n, m*t2));
+        return controls;
+    }
+
     float calcCubicBezierLength(PVector start, PVector control1, PVector control2, PVector goal, float n)
     {
         float l = 0;
@@ -80,6 +96,10 @@ class Utility
         return l;
     }
 
+    /**
+    *   to move at constant speed on the cubic bezier
+    *   @return  list of points dividing the cubic bezier curve at constant interval
+    */
     FloatList calcCubicBezierConstantParams(PVector start, PVector control1, PVector control2, PVector goal, float speed)
     {
         float l = calcCubicBezierLength(start, control1, control2, goal, (int)(PVector.dist(start, goal)*.1));
@@ -124,6 +144,11 @@ class Utility
     float fract(float x)
     {
         return mod(x, 1);
+    }
+
+    float sign(float x)
+    {
+        return x/abs(x);
     }
     
 

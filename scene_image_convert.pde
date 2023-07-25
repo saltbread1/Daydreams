@@ -99,17 +99,9 @@ class SceneImageConvert extends Scene
 
         void setControls()
         {
-            float t1 = random(-1, 1);
-            float t2 = random(-1, 1);
-            PVector c1 = PVector.mult(_start, 1-t1).add(PVector.mult(_goal, t1));
-            PVector c2 = PVector.mult(_start, 1-t2).add(PVector.mult(_goal, t2));
-            PVector dir = PVector.sub(_goal, _start);
-            PVector n = new PVector(dir.y, -dir.x).normalize();
-            float r = PVector.dist(_start, _goal)*2.4;
-            float s1 = random(-1, 1)*r;
-            float s2 = random(-1, 1)*r;
-            _control1 = PVector.mult(n, s1).add(c1);
-            _control2 = PVector.mult(n, s2).add(c2);
+            PVector[] controls = _util.setCubicBezierControls(_start, _goal, random(-1, 1), random(2), random(-3, 3), random(-3, 3));
+            _control1 = controls[0];
+            _control2 = controls[1];
         }
 
         void updateMe()
