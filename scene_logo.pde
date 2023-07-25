@@ -36,8 +36,8 @@ class SceneLogo extends Scene
         _pg.fill(#000000);
         _pg.rect(0, 0, width+x, height);
         _pg.fill(#ffffff);
-        _logo.drawText("Daydreams", _pg, x, height/2, 8, 2);
-        _logo.drawText("take 2023", _pg, x, height/2+24*4, 4, 2);
+        _logo.drawText("Daydreams", _pg, x, height/2, (int)(width/100), 2);
+        _logo.drawText("take 2023", _pg, x, height/2+24*(int)(width/200), (int)(width/200), 2);
         _pg.popStyle();
         if (_curSec > _vibrationStartSec) { _pg.filter(_glitch); }
         _pg.endDraw();
