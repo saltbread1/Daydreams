@@ -66,34 +66,38 @@ void setup()
             //             null,
             //             new TransitionBlink(.33, 1, #000000)),
             //         3),
-            new SceneIcosphere(new Camera(
-                        new PVector(0, 0, (height/2)/tan(PI/6)),
-                        new PVector(),
+            // new SceneIcosphere(new Camera(
+            //             new PVector(0, 0, (height/2)/tan(PI/6)),
+            //             new PVector(),
+            //             null,
+            //             new TransitionRecursive(.8, 5, .8)),
+            //         3),
+            // new SceneQuadDivision(new Camera(
+            //             new TransitionFadeOut(.6, #000000),
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            // new SceneKaleidoscope(new Camera(
+            //             new TransitionFadeOut(.6, #000000),
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            // new SceneAbsorption(new Camera(
+            //             new TransitionFadeOut(.6, #000000),
+            //             new TransitionBlink(.33, 1, #000000)),
+            //         3),
+            // new SceneReversingRects(new Camera(
+            //             new TransitionFadeOut(.6, #000000),
+            //             null),
+            //         3),
+            // new SceneExploring(new ExploringCamera(
+            //             new PVector(0, 0, (height/2)/tan(PI/6)),
+            //             new PVector(),
+            //             new TransitionFadeOut(2, #ffffff),
+            //             new TransitionDivision(.8, 3)),
+            //         12, 3),
+            new SceneSlidingCircles(new Camera(
                         null,
-                        new TransitionRecursive(.8, 5, .8)),
-                    3),
-            new SceneQuadDivision(new Camera(
-                        new TransitionFadeOut(.6, #000000),
-                        new TransitionBlink(.33, 1, #000000)),
-                    3),
-            new SceneKaleidoscope(new Camera(
-                        new TransitionFadeOut(.6, #000000),
-                        new TransitionBlink(.33, 1, #000000)),
-                    3),
-            new SceneAbsorption(new Camera(
-                        new TransitionFadeOut(.6, #000000),
-                        new TransitionBlink(.33, 1, #000000)),
-                    3),
-            new SceneReversingRects(new Camera(
-                        new TransitionFadeOut(.6, #000000),
                         null),
-                    3),
-            new SceneExploring(new ExploringCamera(
-                        new PVector(0, 0, (height/2)/tan(PI/6)),
-                        new PVector(),
-                        new TransitionFadeOut(2, #ffffff),
-                        new TransitionDivision(.8, 3)),
-                    12, 3)
+                    300, 3)
     };
 }
 
