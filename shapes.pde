@@ -63,21 +63,21 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
     @Override
     void drawMe()
     {
-        beginShape();
+        beginShape(TRIANGLES);
         _util.myVertex(_v1);
         _util.myVertex(_v2);
         _util.myVertex(_v3);
-        endShape(CLOSE);
+        endShape();
     }
 
     @Override
     void drawMe(PGraphics pg)
     {
-        pg.beginShape();
+        pg.beginShape(TRIANGLES);
         _util.myVertex(_v1, pg);
         _util.myVertex(_v2, pg);
         _util.myVertex(_v3, pg);
-        pg.endShape(CLOSE);
+        pg.endShape();
     }
 
     @Override
@@ -370,24 +370,24 @@ class TextureQuad extends Quad
     @Override
     void drawMe()
     {
-        beginShape();
+        beginShape(QUADS);
         texture(_img);
-        vertex(_v1.x, _v1.y, 0, 0);
-        vertex(_v2.x, _v2.y, 0, 1);
-        vertex(_v3.x, _v3.y, 1, 1);
-        vertex(_v4.x, _v4.y, 1, 0);
+        _util.myVertex(_v1, 0, 0);
+        _util.myVertex(_v2, 0, 1);
+        _util.myVertex(_v3, 1, 1);
+        _util.myVertex(_v4, 1, 0);
         endShape();
     }
 
     @Override
     void drawMe(PGraphics pg)
     {
-        pg.beginShape();
+        pg.beginShape(QUADS);
         pg.texture(_img);
-        pg.vertex(_v1.x, _v1.y, 0, 0);
-        pg.vertex(_v2.x, _v2.y, 0, 1);
-        pg.vertex(_v3.x, _v3.y, 1, 1);
-        pg.vertex(_v4.x, _v4.y, 1, 0);
+        _util.myVertex(_v1, 0, 0, pg);
+        _util.myVertex(_v2, 0, 1, pg);
+        _util.myVertex(_v3, 1, 1, pg);
+        _util.myVertex(_v4, 1, 0, pg);
         pg.endShape();
     }
 

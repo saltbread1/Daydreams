@@ -21,14 +21,7 @@ abstract class TransitionEffect
         hint(ENABLE_DEPTH_TEST);
     }
 
-    Quad createBaseEffectQuad()
-    {
-        return new Quad(
-                new PVector(-width/2, -height/2),
-                new PVector(-width/2,  height/2),
-                new PVector( width/2,  height/2),
-                new PVector( width/2, -height/2));
-    }
+    abstract Quad createBaseEffectQuad();
 
     abstract void drawEffect(Quad effectQuad);
 
@@ -45,6 +38,16 @@ abstract class TransitionFade extends TransitionEffect
     {
         super(totalEffectSec);
         _colour = colour;
+    }
+
+    @Override
+    Quad createBaseEffectQuad()
+    {
+        return new Quad(
+                new PVector(-width*8, -height*8),
+                new PVector(-width*8,  height*8),
+                new PVector( width*8,  height*8),
+                new PVector( width*8, -height*8));
     }
 
     @Override
@@ -98,6 +101,16 @@ class TransitionBlink extends TransitionEffect
         super(totalEffectSec);
         _blinkFrame = blinkFrame;
         _colour = colour;
+    }
+
+    @Override
+    Quad createBaseEffectQuad()
+    {
+        return new Quad(
+                new PVector(-width*8, -height*8),
+                new PVector(-width*8,  height*8),
+                new PVector( width*8,  height*8),
+                new PVector( width*8, -height*8));
     }
 
     @Override

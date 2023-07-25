@@ -1,19 +1,17 @@
-// import com.hamoid.*;
+import com.hamoid.*;
 import quaternion.*;
 import java.util.Comparator;
 import java.util.Arrays;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 
-// VideoExport _videoExport;
-// boolean _isExport = false;
-// int _exportingMs = 10000;
-int _frameRate = 30;
+VideoExport _videoExport;
+boolean _isExport = false;
 SceneManager _sm;
 DataManager _dm;
 Utility _util;
-TestHUD _hud;
 Scene[] _scenes;
+int _frameRate = 30;
 
 void setup()
 {
@@ -24,28 +22,27 @@ void setup()
     background(#000000);
     textureMode(NORMAL);
 
-    _sm = new SceneManager();
+    _sm = new SceneManager(true);
     _dm = new DataManager();
     _util = new Utility();
-    _hud = new TestHUD();
     _scenes = new Scene[]{
             // new SceneAppearing(new Camera(
             //             null,
             //             null),
-            //         2.65*4),
+            //         11.6, 1, .9, 1),
             // new SceneLandscape(
             //         new LandscapeCamera(
-            //             new PVector(0, 1, .49).normalize().mult((height/2)/tan(PI/6)),
+            //             new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
             //             new PVector(),
             //             new TransitionFadeOut(2, #000000),
             //             new TransitionFadeIn(1, #ffffff)),
-            //         13, 9.5),
-            // new SceneTunnel(new Camera(
-            //             new PVector(0, 0, (height/2)/tan(PI/6)),
-            //             new PVector(),
-            //             new TransitionFadeOut(1, #ffffff),
-            //             new TransitionBlink(.5, 1, #000000)),
-            //         11),
+            //         25.644-11.6, 22.771-11.6),
+            new SceneTunnel(new Camera(
+                        new PVector(0, 0, (height/2)/tan(PI/6)),
+                        new PVector(),
+                        new TransitionFadeOut(1, #ffffff),
+                        new TransitionBlink(37.2-36.45, 1, #000000)),
+                    37.2-25.664)
             // new SceneRecursiveRect(new Camera(
             //             null,
             //             new TransitionFadeIn(.3, #ffffff)),
@@ -98,10 +95,10 @@ void setup()
             //             new TransitionFadeOut(1, #000000),
             //             new TransitionSlide(12, #000000)),
             //         24, 3),
-            new SceneLogo(new Camera(
-                        null,
-                        null),
-                    300, 3)
+            // new SceneLogo(new Camera(
+            //             null,
+            //             null),
+            //         300, 3)
     };
 }
 
@@ -114,13 +111,16 @@ void draw()
     if (frameCount == _scenes.length+2)
     {
         println("The movie has just started.");
-        // if (_isExport) { exportStart(); }
+        if (_isExport)
+        {
+            _videoExport = new VideoExport(this, "daydreams.mp4");
+            _videoExport.startMovie();
+        }
     }
     if (frameCount >= _scenes.length+2)
     {
-        // println("FPS: "+_hud.getFPS());
         _sm.advanceOneFrame();
-        // if (_isExport) { exportFrame(_exportingMs); }
+        if (_isExport) { _videoExport.saveFrame(); }
     }
 }
 
@@ -137,3 +137,9 @@ String timestamp()
 }
 
 void saveImage() { saveFrame(timestamp() + "_####.png"); }
+
+void exportFinish()
+{
+    _videoExport.endMovie();
+    exit();
+}

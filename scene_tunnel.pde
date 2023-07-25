@@ -1,8 +1,7 @@
 class SceneTunnel extends Scene
 {
     ArrayDeque<TunnelGate> _gateQueue;
-    float _radius, _spaceZ, _minZ, _maxZ;
-    int _rectNum;
+    float _minZ, _maxZ;
 
     SceneTunnel(Camera camera, float totalSceneSec)
     {
@@ -13,12 +12,10 @@ class SceneTunnel extends Scene
     void initialize()
     {
         _gateQueue = new ArrayDeque<TunnelGate>();
-        _radius = dist(0, 0, width/2, height/2);
-        _spaceZ = 300;
-        _maxZ = (height/2)/tan(PI/3)+_spaceZ;
-        _minZ = _maxZ - _spaceZ*8;
-        _rectNum = 90;
-        for (float z = _maxZ-_spaceZ; z >= _minZ; z-=_spaceZ)
+        float spaceZ = 300;
+        _maxZ = (height/2)/tan(PI/3)+spaceZ;
+        _minZ = _maxZ - spaceZ*8;
+        for (float z = _maxZ-spaceZ; z >= _minZ; z-=spaceZ)
         {
             _gateQueue.add(createNewGate(z));
         }
@@ -40,8 +37,8 @@ class SceneTunnel extends Scene
 
     TunnelGate createNewGate(float z)
     {
-        TunnelGate gate = new TunnelGate(new PVector(0, 0, z), _radius, _rectNum);
-        gate.createCuboids(_minZ, _maxZ);
+        TunnelGate gate = new TunnelGate(new PVector(0, 0, z), dist(0, 0, width/2, height/2), 80);
+        gate.createCuboids();
         return gate;
     }
 
@@ -77,10 +74,10 @@ class SceneTunnel extends Scene
             _seed = (int)random(65536);
         }
 
-        void createCuboids(float minZ, float maxZ)
+        void createCuboids()
         {
             _cuboidArray = new TunnelCuboid[_num];
-            for (int i = 0; i < _num; i++) { _cuboidArray[i] = new TunnelCuboid(minZ, maxZ); }
+            for (int i = 0; i < _num; i++) { _cuboidArray[i] = new TunnelCuboid(); }
 
         }
 
@@ -129,14 +126,12 @@ class SceneTunnel extends Scene
 
         class TunnelCuboid extends QuadPrism implements Rotatable3D
         {
-            final float _minZ, _maxZ, _initRotRad;
+            final float _initRotRad;
             final int _rotDir;
             float _edgeLenZ;
 
-            TunnelCuboid(float minZ, float maxZ)
+            TunnelCuboid()
             {
-                _minZ = minZ;
-                _maxZ = maxZ;
                 _initRotRad = random(TAU);
                 _rotDir = 1-(int)random(2)*2;
             }

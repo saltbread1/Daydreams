@@ -1,14 +1,18 @@
 class SceneAppearing extends Scene
 {
+    final float _appearTotalSec, _vanishTotalSec, _waitTotalSec;
     PGraphics _pg;
     PShader _glitch;
     CircleManager _cm;
     int[] _createNum = {8, 24, 48, 128};
     int _createIndex;
     
-    SceneAppearing(Camera camera, float totalSceneSec)
+    SceneAppearing(Camera camera, float totalSceneSec, float appearTotalSec, float vanishTotalSec, float waitTotalSec)
     {
         super(camera, totalSceneSec);
+        _appearTotalSec = appearTotalSec;
+        _vanishTotalSec = vanishTotalSec;
+        _waitTotalSec = waitTotalSec;
     }
 
     @Override
@@ -17,7 +21,7 @@ class SceneAppearing extends Scene
         _pg = createGraphics(width, height, P3D);
         _glitch = _dm.getGlitchShader();
         _glitch.set("resolution", (float)width, (float)height);
-        _cm = new CircleManager(.6, .75, 1.3);
+        _cm = new CircleManager();
     }
 
     @Override
@@ -48,16 +52,16 @@ class SceneAppearing extends Scene
             _maxRadius = maxRadius;
         }
 
-        void appear(float totalSec)
+        void appear()
         {
-            float r = _util.easeOutCubic(_appearSec/totalSec);
+            float r = _util.easeOutCubic(_appearSec/_appearTotalSec);
             _radius = _maxRadius * r;
             _appearSec += 1./_frameRate;
         }
 
-        void vanish(float totalSec)
+        void vanish()
         {
-            float r = _util.easeInQuad(_vanishSec/totalSec);
+            float r = _util.easeInQuad(_vanishSec/_vanishTotalSec);
             setAttribution(new Attribution(lerpColor(#ffffff, #000000, r), DrawStyle.FILLONLY));
             _vanishSec += 1./_frameRate;
         }
@@ -66,15 +70,11 @@ class SceneAppearing extends Scene
     class CircleManager
     {
         ArrayList<AppearingCircle> _circleList;
-        final float _appearSec, _vanishSec, _waitSec;
         float _stepSec;
 
-        CircleManager(float appearSec, float vanishSec, float waitSec)
+        CircleManager()
         {
-            _appearSec = appearSec;
-            _vanishSec = vanishSec;
-            _waitSec = waitSec;
-            _stepSec = appearSec+vanishSec+waitSec+1;
+            _stepSec = _appearTotalSec+_vanishTotalSec+_waitTotalSec+1;
         }
 
         void createCircles(int n)
@@ -120,8 +120,8 @@ class SceneAppearing extends Scene
         {
             for (AppearingCircle circle : _circleList)
             {
-                if (_stepSec < _appearSec) { circle.appear(_appearSec); }
-                else if (_stepSec > _appearSec+_waitSec) { circle.vanish(_vanishSec); }
+                if (_stepSec < _appearTotalSec) { circle.appear(); }
+                else if (_stepSec > _appearTotalSec+_waitTotalSec) { circle.vanish(); }
             }
             _stepSec += 1./_frameRate;
         }
@@ -131,6 +131,6 @@ class SceneAppearing extends Scene
             for (AppearingCircle circle : _circleList) { circle.drawMeAttr(pg); }
         }
 
-        boolean isUpdateEnd() { return _stepSec > _appearSec+_vanishSec+_waitSec; }
+        boolean isUpdateEnd() { return _stepSec > _appearTotalSec+_vanishTotalSec+_waitTotalSec; }
     }
 }

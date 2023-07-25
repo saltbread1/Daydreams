@@ -12,6 +12,18 @@ class Utility
         else { pg.vertex(v.x, v.y, v.z); }
     }
 
+    void myVertex(PVector pv, float u, float v)
+    {
+        if (pv.z == 0) { vertex(pv.x, pv.y, u, v); }
+        else { vertex(pv.x, pv.y, pv.z, u, v); }
+    }
+
+    void myVertex(PVector pv, float u, float v, PGraphics pg)
+    {
+        if (pv.z == 0) { pg.vertex(pv.x, pv.y, u, v); }
+        else { pg.vertex(pv.x, pv.y, pv.z, u, v); }
+    }
+
     void myLine(PVector v1, PVector v2)
     {
         if (v1.z == 0 && v2.z == 0) { line(v1.x, v1.y, v2.x, v2.y); }

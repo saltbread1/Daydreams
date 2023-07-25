@@ -67,12 +67,12 @@ class SceneQuadDivision extends Scene
         @Override
         void drawLeaf()
         {
-            beginShape();
+            beginShape(QUADS);
             texture(_curImg);
-            vertex(_v1.x, _v1.y, 0, 0);
-            vertex(_v2.x, _v2.y, 0, 1);
-            vertex(_v3.x, _v3.y, 1, 1);
-            vertex(_v4.x, _v4.y, 1, 0);
+            _util.myVertex(_v1, 0, 0);
+            _util.myVertex(_v2, 0, 1);
+            _util.myVertex(_v3, 1, 1);
+            _util.myVertex(_v4, 1, 0);
             endShape();
         }
     }
