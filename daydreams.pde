@@ -30,13 +30,13 @@ void setup()
             //             null,
             //             null),
             //         11.6, 1, .9, 1),
-            // new SceneLandscape(
-            //         new LandscapeCamera(
-            //             new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
-            //             new PVector(),
-            //             new TransitionFadeOut(2, #000000),
-            //             new TransitionFadeIn(1, #ffffff)),
-            //         25.644-11.6, 22.771-11.6),
+            new SceneLandscape(
+                    new LandscapeCamera(
+                        new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
+                        new PVector(),
+                        new TransitionFadeOut(2, #000000),
+                        new TransitionFadeIn(1, #ffffff)),
+                    25.644-11.6, 22.771-11.6),
             new SceneTunnel(new Camera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),

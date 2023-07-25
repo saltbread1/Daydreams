@@ -10,18 +10,30 @@ abstract class TransitionEffect
 
     final void applyEffect(PVector cameraCenter, PVector cameraCenter2Eye)
     {
-        Quad effectQuad = createBaseEffectQuad();
+        Quad effectQuad = createEffectQuad();
         PVector ez = new PVector(0, 0, 1);
         PVector axis = ez.cross(cameraCenter2Eye);
         float rad = PVector.angleBetween(ez, cameraCenter2Eye);
-        effectQuad.rotate(axis, rad, effectQuad.getCenter());
-        effectQuad.translate(cameraCenter);
+        PVector transOffset = PVector.add(cameraCenter, PVector.mult(cameraCenter2Eye, 1-(height/2)/tan(PI/6)/cameraCenter2Eye.mag()));
+        effectQuad.translate(transOffset);
+        effectQuad.rotate(axis, rad, transOffset);
+        noLights();
         hint(DISABLE_DEPTH_TEST);
         drawEffect(effectQuad);
         hint(ENABLE_DEPTH_TEST);
     }
 
-    abstract Quad createBaseEffectQuad();
+    /**
+    *   create a quad so that its center is at the orign
+    */
+    Quad createEffectQuad()
+    {
+        return new Quad(
+                new PVector(-width/2, -height/2),
+                new PVector(-width/2,  height/2),
+                new PVector( width/2,  height/2),
+                new PVector( width/2, -height/2));
+    }
 
     abstract void drawEffect(Quad effectQuad);
 
@@ -38,16 +50,6 @@ abstract class TransitionFade extends TransitionEffect
     {
         super(totalEffectSec);
         _colour = colour;
-    }
-
-    @Override
-    Quad createBaseEffectQuad()
-    {
-        return new Quad(
-                new PVector(-width*8, -height*8),
-                new PVector(-width*8,  height*8),
-                new PVector( width*8,  height*8),
-                new PVector( width*8, -height*8));
     }
 
     @Override
@@ -104,16 +106,6 @@ class TransitionBlink extends TransitionEffect
     }
 
     @Override
-    Quad createBaseEffectQuad()
-    {
-        return new Quad(
-                new PVector(-width*8, -height*8),
-                new PVector(-width*8,  height*8),
-                new PVector( width*8,  height*8),
-                new PVector( width*8, -height*8));
-    }
-
-    @Override
     void drawEffect(Quad effectQuad)
     {
         if (_threshFrame < _blinkFrame)
@@ -144,7 +136,7 @@ class TransitionRecursive extends TransitionEffect
     }
 
     @Override
-    Quad createBaseEffectQuad()
+    Quad createEffectQuad()
     {
         PImage img = get(0, 0, width, height);
         PGraphics pg = createGraphics(width, height, P2D);
@@ -200,7 +192,7 @@ class TransitionDivision extends TransitionEffect
     }
 
     @Override
-    Quad createBaseEffectQuad()
+    Quad createEffectQuad()
     {
         PImage img = get(0, 0, width, height);
         PGraphics pg = createGraphics(width, height, P2D);
@@ -258,7 +250,7 @@ class TransitionSlide extends TransitionEffect
     }
 
     @Override
-    Quad createBaseEffectQuad()
+    Quad createEffectQuad()
     {
         float r = constrain(_curSec/_totalEffectSec, 0, 1);
         return new Quad(

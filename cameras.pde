@@ -86,12 +86,14 @@ class Camera
         }
 
         @Override
-        Quad createBaseEffectQuad()
+        Quad createEffectQuad()
         {
-            String message = "FPS: " + nf(getFPS(), 2, 1) + ", Second: " + nf((float)(frameCount - _scenes.length+2)/_frameRate, 2, 2);
-            int textSize = (int)(width*.04);
+            String message = nf((float)(frameCount - _scenes.length+2)/_frameRate, 3, 2) + "sec  " + nf(getFPS(), 2, 1) + "fps";
+            int textSize = (int)(width*.035);
+            pushStyle();
             textSize(textSize);
             int messageSize = (int)textWidth(message);
+            popStyle();
             PGraphics pg;
             pg = createGraphics(messageSize, textSize, P2D);
             pg.beginDraw();
