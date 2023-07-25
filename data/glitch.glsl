@@ -28,7 +28,7 @@ float noise(const vec2 v)
 void main()
 {
     vec2 st = gl_FragCoord.xy / resolution.xy;
-    float n = noise(vec2(st.x+time, st.y+time*.4));
+    float n = noise(vec2(floor(st.x*64)/64.+time, floor(st.y*64)/64.+time*.4));
     vec2 dist = fract(vec2(n, n*1.6)*8.) - .5;
     float r = texture2D(texture, st+dist*.002).r;
     float g = texture2D(texture, st+dist*.013).g;

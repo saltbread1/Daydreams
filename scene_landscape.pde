@@ -17,7 +17,7 @@ class SceneLandscape extends Scene
     @Override
     void initialize()
     {
-        _landscape = new Landscape(width*6, 40, new PVector(), width);
+        _landscape = new Landscape(width*6, width/20, new PVector(), width);
         _landscape.createFaces();
 
         PVector offset = new PVector(width, width).div(2);
@@ -150,7 +150,7 @@ class SceneLandscape extends Scene
                 {
                     float x = map(i, 0, _res, -_totalSize/2, _totalSize/2);
                     float y = map(j, 0, _res, -_totalSize/2, _totalSize/2);
-                    float z = (1 - noise(i*noiseScale, j*noiseScale)*2) * 290;
+                    float z = (1 - noise(i*noiseScale, j*noiseScale)*2) * height*.64;
                     PVector offset = PVector.random3D().mult(_faceSize*.5);
                     offset.z = 0;
                     vertices[i][j] = new PVector(x, y, z).add(offset).add(_center);

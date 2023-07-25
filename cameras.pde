@@ -147,7 +147,7 @@ class LandscapeCamera extends Camera
             float d = width + sqrt(random(1))*width*2.5;
             rad = ++c < 20 ? _preStepRad + random(-1,1)*PI*.4 : _preStepRad + random(-1,1)*PI*.8;
             PVector dir = PVector.fromAngle(rad);
-            _stepTotalSec = type == LandscapeType.PHASE1 ? d*.0015 : d*.0006;
+            _stepTotalSec = type == LandscapeType.PHASE1 ? d*1.2/width : d*.48/width;
             _stepEndSec = _stepTotalSec * sq(random(.28, .82));
             _goalPos = PVector.add(_startPos, dir.mult(d));
             float r = _util.easeOutQuad(_stepEndSec/_stepTotalSec);

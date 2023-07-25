@@ -55,7 +55,7 @@ class SceneIcosphere extends Scene
         {
             for (TwistedTriangularPrism prism : _prismList)
             {
-                prism.updateMe(50, 180);
+                prism.updateMe(width*.062, width*.26);
                 prism.createFaces();
             }
         }
@@ -86,7 +86,7 @@ class SceneIcosphere extends Scene
 
         TwistedTriangularPrism(Triangle bottomFace)
         {
-            super(bottomFace, 100);
+            super(bottomFace, width*.125);
             _rotRad = TAU;
         }
 
