@@ -37,14 +37,26 @@ abstract class Scene
     final float getBeginEffectTotalSecound() { return _camera.getBeginEffectTotalSecound(); }
 
     final float getEndEffectTotalSecound() { return _camera.getEndEffectTotalSecound(); }
+
+    final void displayTimeInfo() { _camera.displayTimeInfo(); }
 }
 
 class SceneManager
 {
     ArrayDeque<Scene> _sceneQueue;
     Scene _curScene;
+    final boolean _isDisplayTime;
 
-    SceneManager() { _sceneQueue = new ArrayDeque<Scene>(); }
+    SceneManager(boolean isDisplayTime)
+    {
+        _sceneQueue = new ArrayDeque<Scene>();
+        _isDisplayTime = isDisplayTime;
+    }
+
+    SceneManager()
+    {
+        this(false);
+    }
 
     void addScene(Scene scene)
     {
@@ -74,6 +86,7 @@ class SceneManager
         {
             _curScene.applyEndTransitionEffect();
         }
+        if (_isDisplayTime) { _curScene.displayTimeInfo(); }
         _curScene.timeCount();
         if (_curScene.isEnd())
         {
@@ -93,5 +106,6 @@ class SceneManager
     {
         println("The movie has just finished.");
         noLoop();
+        if (_isExport) { exportFinish(); }
     }
 }

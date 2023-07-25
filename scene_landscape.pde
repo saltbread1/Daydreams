@@ -177,7 +177,7 @@ class SceneLandscape extends Scene
             {
                 int alpha = (int)(constrain(_visibleSize / (1+PVector.dist(face.getCenter(), _camera.getCenter())) - 1.8, 0, 1)*255);
                 if (alpha == 0) { face.reset(); continue; }
-                if (alpha - 250 > 0) { face.updateCones(.36); }
+                if (alpha - 250 > 0) { face.updateCones(.24); }
                 setDrawStyle(_style, alpha);
                 face.drawMe();
             }
