@@ -233,3 +233,32 @@ class TransitionDivision extends TransitionEffect
         _iterateSec += 1./_frameRate;
     }
 }
+
+class TransitionSlide extends TransitionEffect
+{
+    final color _colour;
+
+    TransitionSlide(float totalEffectSec, color colour)
+    {
+        super(totalEffectSec);
+        _colour = colour;
+    }
+
+    @Override
+    Quad createBaseEffectQuad()
+    {
+        float r = constrain(_curSec/_totalEffectSec, 0, 1);
+        return new Quad(
+                new PVector(-width/2, -height/2),
+                new PVector(-width/2,  height/2),
+                new PVector(-width/2 + width * r,  height/2),
+                new PVector(-width/2 + width * r, -height/2));
+    }
+
+    @Override
+    void drawEffect(Quad effectQuad)
+    {
+        effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+        effectQuad.drawMeAttr();
+    }
+}

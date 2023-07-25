@@ -94,7 +94,11 @@ void setup()
             //             new TransitionFadeOut(2, #ffffff),
             //             new TransitionDivision(.8, 3)),
             //         12, 3),
-            new SceneSlidingCircles(new Camera(
+            // new SceneSlidingCircles(new Camera(
+            //             new TransitionFadeOut(1, #000000),
+            //             new TransitionSlide(12, #000000)),
+            //         24, 3),
+            new SceneLogo(new Camera(
                         null,
                         null),
                     300, 3)
