@@ -1,5 +1,4 @@
 import com.hamoid.*;
-import quaternion.*;
 import java.util.Comparator;
 import java.util.Arrays;
 import java.util.ArrayDeque;
@@ -41,16 +40,16 @@ void setup()
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),
                         new TransitionFadeOut(1, #ffffff),
-                        new TransitionBlinkAlternating(.5, 1, #000000)),
+                        new TransitionBlinkAlternating(.7, 1, #000000)),
                     11.6), // total: 37.1 sec
             new SceneRecursiveRect(new Camera(
                         null,
                         new TransitionFadeIn(.3, #ffffff)),
-                    11.8, 5.9) // total: 48.9 sec
+                    11.8, 5.9), // total: 48.9 sec
             new SceneImageConvert(new Camera(
                         new TransitionFadeOut(.3, #ffffff),
                         new TransitionBlinkOnce(1.5, .3, #ffffff)),
-                    25.3, 6.1, 12.1), // total: 74.2 sec    48.9, 55, 61, 72.7, 74.2
+                    25.3, 6.1, 12.1), // total: 74.2 sec
             new SceneTrianglesRotation(new Camera(
                         new TransitionFadeOut(.35, #ffffff),
                         new TransitionBlinkAlternating(.35, 1, #000000)),
@@ -98,7 +97,7 @@ void setup()
             new SceneLogo(new Camera(
                         null,
                         null),
-                    8.9, 6.1) // total: 142.3 sec
+                    10, 6.1) // total: 143.4 sec
     };
 }
 
