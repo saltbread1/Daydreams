@@ -150,13 +150,6 @@ class SceneSlidingCircles extends Scene
             _glitchSec += 1./frameRate;
         }
 
-        boolean isDestroy()
-        {
-            return _stepVec.x < 0
-                    ? _center.x + _radius < 0
-                    : _center.x - _radius > width;
-        }
-
         @Override
         void drawMe(PGraphics pg)
         {
@@ -193,7 +186,7 @@ class SceneSlidingCircles extends Scene
         final int _circleNum;
         final float _stepTotalSec;
         float _stepSec;
-        ArrayList<SlidingCircle> _circleList;
+        ArrayDeque<SlidingCircle> _circleList;
 
         CircleManager(int circleNum, float stepSec)
         {
@@ -203,7 +196,7 @@ class SceneSlidingCircles extends Scene
 
         void initialize()
         {
-            _circleList = new ArrayList<SlidingCircle>();
+            _circleList = new ArrayDeque<SlidingCircle>();
             for (int i = 0; i < ceil((_circleNum+1)*_stepTotalSec*_frameRate); i++) { updateCircles(); }
         }
 
@@ -217,11 +210,7 @@ class SceneSlidingCircles extends Scene
 
         void updateCircles()
         {
-            for (int i = 0; i < _circleList.size(); i++)
-            {
-                SlidingCircle circle = _circleList.get(i);
-                if (circle.isDestroy()) { _circleList.remove(i); }
-            }
+            while (_circleList.size() > _circleNum+2) { _circleList.poll(); }
             if (_stepSec >= _stepTotalSec)
             {
                 addCircle();

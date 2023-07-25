@@ -43,7 +43,7 @@ class SceneImageConvert extends Scene
         float timeVal = (_convertStartSec - _colorChangeSec) * easeCustom(sec, _colorChangeSec, _convertStartSec, 5);
         _noise.set("resolution", (float)_base.width, (float)_base.height);
         _noise.set("time", timeVal);
-        _noise.set("kernel_size", 5);
+        _noise.set("kernel_size", width/160);
         _noise.set("hue_offset", sec < _colorChangeSec ? .6 : .8);
         _base.beginDraw();
         _base.shader(_noise);

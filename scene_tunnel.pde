@@ -12,7 +12,7 @@ class SceneTunnel extends Scene
     void initialize()
     {
         _gateQueue = new ArrayDeque<TunnelGate>();
-        float spaceZ = 300;
+        float spaceZ = width*.375;
         _maxZ = (height/2)/tan(PI/3)+spaceZ;
         _minZ = _maxZ - spaceZ*8;
         for (float z = _maxZ-spaceZ; z >= _minZ; z-=spaceZ)

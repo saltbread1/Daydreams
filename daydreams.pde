@@ -14,8 +14,8 @@ int _frameRate = 30;
 
 void setup()
 {
-    //size(1920, 1080, P3D); // full HD
-    size(800, 450, P3D);
+    size(1920, 1080, P3D); // full HD
+    //size(800, 450, P3D);
     smooth();
     frameRate(_frameRate);
     background(#000000);
