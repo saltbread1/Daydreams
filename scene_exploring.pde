@@ -286,7 +286,7 @@ class SceneExploring extends Scene
             new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
-            for (int i = 0; i <= 16; i++)
+            for (int i = 0; i <= 32; i++)
             {
                 _util.myVertex(PVector.fromAngle(TAU/16*i).mult(_radius).add(_center));
             }

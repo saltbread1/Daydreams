@@ -27,14 +27,14 @@ class SceneLogo extends Scene
     {
         int x = _curSec < _vibrationStartSec
                 ? 0
-                : -(int)(pow(random(1), 3)*width*.15);
+                : (int)(pow(random(-1, 1), 3)*width*.15);
         _glitch.set("time", _curSec*16);
         _pg.beginDraw();
-        _pg.background(#ffffff);
+        _pg.background(#000000);
         _pg.pushStyle();
         _pg.noStroke();
-        _pg.fill(#000000);
-        _pg.rect(0, 0, width+x, height);
+        // _pg.fill(#000000);
+        // _pg.rect(0, 0, width+x, height);
         _pg.fill(#ffffff);
         _logo.drawText("Daydreams", _pg, x, height/2, (int)(width/100), 2);
         _logo.drawText("take 2023", _pg, x, height/2+24*(int)(width/200), (int)(width/200), 2);

@@ -50,7 +50,7 @@ class SceneTunnel extends Scene
             _gateQueue.add(createNewGate(_minZ));
         }
 
-        for (TunnelGate gate : _gateQueue) { gate.updateMe(32, _curSec); }
+        for (TunnelGate gate : _gateQueue) { gate.updateMe(width*1.2/_frameRate, _curSec); }
     }
 
     void drawGates()

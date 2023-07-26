@@ -10,7 +10,7 @@ SceneManager _sm;
 DataManager _dm;
 Utility _util;
 Scene[] _scenes;
-int _frameRate = 30;
+int _frameRate = 60;
 
 void setup()
 {
@@ -20,15 +20,16 @@ void setup()
     frameRate(_frameRate);
     background(#000000);
     textureMode(NORMAL);
+    println(ceil(_frameRate/30));
 
-    _sm = new SceneManager(true);
+    _sm = new SceneManager();
     _dm = new DataManager();
     _util = new Utility();
     _scenes = new Scene[]{
             new SceneAppearing(new Camera(
                         null,
                         null),
-                    11.4, 1, .85, 1), // total: 11.4 sec
+                    11.4, .5, 1.35, 1), // total: 11.4 sec
             new SceneLandscape(
                     new LandscapeCamera(
                         new PVector(0, 1, .6).normalize().mult((height/2)/tan(PI/6)*1.5),
@@ -40,7 +41,7 @@ void setup()
                         new PVector(0, 0, (height/2)/tan(PI/6)),
                         new PVector(),
                         new TransitionFadeOut(1, #ffffff),
-                        new TransitionBlinkAlternating(.7, 1, #000000)),
+                        new TransitionBlinkAlternating(.7, ceil(_frameRate/30), #000000)),
                     11.6), // total: 37.1 sec
             new SceneRecursiveRect(new Camera(
                         null,
@@ -52,15 +53,15 @@ void setup()
                     25.3, 6.1, 12.1), // total: 74.2 sec
             new SceneTrianglesRotation(new Camera(
                         new TransitionFadeOut(.35, #ffffff),
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneArcsRotation(new Camera(
                         null,
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneDistortedGrid(new Camera(
                         null,
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneIcosphere(new Camera(
                         new PVector(0, 0, (height/2)/tan(PI/6)),
@@ -70,15 +71,15 @@ void setup()
                     2.95),
             new SceneQuadDivision(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneKaleidoscope(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneAbsorption(new Camera(
                         new TransitionFadeOut(.7, #000000),
-                        new TransitionBlinkAlternating(.35, 1, #000000)),
+                        new TransitionBlinkAlternating(.35, ceil(_frameRate/30), #000000)),
                     2.95),
             new SceneReversingRects(new Camera(
                         new TransitionFadeOut(.7, #000000),
@@ -93,11 +94,11 @@ void setup()
             new SceneSlidingCircles(new Camera(
                         new TransitionFadeOut(1, #000000),
                         new TransitionSlide(11.8, #000000)),
-                    2.95*8, 2.95), // total: 133.4 sec
+                    2.95*8-.05, 2.95), // total: 133.4 sec
             new SceneLogo(new Camera(
                         null,
                         null),
-                    10, 6.1) // total: 143.4 sec
+                    10, 6.6) // total: 143.4 sec
     };
 }
 
@@ -113,6 +114,8 @@ void draw()
         if (_isExport)
         {
             _videoExport = new VideoExport(this, "daydreams.mp4");
+            _videoExport.setFrameRate(_frameRate);
+            _videoExport.setDebugging(false);
             _videoExport.startMovie();
         }
     }
