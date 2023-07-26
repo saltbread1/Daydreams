@@ -20,7 +20,6 @@ void setup()
     frameRate(_frameRate);
     background(#000000);
     textureMode(NORMAL);
-    println(ceil(_frameRate/30));
 
     _sm = new SceneManager();
     _dm = new DataManager();
