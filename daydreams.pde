@@ -137,7 +137,7 @@ String timestamp()
     return timestamp;
 }
 
-void saveImage() { saveFrame(timestamp() + "_####.png"); }
+void saveImage() { saveFrame("snap_shots/" + timestamp() + "_####.png"); }
 
 void exportFinish()
 {

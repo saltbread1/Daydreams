@@ -48,7 +48,7 @@ class SceneAppearing extends Scene
 
         AppearingCircle(PVector center, float maxRadius)
         {
-            super(center, maxRadius, new Attribution(#ffffff, DrawStyle.FILLONLY));
+            super(center, maxRadius, new Attribute(#ffffff, DrawStyle.FILLONLY));
             _maxRadius = maxRadius;
         }
 
@@ -62,7 +62,7 @@ class SceneAppearing extends Scene
         void vanish()
         {
             float r = _util.easeInQuad(_vanishSec/_vanishTotalSec);
-            setAttribution(new Attribution(lerpColor(#ffffff, #000000, r), DrawStyle.FILLONLY));
+            setAttribute(new Attribute(lerpColor(#ffffff, #000000, r), DrawStyle.FILLONLY));
             _vanishSec += 1./_frameRate;
         }
     }

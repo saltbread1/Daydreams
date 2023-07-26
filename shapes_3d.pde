@@ -5,7 +5,7 @@ interface Rotatable3D
 
 abstract class SimpleShape3D extends SimpleShape
 {
-    SimpleShape3D(Attribution attr) { super(attr); }
+    SimpleShape3D(Attribute attr) { super(attr); }
 
     SimpleShape3D() {}
 
@@ -21,7 +21,7 @@ class Cone extends SimpleShape3D implements Translatable
     int _res;
     ArrayList<Triangle> _faceList;
 
-    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
+    Cone(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribute attr)
     {
         super(attr);
         _bottomCenter = bottomCenter;
@@ -91,7 +91,7 @@ class Cylinder extends SimpleShape3D
     int _res;
     ArrayList<SimpleShape> _faceList;
 
-    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribution attr)
+    Cylinder(PVector bottomCenter, PVector centerAxis, float radius, float height, int res, Attribute attr)
     {
         super(attr);
         _bottomCenter = bottomCenter;
@@ -316,7 +316,7 @@ class QuadPrism extends SimpleShape3D implements Rotatable3D
     PVector _normal;
     ArrayList<Quad> _faceList;
 
-    QuadPrism(Quad bottomFace, float height, Attribution attr)
+    QuadPrism(Quad bottomFace, float height, Attribute attr)
     {
         super(attr);
         _bottomFace = bottomFace;

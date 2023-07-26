@@ -36,7 +36,7 @@ class SceneQuadDivision extends Scene
         {
             super(v1, v2, v3, v4, minEndArea, maxEndArea, parent);
             _textureImages = _dm.getEyeImages();
-            setAttribution(new Attribution(#ffffff, DrawStyle.FILLONLY));
+            setAttribute(new Attribute(#ffffff, DrawStyle.FILLONLY));
         }
 
         TextureDivideQuad(PVector v1, PVector v2, PVector v3, PVector v4, float minEndArea, float maxEndArea)

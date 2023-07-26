@@ -45,7 +45,7 @@ class SceneTrianglesRotation extends Scene
         PVector v1 = PVector.fromAngle(random(start, goal)).mult(circle._radius);
         PVector v2 = PVector.fromAngle(random(start, goal) + offset).mult(circle._radius);
         PVector v3 = PVector.fromAngle(random(start, goal) + offset*2).mult(circle._radius);
-        Attribution attr = new Attribution(
+        Attribute attr = new Attribute(
                 color(_palette[(int)random(_palette.length)], 100),
                 DrawStyle.FILLONLY);
         Triangle tri = new Triangle(v1, v2, v3, attr);

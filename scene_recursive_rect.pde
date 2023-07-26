@@ -109,7 +109,7 @@ class SceneRecursiveRect extends Scene
 
         RecursiveRect(float width, float height, RecursiveRect parent)
         {
-            super(0, 0, width, height, new Attribution(#ffffff, DrawStyle.STROKEONLY));
+            super(0, 0, width, height, new Attribute(#ffffff, DrawStyle.STROKEONLY));
             _width = width;
             _height = height;
             _parent = parent;
@@ -219,7 +219,7 @@ class SceneRecursiveRect extends Scene
 
         FloatingCircle(float radius)
         {
-            super(new PVector(), radius, new Attribution(color(#ffffff, 216), DrawStyle.FILLONLY));
+            super(new PVector(), radius, new Attribute(color(#ffffff, 216), DrawStyle.FILLONLY));
             _initRadius = radius;
             _seed1 = (int)random(65536);
             _seed2 = (int)random(65536);

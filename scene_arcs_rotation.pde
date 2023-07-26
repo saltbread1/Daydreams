@@ -92,7 +92,7 @@ class SceneArcsRotation extends Scene
                 float k2 = map(_util.easeInOutQuad(noise(_curSec*2.3, _seed*_arcNum+i)), 0, 1, -.48, .48);
                 float start = dRad*(i*2+k1) + _radOffset;
                 float stop = dRad*(i*2+1+k2) + _radOffset;
-                Attribution attr = new Attribution(_colour, DrawStyle.FILLONLY);
+                Attribute attr = new Attribute(_colour, DrawStyle.FILLONLY);
                 _arcList.add(new CustomArc(_trackCenter, _trackRadius, start, stop, attr));
             }
         }
@@ -113,7 +113,7 @@ class SceneArcsRotation extends Scene
 
     class CustomArc extends Arc
     {
-        CustomArc(PVector center, float radius, float startRad, float stopRad, Attribution attr)
+        CustomArc(PVector center, float radius, float startRad, float stopRad, Attribute attr)
         {
             super(center, radius, startRad, stopRad, OPEN, attr);
         }

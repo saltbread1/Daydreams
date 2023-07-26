@@ -89,7 +89,7 @@ class SceneSlidingCircles extends Scene
 
         SlidingCircle(PVector center, float radius, PVector stepVec, float stepTotalSec)
         {
-            super(center, radius, new Attribution(#ffffff, DrawStyle.FILLONLY));
+            super(center, radius, new Attribute(#ffffff, DrawStyle.FILLONLY));
             _stepVec = stepVec;
             _stepTotalSec = stepTotalSec;
             _stepSec = _stepTotalSec;
