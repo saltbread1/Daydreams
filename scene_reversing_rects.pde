@@ -62,7 +62,7 @@ class SceneReversingRects extends Scene
 
         void initialize()
         {
-            _quad.setAttribution(new Attribution(#000000, DrawStyle.FILLONLY));
+            _quad.setAttribute(new Attribute(#000000, DrawStyle.FILLONLY));
             for (int i = 0; i < 80; i++) { updateQuad(); }
         }
 

@@ -87,7 +87,7 @@ class SceneExploring extends Scene
 
         FloatingTriangle(float sizeRadius, float speed)
         {
-            super(null, null, null, new AttributionDetail(#ffffff, #000000, DrawStyle.STROKEANDFILL, 2, ROUND));
+            super(null, null, null, new AttributeDetail(#ffffff, #000000, DrawStyle.STROKEANDFILL, 2, ROUND));
             _sizeRadius = sizeRadius;
             _speed = speed;
             _center = new PVector();
@@ -191,7 +191,7 @@ class SceneExploring extends Scene
             return d < range._radius;
         }
 
-        Attribution changeAlpha(PVector center, Attribution attr)
+        Attribute changeAlpha(PVector center, Attribute attr)
         {
             Circle range = _triangle.getReactionableRange();
             int alpha = (int)(constrain(pow(sq(range._radius)/(1+PVector.sub(center, _triangle.getCenter()).magSq()), 3), .24, 1)*255);
@@ -199,7 +199,7 @@ class SceneExploring extends Scene
             color cFill = attr.getFill();
             cStroke = color(red(cStroke), green(cStroke), blue(cStroke), alpha);
             cFill = color(red(cFill), green(cFill), blue(cFill), alpha);
-            return new Attribution(cStroke, cFill, attr.getStyle());
+            return new Attribute(cStroke, cFill, attr.getStyle());
         }
     }
 
@@ -212,7 +212,7 @@ class SceneExploring extends Scene
         final ReactUtility _reactUtil;
         final int _fillIndex;
 
-        ReactCircle(PVector center, float maxRadius, Attribution attr, int fillIndex)
+        ReactCircle(PVector center, float maxRadius, Attribute attr, int fillIndex)
         {
             super(center, 0, attr);
             _maxRadius = maxRadius;
@@ -239,7 +239,7 @@ class SceneExploring extends Scene
             _appearSec = constrain(_appearSec, 0, _appearTotalSec);
             float t = .56;
             _radius = _maxRadius * ((1-t)+r*t);
-            setAttribution(_reactUtil.changeAlpha(_center, _attr));
+            setAttribute(_reactUtil.changeAlpha(_center, _attr));
         }
 
         @Override
@@ -283,7 +283,7 @@ class SceneExploring extends Scene
         {
             pushStyle();
             beginShape(TRIANGLE_FAN);
-            new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
+            new Attribute(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
             for (int i = 0; i <= 32; i++)
@@ -297,7 +297,7 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribute(new Attribute(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -310,7 +310,7 @@ class SceneExploring extends Scene
         final ReactUtility _reactUtil;
         final int _fillIndex;
 
-        ReactRect(PVector center, float maxWidth, float maxHeight, Attribution attr, int fillIndex)
+        ReactRect(PVector center, float maxWidth, float maxHeight, Attribute attr, int fillIndex)
         {
             super(center, 0, 0, attr);
             _maxWidth = maxWidth;
@@ -339,7 +339,7 @@ class SceneExploring extends Scene
             float t = .56;
             _width = _maxWidth * ((1-t)+r*t);
             _height = _maxHeight * ((1-t)+r*t);
-            setAttribution(_reactUtil.changeAlpha(_center, _attr));
+            setAttribute(_reactUtil.changeAlpha(_center, _attr));
         }
 
         @Override
@@ -391,7 +391,7 @@ class SceneExploring extends Scene
         {
             pushStyle();
             beginShape(TRIANGLE_FAN);
-            new Attribution(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
+            new Attribute(color(_style.getBackgroundColor(), 4), _attr.getStyle()).apply();
             _util.myVertex(_center);
             _attr.apply();
             _util.myVertex(new PVector(-_width, -_height).div(2).rotate(QUARTER_PI).add(_center));
@@ -406,7 +406,7 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribute(new Attribute(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
@@ -419,7 +419,7 @@ class SceneExploring extends Scene
         final ReactUtility _reactUtil;
         final int _fillIndex;
 
-        ReactCylinder(PVector bottomCenter, float maxRadius, float maxHeight, int res, Attribution attr, int fillIndex)
+        ReactCylinder(PVector bottomCenter, float maxRadius, float maxHeight, int res, Attribute attr, int fillIndex)
         {
             super(bottomCenter, new PVector(0, 0, -1), 0, 0, res, attr);
             _maxRadius = maxRadius;
@@ -455,7 +455,7 @@ class SceneExploring extends Scene
             float t = .56;
             _radius = _maxRadius * ((1-t)+r*t);
             _height = _maxHeight * r;
-            setAttribution(_reactUtil.changeAlpha(_bottomCenter, _attr));
+            setAttribute(_reactUtil.changeAlpha(_bottomCenter, _attr));
             createFaces();
         }
 
@@ -504,13 +504,13 @@ class SceneExploring extends Scene
         @Override
         void changeColor()
         {
-            setAttribution(new Attribution(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
+            setAttribute(new Attribute(_style.getStroke(), _style.getFills()[_fillIndex], _attr.getStyle()));
         }
     }
 
     class CustomQuad extends Quad
     {
-        CustomQuad(PVector v1, PVector v2, PVector v3, PVector v4, Attribution attr)
+        CustomQuad(PVector v1, PVector v2, PVector v3, PVector v4, Attribute attr)
         {
             super(v1, v2, v3, v4, attr);
         }
@@ -520,7 +520,7 @@ class SceneExploring extends Scene
         {
             pushStyle();
             beginShape(QUADS);
-            new Attribution(color(_style.getBackgroundColor(), 96), _attr.getStyle()).apply();
+            new Attribute(color(_style.getBackgroundColor(), 96), _attr.getStyle()).apply();
             _util.myVertex(_v1);
             _util.myVertex(_v2);
             _attr.apply();
@@ -551,7 +551,7 @@ class SceneExploring extends Scene
                 float r = sq(random(1))*width*.055;
                 color[] palette = _style.getFills();
                 int index = (int)random(palette.length);
-                Attribution attr = new Attribution(palette[index], DrawStyle.FILLONLY);
+                Attribute attr = new Attribute(palette[index], DrawStyle.FILLONLY);
                 ReactCircle circle = new ReactCircle(c, r, attr, index);
                 if (!isOverlap(circle))
                 {
@@ -574,7 +574,7 @@ class SceneExploring extends Scene
                 float h = sq(random(.2, 1))*width*.12;
                 color[] palette = _style.getFills();
                 int index = (int)random(palette.length);
-                Attribution attr = new Attribution(palette[index], DrawStyle.FILLONLY);
+                Attribute attr = new Attribute(palette[index], DrawStyle.FILLONLY);
                 ReactRect rect = new ReactRect(c, w, h, attr, index);
                 if (!isOverlap(rect))
                 {
@@ -598,7 +598,7 @@ class SceneExploring extends Scene
                 int res = (int)random(5, 9);
                 color[] palette = _style.getFills();
                 int index = (int)random(palette.length);
-                Attribution attr = new Attribution(_style.getStroke(), palette[index]);
+                Attribute attr = new Attribute(_style.getStroke(), palette[index]);
                 ReactCylinder cylinder = new ReactCylinder(c, r, h, res, attr, index);
                 if (!isOverlap(cylinder))
                 {

@@ -10,15 +10,15 @@ interface Rotatable
 
 abstract class SimpleShape
 {
-    Attribution _attr;
+    Attribute _attr;
 
-    SimpleShape(Attribution attr) { _attr = attr; }
+    SimpleShape(Attribute attr) { _attr = attr; }
 
     SimpleShape() { _attr = null; }
 
-    final void setAttribution(Attribution attr) { _attr = attr; }
+    final void setAttribute(Attribute attr) { _attr = attr; }
 
-    final Attribution getAttribution() { return _attr; }
+    final Attribute getAttribute() { return _attr; }
 
     void drawMeAttr()
     {
@@ -45,7 +45,7 @@ class Triangle extends SimpleShape implements Translatable, Rotatable, Rotatable
 {
     PVector _v1, _v2, _v3;
 
-    Triangle(PVector v1, PVector v2, PVector v3, Attribution attr)
+    Triangle(PVector v1, PVector v2, PVector v3, Attribute attr)
     {
         super(attr);
         _v1 = v1;
@@ -146,7 +146,7 @@ class Rect extends SimpleShape implements Translatable
 { // for only 2D renderer
     PVector _upperLeft, _lowerRight;
 
-    Rect(PVector upperLeft, PVector lowerRight, Attribution attr)
+    Rect(PVector upperLeft, PVector lowerRight, Attribute attr)
     {
         super(attr);
         _upperLeft = upperLeft;
@@ -158,7 +158,7 @@ class Rect extends SimpleShape implements Translatable
         this(upperLeft, lowerRight, null);
     }
 
-    Rect(PVector upperLeft, float width, float height, Attribution attr)
+    Rect(PVector upperLeft, float width, float height, Attribute attr)
     {
         this(upperLeft, new PVector(width, height).add(upperLeft), attr);
     }
@@ -168,7 +168,7 @@ class Rect extends SimpleShape implements Translatable
         this(upperLeft, width, height, null);
     }
 
-    Rect(float x, float y, float width, float height, Attribution attr)
+    Rect(float x, float y, float width, float height, Attribute attr)
     {
         this(new PVector(x, y), width, height, attr);
     }
@@ -214,7 +214,7 @@ class Rect2 extends SimpleShape implements Translatable
     PVector _center;
     float _width, _height;
 
-    Rect2(PVector center, float width, float height, Attribution attr)
+    Rect2(PVector center, float width, float height, Attribute attr)
     {
         super(attr);
         _center = center;
@@ -255,7 +255,7 @@ class Quad extends SimpleShape implements Translatable, Rotatable, Rotatable3D
 {
     PVector _v1, _v2, _v3, _v4;
 
-    Quad(PVector v1, PVector v2, PVector v3, PVector v4, Attribution attr)
+    Quad(PVector v1, PVector v2, PVector v3, PVector v4, Attribute attr)
     {
         super(attr);
         _v1 = v1;
@@ -356,7 +356,7 @@ class TextureQuad extends Quad
 
     TextureQuad(PVector v1, PVector v2, PVector v3, PVector v4, PImage img)
     {
-        super(v1, v2, v3, v4, new Attribution(#ffffff, DrawStyle.FILLONLY));
+        super(v1, v2, v3, v4, new Attribute(#ffffff, DrawStyle.FILLONLY));
         _img = img;
     }
 
@@ -546,7 +546,7 @@ class Circle extends SimpleShape implements Translatable, Rotatable
     PVector _center;
     float _radius;
 
-    Circle(PVector center, float radius, Attribution attr)
+    Circle(PVector center, float radius, Attribute attr)
     {
         super(attr);
         _center = center;
@@ -558,7 +558,7 @@ class Circle extends SimpleShape implements Translatable, Rotatable
         this(center, radius, null);
     }
 
-    Circle(float x, float y, float radius, Attribution attr)
+    Circle(float x, float y, float radius, Attribute attr)
     {
         this(new PVector(x, y), radius, attr);
     }
@@ -600,7 +600,7 @@ class Arc extends Circle
     float _startRad, _stopRad;
     int _mode;
 
-    Arc(PVector center, float radius, float startRad, float stopRad, int mode, Attribution attr)
+    Arc(PVector center, float radius, float startRad, float stopRad, int mode, Attribute attr)
     {
         super(center, radius, attr);
         _startRad = startRad;
@@ -613,7 +613,7 @@ class Arc extends Circle
         this(center, radius, startRad, stopRad, mode, null);
     }
 
-    Arc(float x, float y, float radius, float startRad, float stopRad, int mode, Attribution attr)
+    Arc(float x, float y, float radius, float startRad, float stopRad, int mode, Attribute attr)
     {
         this(new PVector(x, y), radius, startRad, stopRad, mode, attr);
     }

@@ -5,29 +5,29 @@ enum DrawStyle
     STROKEANDFILL,
 }
 
-class Attribution
+class Attribute
 {
     final color _cStroke, _cFill;
     final DrawStyle _style;
 
-    Attribution(color cStroke, color cFill, DrawStyle style)
+    Attribute(color cStroke, color cFill, DrawStyle style)
     {
         _cStroke = cStroke;
         _cFill = cFill;
         _style = style;
     }
 
-    Attribution(color cStroke, color cFill)
+    Attribute(color cStroke, color cFill)
     {
         this(cStroke, cFill, DrawStyle.STROKEANDFILL);
     }
 
-    Attribution(color colour, DrawStyle style)
+    Attribute(color colour, DrawStyle style)
     {
         this(colour, colour, style);
     }
 
-    Attribution()
+    Attribute()
     { // default colors
         _cStroke = #000000;
         _cFill = #ffffff;
@@ -85,8 +85,8 @@ class Attribution
     @Override
     boolean equals(Object o)
     {
-        if (o == null || !(o instanceof Attribution)) { return false; }
-        Attribution other = (Attribution)o;
+        if (o == null || !(o instanceof Attribute)) { return false; }
+        Attribute other = (Attribute)o;
         if (_cStroke == other._cStroke && _cFill == other._cFill && _style == other._style)
         {
             return true;
@@ -95,29 +95,29 @@ class Attribution
     }
 }
 
-class AttributionDetail extends Attribution
+class AttributeDetail extends Attribute
 {
     final float _strokeW;
     final int _capType; // stroke cap: ROUND, SQUARE, PROJECT
 
-    AttributionDetail(color cStroke, color cFill, DrawStyle style, float strokeW, int capType)
+    AttributeDetail(color cStroke, color cFill, DrawStyle style, float strokeW, int capType)
     {
         super(cStroke, cFill, style);
         _strokeW = strokeW;
         _capType = capType;
     }
 
-    AttributionDetail(color cStroke, color cFill, float strokeW, int capType)
+    AttributeDetail(color cStroke, color cFill, float strokeW, int capType)
     {
         this(cStroke, cFill, DrawStyle.STROKEANDFILL, strokeW, capType);
     }
 
-    AttributionDetail(color colour, DrawStyle style, float strokeW, int capType)
+    AttributeDetail(color colour, DrawStyle style, float strokeW, int capType)
     {
         this(colour, colour, style, strokeW, capType);
     }
 
-    AttributionDetail()
+    AttributeDetail()
     {
         _strokeW = 1;
         _capType = ROUND;

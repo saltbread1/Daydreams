@@ -55,7 +55,7 @@ abstract class TransitionFade extends TransitionEffect
     @Override
     void drawEffect(Quad effectQuad)
     {
-        effectQuad.setAttribution(new Attribution(color(_colour, getAlpha()), DrawStyle.FILLONLY));
+        effectQuad.setAttribute(new Attribute(color(_colour, getAlpha()), DrawStyle.FILLONLY));
         effectQuad.drawMeAttr();
     }
 
@@ -110,7 +110,7 @@ class TransitionBlinkAlternating extends TransitionEffect
     {
         if (_threshFrame < _blinkFrame)
         {
-            effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+            effectQuad.setAttribute(new Attribute(_colour, DrawStyle.FILLONLY));
             effectQuad.drawMeAttr();
         }
         _threshFrame = (_threshFrame+1)%(_blinkFrame*2);
@@ -136,7 +136,7 @@ class TransitionBlinkOnce extends TransitionEffect
     {
         if (_blinkSec >= _intervalSec)
         {
-            effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+            effectQuad.setAttribute(new Attribute(_colour, DrawStyle.FILLONLY));
             effectQuad.drawMeAttr();
             _blinkSec = 0;
         }
@@ -290,7 +290,7 @@ class TransitionSlide extends TransitionEffect
     @Override
     void drawEffect(Quad effectQuad)
     {
-        effectQuad.setAttribution(new Attribution(_colour, DrawStyle.FILLONLY));
+        effectQuad.setAttribute(new Attribute(_colour, DrawStyle.FILLONLY));
         effectQuad.drawMeAttr();
     }
 }
