@@ -112,10 +112,10 @@ class SceneSlidingCircles extends Scene
                     t2 = random(-.5, .5);
                     break;
                 case BEZIER2:
-                    s1 = random(-8, 8);
-                    s2 = random(-8, 8)+1;
-                    t1 = random(-8, 8);
-                    t2 = random(-8, 8);
+                    s1 = random(-4, 4);
+                    s2 = random(-4, 4)+1;
+                    t1 = random(-4, 4);
+                    t2 = random(-4, 4);
                     break;
 
             }
