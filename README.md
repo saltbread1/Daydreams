@@ -18,5 +18,9 @@ https://youtu.be/TtqpOBysGvE
 
 ## Author
 
-- take
+- [take](https://twitter.com/saltbread1729)
 - [youtube](https://www.youtube.com/channel/UCjW8L5eykr1xlBkhgD5ihBQ)
+
+## License
+
+- [MIT License](https://github.com/saltbread1/Daydreams/blob/main/LICENSE)
